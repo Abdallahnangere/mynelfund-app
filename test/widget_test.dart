@@ -1,9 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_nelfund/main.dart';
 
 void main() {
-  testWidgets('MyNelfundApp launches and displays 5 Cupertino tabs',
+  testWidgets('MyNelfundApp launches with Home tab, logo, pillars, and quick navigation',
       (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
     await tester.pumpWidget(const MyNelfundApp());
     await tester.pumpAndSettle();
 
@@ -14,17 +19,27 @@ void main() {
     expect(find.text('FAQ'), findsWidgets);
     expect(find.text('Timeline'), findsWidgets);
 
-    // Verify initial home content is displayed
-    expect(find.text('My NELFund'), findsOneWidget);
+    // Verify Home Tab Content
+    expect(find.text('My NELFund'), findsWidgets);
+    expect(find.text('Portal Currently Open'), findsOneWidget);
+    expect(find.text('0% Zero Interest'), findsOneWidget);
+    expect(find.text('₦20,000 Monthly Upkeep'), findsOneWidget);
+    expect(find.text('Key Loan Pillars (Act 2024)'), findsOneWidget);
 
-    // Switch to Eligibility tab
-    await tester.tap(find.text('Eligibility'));
-    await tester.pumpAndSettle();
-    expect(find.text('Eligibility Checker'), findsOneWidget);
+    // Verify Quick-Access card to Eligibility Checker
+    final eligibilityActionCard = find.text('Eligibility Checker');
+    expect(eligibilityActionCard, findsOneWidget);
 
-    // Switch to Calculator tab
-    await tester.tap(find.text('Calculator'));
+    await tester.tap(eligibilityActionCard);
     await tester.pumpAndSettle();
-    expect(find.text('Repayment Calculator'), findsOneWidget);
+
+    // Now Eligibility tab is active
+    expect(find.text('Official 2024 Criteria & Disqualification Test'), findsOneWidget);
+
+    // Switch back to Home tab via bottom bar
+    await tester.tap(find.byIcon(CupertinoIcons.house));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Portal Currently Open'), findsOneWidget);
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import '../core/theme/nelfund_colors.dart';
 import '../core/theme/nelfund_typography.dart';
 import '../widgets/apple_frosted_card.dart';
+import 'home/home_view.dart';
 
 class MainTabScaffold extends StatefulWidget {
   final int initialIndex;
@@ -91,13 +92,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
           builder: (context) {
             switch (index) {
               case 0:
-                return _buildPlaceholderView(
-                  title: 'My NELFund',
-                  subtitle: 'Student Loan Information & Utility',
-                  icon: CupertinoIcons.house_fill,
-                  tabName: 'Home',
-                  segmentBadge: 'Segment 2 Ready',
-                );
+                return const HomeView();
               case 1:
                 return _buildPlaceholderView(
                   title: 'Eligibility Checker',
