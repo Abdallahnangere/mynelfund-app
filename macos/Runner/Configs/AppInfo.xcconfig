@@ -1,0 +1,14 @@
+// Application-level settings for the Runner target.
+//
+// This may be replaced with something auto-generated from metadata (e.g., pubspec.yaml) in the
+// future. If not, the values below would default to using the project name when this becomes a
+// 'flutter create' template.
+
+// The application's name. By default this is also the title of the Flutter window.
+PRODUCT_NAME = my_nelfund
+
+// The application's bundle identifier
+PRODUCT_BUNDLE_IDENTIFIER = com.nelfund.app.myNelfund
+
+// The copyright displayed in application information
+PRODUCT_COPYRIGHT = Copyright © 2026 com.nelfund.app. All rights reserved.

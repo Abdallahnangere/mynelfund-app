@@ -1,0 +1,544 @@
+=== PAGE 1 ===
+i  
+GUIDELINES FOR PUBLIC TERTIARY INSTITUTIONS ON THE ADMINISTRATION OF THE 
+NIGERIAN EDUCATION LOAN FUND (NELFUND) STUDENT LOAN 
+ 
+i. GLOSSARY 
+1.0 INTRODUCTION 
+1.1 Background 
+1.2 Overview/Importance of higher education 
+1.3 Objectives of the NELFUND 
+1.4 Target Beneficiaries 
+1.5 Expected Outcome 
+ 
+2.0 ELIGIBILITY CRITERIA 
+2.1 Nationality 
+2.2.0 Academic Criteria 
+2.3 Know Your Customer (KYC) Criteria 
+ 
+3.0 DISQUALIFICATION CRITERIA 
+ 
+4.0 LOAN APPLICATION PROCESS 
+4.1 Application Requirements 
+4.2 Review and Evaluation 
+4.3 Loan Approval 
+ 
+5.0 LOAN DISBURSEMENT 
+5.1 Execution of Loan Agreement 
+5.2 Execution of Global Standing Instruction mandate 
+5.3 Disbursement Approval 
+5.4 Disbursement Notification to Applicant and Tertiary Institution 
+5.5 Conditions for Institutional Refunds/Reversals 
+5.6 Breaches and sanctions 
+ 
+6.0 LOAN REPAYMENT 
+6.1 Repayment terms and conditions 
+6.2.1 Repayment options and schedules 
+6.3 Recovery Actions 
+ 
+7.0 LEGAL AND ETHICAL CONSIDERATIONS 
+7.1 Compliance with national and international laws and regulations 
+7.2 Ethical considerations in loan management 
+7.3 Confidentiality and Data Protection 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 2 ===
+i  
+ 
+ 
+GLOSSARY 
+BVN Bank Verification Number 
+CBN Central Bank of Nigeria 
+CRMS Credit Risk Management System 
+DPR Data Protection Regulation 
+ETI Eligible Tertiary Institutions 
+FAQ Frequently Asked Questions 
+GSI Global Standing Instruction 
+IBR Income-Based Repayment 
+JAMB Joint Admissions and Matriculation Board 
+KYC Know Your Customer 
+NIBSS Nigeria Inter-Bank Settlement System 
+NIMC National Identity Management Commission 
+NIN National Identity Number 
+NOUN National Open University of Nigeria 
+NYSC National Youth Service Corps 
+PAYE Pay As You Earn 
+NELFUND Nigerian Education Loan Fund 
+SLA Student Loan Act 
+SHEL Student Higher Education Loan 
+The Act The Student Loan (Access to Higher Education) Act 2024 
+The Fund The Nigerian Education Loan Fund 
+UNESCO United Nations Educational, Scientific and Cultural Organization 
+
+=== PAGE 3 ===
+  1  
+ 
+ 
+1.1 Background 
+The Students Loans (Access to Higher Education) Act, 2024 was signed into 
+law by the President, Federal Republic of Nigeria, His Excellency, Bola  
+Ahmed Tinubu. The Act repealed the Student Loans (Access to Higher 
+Education) Act 2023 and established the Nigerian Education Loan Fund 
+(NELFUND) as a body corporate to receive, manage and invest funds to 
+provide loans to eligible Nigerians for higher education, vocational training and 
+skills acquisition. 
+In compliance with Section 23 (3) of the Act, the Board1 hereby issues this 
+Guidelines for the eligibility criteria, loan application process, loan 
+disbursement, and repayment of student loans under the Act. 
+1.2 Overview/Importance of Higher Education 
+A UNESCO report 2 titled "What You Need to Know About Higher Education ," 
+published in April 2023 highlighted a global surge in student enrollment into 
+higher institutions of learning within the past two decades, with numbers 
+exceeding 235 million. This trajectory showcases the increasing recognition of 
+the vital role of higher education in personal and societal development, as it 
+equips individuals with the knowledge, skills, and critical thinking necessary to 
+actively participate in the workforce and contribute to economic growth. 
+The International Covenant on Economic, Social, and Cultural Rights calls for 
+accessible higher education, stating that it is necessary for the “full development 
+of the human personality and the sense of its dignity.” This is provided for under 
+the Sustainable Development Goal 4: “Ensure inclusive and  equitable quality 
+education and promote lifelong learning opportunities for all”. This highlights the 
+importance of ensuring equal access to higher education opportunities for all, 
+regardless of gender, economic status, disability, or location. 
+For many Nigerians, especially those from humble backgrounds, higher 
+education acts as a springboard towards economic security and a brighter 
+future. With the strategic investment by the Federal Government in the 
+ 
+ 
+1 Administration of Students’ Higher Education Loans Scheme as provided by Section 23 of the 
+Students Loans Act, 2024 
+2 (see UNESCO’s website: What you need to know about higher education | UNESCO) 
+1.0 INTRODUCTION 
+
+=== PAGE 4 ===
+  2  
+education sector through NELFUND, Nigeria is unlocking immense potentials 
+by paving ways for brighter future generations. 
+1.3 Objectives of NELFUND 
+1.3.1 Enhance Access to Higher Education 
+To broaden access to higher education by offering financial support to 
+students who face challenges in funding their education. 
+1.3.2 Ensuring financial inclusivity for all eligible students 
+Promote equal opportunities to higher education for eligible students without 
+any form of discrimination. 
+1.3.3 Foster Skill Development 
+The program aims to contribute to the development of a skilled and 
+knowledgeable workforce by supporting students to acquire useful skills. 
+ 
+1.3.4 Promote Socio-economic Mobility 
+The Fund aims to create a level playing field for Nigerians irrespective  of 
+financial background to acquire higher education regardless of socio 
+economic status. 
+ 
+1.3.5 Reduce Dropout Rates 
+By alleviating financial burdens, the program seeks to reduce dropout rates 
+and enable students successfully complete their academic programs. 
+ 
+1.3.6 Stimulate Economic Growth 
+Investment in education and a skilled workforce capable of driving innovation 
+and development will contribute to the overall economic growth and 
+development of Nigeria. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 5 ===
+  3  
+2.0 ELIGIBILITY CRITERIA 
+1.4 EXPECTED OUTCOMES 
+1.4.1 Increased Enrolment: The program anticipates a rise in the enrolment 
+of deserving students who would otherwise be unable to afford higher 
+education. 
+1.4.2 Higher Graduation Rates: Financial support reduces the likelihood of 
+students dropping out, leading to increased graduation rates and a more 
+educated populace. 
+1.4.3 Skilled Workforce: The program contributes to the creation of a skilled 
+and diverse workforce, aligning with the evolving needs of the job market. 
+1.4.4 Economic Empowerment : Beneficiaries, upon graduation, are 
+expected to enter the workforce with improved earning potential, contributing 
+to personal and familial economic empowerment. 
+1.4.5 National Development: As educated individuals contribute to societal 
+progress, the program aims to play a role in Nigeria's long-term development 
+by fostering a knowledgeable and skilled citizenry. 
+1.4.6 Establishment of a Sustainable Framework: Beyond immediate 
+outcomes, the program seeks to establish a sustainable framework for 
+continued support to future generations of students. 
+ 
+ 
+An intending loan applicant under the Fund is required to meet the following 
+eligibility criteria: 
+2.1 Nationality 
+ 
+2.1.1 An intending applicant must be a Nigerian citizen as defined by the 
+Constitution of the Federal Republic of Nigeria 1999 (as amended). 
+2.1.2 The proof of citizenship shall include the provision of National Identity 
+Number (NIN), and Bank Verification Number (BVN). 
+ 
+2.2 Academic Criteria 
+The NELF can be assessed by persons who fall into the following 
+categories: 
+2.2.1 Fresh Entry – where an intending applicant is a prospective student of 
+an Eligible Tertiary Institution (ETI), such an applicant is required to have 
+secured a valid admission to the ETI through the Joint Admissions and 
+Matriculation Board (JAMB). 
+
+=== PAGE 6 ===
+  4  
+3.0 DISQUALIFICATION CRITERIA 
+2.2.2 Direct Entry – For direct entry, an intending applicant is required to have 
+secured a valid admission to any ETI through JAMB. 
+ 
+ 
+2.2.3 Full-time Undergraduate – An intending applicant undergoing a full- 
+time undergraduate programme at an ETI, is required to provide his/her 
+matriculation number. 
+ 
+2.3 Know Your Customer (KYC) Criteria 
+An intending applicant is required to provide the underlisted 
+documents/information: 
+ 
+i) JAMB Number 
+ii) Bank Verification Number (BVN) – for intending applicants aged 18 
+years and above; 
+iii) National Identity Number (NIN) 
+iv) Personal information such as age, gender, phone number, home 
+address, and email address; and 
+v) A passport photograph. 
+ 
+ 
+3.1 An intending applicant is disqualified from assessing the loan if such an 
+applicant is: 
+▪ Proven to have defaulted in respect of any previous education loan 
+granted by the Federal Government of Nigeria, a state government, 
+or any of their agencies or departments. 
+▪ At the time of application, he or she is a beneficiary of any education 
+loan or other scholarship scheme from the Federal Government of 
+Nigeria, a state government, or any of their agencies or departments. 
+▪ Found guilty of misconduct involving plagiarism, cultism, violence, 
+submitting fake/fraudulent documents and dismissed for exam 
+malpractices by any tertiary institution empowered by law or 
+regulation to make such findings; and 
+▪ Convicted of fraud and forgery, drug offences, felony, or any offence 
+involving dishonesty. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 7 ===
+  5  
+LOAN APPLICATION PROCESS 
+ 
+4.1 Application Requirement 
+4.1.1 Application channels 
+▪ To apply for students loan, an applicant is required to complete the 
+online application form through a portal on the NELFUND website: 
+nelf.gov.ng 
+▪ An applicant is required to complete the designated application form 
+on the online portal by providing accurate personal information, 
+academic records, and any other necessary documentation required 
+for the loan application. 
+▪ An applicant shall be required to complete an online indemnity 
+agreement for the purpose of verification of the data submitted. 
+▪ The NELFUND Board may determine alternate channels for the 
+submission of loan applications as circumstances and exigencies may 
+warrant. 
+ 
+4.1.2 Documentation requirements 
+An applicant is required to provide the following documents as 
+attachments to the online application form: 
+▪ A valid admission letter or Student ID is required 
+ 
+▪ Any other document as may be determined by NELFUND’s Board 
+from time to time. 
+ 
+4.1.3 Attestation Form 
+The online application form shall include an Attestation Form which an 
+applicant is required to execute thereby confirming that he/she: 
+▪ has no criminal records; 
+▪ has not been found culpable of submitting fake/forged documents or 
+for exam malpractices by any tertiary institution; 
+▪ has not been convicted for drugs related offences, fraud & forgery, 
+felony, or any offence involving dishonesty; 
+▪ is not a holder of a first degree or its equivalent from a Nigerian or 
+foreign tertiary institution; and 
+▪ has not defaulted in respect of any previous education loan granted 
+by the Federal Government of Nigeria, a state government, or any of 
+their agencies or departments. 
+ 
+ 
+ 
+
+=== PAGE 8 ===
+  6  
+4.1.4 Timeline for Application 
+NELFUND’s application window shall be as determined and 
+communicated by the Board. 
+4.2 Review and Evaluation 
+4.2.1. Data Verification and Validation 
+1) The NELF shall verify the authenticity and accuracy of the submitted 
+documents and information, to ensure that all required documents are in 
+line with the established eligibility criteria and regulatory standards set by 
+the National  Universities Commission (NUC), National Commission for 
+Colleges of Education (NCCE), National Board for Technical Education 
+(NBTE) and other relevant authorities. 
+2) Verification by tertiary institutions shall not exceed 20 working days. 
+4.2.2. Evaluation Criteria 
+i) Mandatory criteria – all applications shall be immediately evaluated to 
+ascertain the following: 
+▪ Completeness of the loan application; 
+▪ Validation of the applicant’s NIN with the NIMC; 
+▪ Validation of the applicant’s BVN with the NIBSS; and 
+▪ Validation of the applicant’s admission number/letter with JAMB 
+and/or the ETI. 
+ii) Future criteria – an applicant’s attestation, as detailed in Section 4.1.3 
+shall be verified across the relevant platforms and Government 
+Agencies. Where any of the declaration is found to be false, the applicant 
+is immediately disqualified from the Scheme and the loan granted 
+becomes immediately due for repayment. 
+ 
+iii) Optional criteria – The Board may, from time to time, set other evaluation 
+criteria such as field of  study critical to development and as exigencies 
+of national aspirations may require. 
+ 
+4.2.3 Evaluation and assessment of the loan applications 
+The evaluation and assessment of an application shall be fully automated 
+in line with the timeline stipulated in the Act. The Board may also conduct 
+random manual checks to ensure the effectiveness of the loan evaluation 
+process. 
+ 
+
+=== PAGE 9 ===
+  7  
+5.0 LOAN DISBURSEMENT 
+4.2.4 Turn Around Time for the Evaluation 
+Evaluation of an application shall be within fifteen (15) calendar days 
+following receipt of an application. 
+4.2.5 Notifications to Applicant 
+NELFUND shall notify the applicant of the status of his/her application 
+after evaluating the application immediately after evaluation. 
+4.3 Loan Approval 
+4.3.1 Any application that satisfies the mandatory evaluation criteria will be 
+automatically approved. 
+4.3.2 A successful applicant shall be notified through the email address. The 
+approved loan and an agreement outlining the terms and conditions of 
+the loan shall be attached to the notification email. 
+ 
+4.3.3 Turn Around Time for Loan Approval – the Loan approval and 
+notification to the applicant shall not be more than 10 working days 
+following completion of the mandatory verification process by ETI. 
+ 
+ 
+Disbursement of a student loan shall be subject to availability of funds in the 
+Scheme. 
+Disbursement of the student loan shall be directly to an ETI on behalf of the 
+successful applicant and shall cover the applicant’s institutional charge only. 
+This may be however reviewed by the Board from time to time. 
+NELFUND shall obtain the schedule of fees for all programs offered by an ETI 
+on an annual basis. 
+Upon successful student eligibility verification, the fee structures of enrolled 
+students are validated through the integration with the institutions database and 
+records, ensuring the accurate calculation of the loan amount required to cover 
+institutional charges. 
+Disbursement of optional upkeep allowance shall be directly to the applicant. 
+Following from the above, a successful applicant is required to satisfy the 
+following pre-conditions for the disbursement of an approved student loan. 
+ 
+
+=== PAGE 10 ===
+  8  
+5.1 Execution of Loan Agreement 
+▪ A successful applicant is required to execute a legally binding loan 
+agreement on the Portal. 
+▪ Such a successful applicant is required to review the terms and 
+conditions of the loan, acknowledge their understanding of the repayment 
+obligations before accepting the terms and conditions therein. 
+ 
+5.2 Execution of Global Standing Instruction (GSI) mandate 
+5.2.1 The successful applicant is required to: 
+▪ Complete the GSI mandate form. 
+▪ Ensure that the terms and conditions of the mandate are clearly 
+understood before execution. 
+▪ Ensure that all qualifying accounts linked to his/her BVN are 
+disclosed in the GSI mandate form. 
+▪ Execute the GSI mandate on the Portal. 
+5.3 Disbursement Approval 
+▪ The NELF shall review the loan agreement and GSI mandate executed 
+under Section 5.1 and 5.2 for completeness. 
+▪ Disbursement of funds by NELFUND to institutions shall not exceed 10 
+working days. 
+▪ Details of successful applicants who have completed the process shall 
+be collated and recommended for loan disbursement. 
+▪ The Managing Director shall grant approval for disbursement of the 
+approved student loan for payment of the successful applicants’ 
+institutional charges. 
+▪ Disbursement shall be based on availability of funds. 
+▪ The institutional charges shall be paid electronically, directly to the ETI. 
+ 
+5.4 Disbursement Notification to Successful Applicant and Tertiary 
+Institution 
+▪ Upon payment of the institutional charges to an ETI, a successful 
+applicant shall receive a notification of the loan disbursement and 
+payment of institutional charges to the ETI. 
+▪ Notification to applicants by ETI 
+The ETI should notify their approved applicants upon the receipt of fund 
+from NELFUND; 
+• Institutions operating TSA  Accounts have a maximum of 10 
+working days 
+• Institutions operating Non -TSA Accounts have a maximum of 5 
+
+=== PAGE 11 ===
+  9  
+working days 
+▪ NELFUND format for notifying students upon confirmation of loan 
+Disbursement. 
+ Students should be notified by any or all of the following channels: 
+• Student Portal 
+• Email 
+• SMS 
+ 
+▪ Notification to the successful applicant and ETI shall be within 30 days 
+from the date the loan application is completed and submitted or as 
+stipulated in the extant legislation.  
+▪ The ETI is required to acknowledge receipt of payment to NELFUND and 
+generate a payment receipt for the beneficiary within 7 working days. 
+▪ NELFUND may periodically publish a list of all successful applicants. 
+ 
+ 
+5.5 Conditions for Institutional Refunds/Reversals 
+i) New students – When a new student subsequently rejects an admission 
+from an ETI after the institutional charges has been paid to the ETI by 
+the Fund but prior to the commencement of the academic year, such an 
+ETI shall refund the institutional charges to the Fund. 
+ 
+ii) Undergraduates – When an undergraduate withdraws from the ETI, 
+before the commencement of a new academic year but after the 
+institutional charges for the new academic year has been paid by the 
+Fund, such an ETI shall refund the institutional charges paid for the new 
+academic year back to the Fund. 
+ 
+iii) An ETI shall refund any overpayment or duplicated payments made for 
+any student. 
+ 
+iv) Institutions are to process and issue refunds within a maximum of 30 
+calendar days 
+v) Any other instances as may be determined by the Board. 
+ 
+ 
+5.6 Breaches and Sanctions 
+An ETI shall be suspended from receiving funds from NELFUND, if: 
+▪ The institution contravenes the provisions of the Student Loan Act 2024 
+and any relevant section of this Guidelines. 
+▪ The institution engages in fraudulent activities related to institutional 
+
+=== PAGE 12 ===
+  10  
+LOAN REPAYMENT 
+charges payment, such as falsifying student information/records or 
+colluding with students to obtain loans for ineligible purposes. 
+▪ The institution fails to refund disbursed institutional charges in instances 
+stipulated in Section 5.5 above. 
+▪ The institution fails to refund any overpayments or duplicate institutional 
+charges payments made for any student. 
+▪ The Fund is investigating allegations of misconduct or irregularities by an 
+institution. 
+▪ The institution fails to comply with reporting requirements. 
+The suspension of an ETI from receiving institutional charges payment from 
+the Fund shall not apply to existing students under the scheme except in 
+instances of proven fraud. 
+ 
+ 
+6.1 Repayment terms and conditions 
+i) Beneficiaries of the loan shall commence repayment two years after 
+completion of the NYSC program or exemption from it. 
+ii) The beneficiaries are required to disclose their employment status 
+quarterly to the Fund after completion of the NYSC program through 
+channels as may be determined by the Fund. 
+iii) Repayment shall be a direct deduction of 10  percent of the beneficiary’s 
+salary at source by the Employer and remitted to the Fund. 
+iv) Any beneficiary who changes employment shall communicate his/her new  
+employment details to the Fund within 30 days of resuming with the new 
+employer. 
+v) Where a beneficiary is Self -employed, he/she shall remit 10 percent of 
+his/her total profit monthly to the Fund. A Self-employed person shall within 
+60 days of assuming that status submit information such as name of the 
+business, address and location, registration documents (if registered),  
+name of bankers, names of partners, names of directors, and shareholders, 
+to the Fund. 
+vi) A beneficiary can make voluntary repayments at any time. 
+vii) A beneficiary is required to fulfill obligations and responsibilities of the 
+repayment terms and conditions of the loan agreement. The performance 
+status of a student loan granted to a beneficiary shall be periodically 
+reported to the CBN CRMS and private Credit Bureaus. 
+viii) A beneficiary may receive an extension from the Fund by providing a sworn 
+statement in such manner as the Board may determine, indicating  that he 
+is not employed in any capacity and is not receiving any income. 
+
+=== PAGE 13 ===
+  11  
+7.0 LEGAL AND ETHICAL CONSIDERATIONS 
+ 
+6.2 Repayment options and schedules 
+ 
+▪ PAYE: This option mandates a beneficiary to make monthly repayments 
+of 10% of their salary, wages and any other income accruing to them to 
+the Fund. 
+▪ IBR: This option requires a Self -employed beneficiary to make monthly 
+repayments of 10% of their profit to the Fund. 
+Voluntary repayment: A beneficiary can make voluntary payments in 
+addition to the mandatory monthly payments. 
+6.3 Recovery Actions 
+In the event of a loan default, the Fund reserves the right to take one or all the 
+following actions: 
+Warning Notifications: a defaulter shall be put on notice of the default via email 
+and/or text messages and requested to make repayments immediately. 
+i) Restricting access to further credits: a defaulter will be restricted from 
+accessing credit from any financial institution in Nigeria. Their credit records 
+on CRMS and the regulated credit bureaus would reflect their non - 
+performing loan status. 
+ii) Publish a list of defaulters: the Fund can publish a list containing all 
+persistent defaulters. 
+iii) GSI: The GSI process will be triggered to access all credit balances of a 
+defaulter in the financial system for the purpose of settling the loan. 
+iv) Legal Action: Legal redress may be sought against defaulters. 
+ 
+ 
+7.1 Compliance with National and International laws and regulations 
+The operations of the NELFUND shall comply with the provisions of the 
+Student Loans Act 2024 and other relevant national and international 
+laws and regulations. 
+7.2 Ethical considerations in loan management 
+i) The Fund shall ensure fairness, equity, and transparency at all stages of 
+the loan application, disbursement, management and repayment 
+processes. 
+ii) The Fund shall prohibit discrimination based on gender, ethnicity, 
+religion, tribe or any other demographic factor, in loan allocation and 
+management. 
+
+=== PAGE 14 ===
+  12  
+7.3 Confidentiality and Data Protection 
+i) The Fund shall ensure that beneficiary data is handled in accordance with 
+the requirements of the Data Protection Regulation (DPR) and the Nigeria 
+Data Protection Act 2023. 
+ 
+ 
+
