@@ -34,7 +34,10 @@ void main() {
     await tester.pumpAndSettle();
 
     // Now Eligibility tab is active
-    expect(find.text('Official 2024 Criteria & Disqualification Test'), findsOneWidget);
+    expect(find.text('Official Eligibility Audit'), findsOneWidget);
+    expect(find.text('Fresh Entry'), findsOneWidget);
+    expect(find.text('Likely Eligible for NELFUND Loan'), findsOneWidget);
+    expect(find.text('Statutory Disqualification Bars'), findsOneWidget);
 
     // Switch back to Home tab via bottom bar
     await tester.tap(find.byIcon(CupertinoIcons.house));

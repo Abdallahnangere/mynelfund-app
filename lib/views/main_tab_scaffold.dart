@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import '../core/theme/nelfund_colors.dart';
 import '../core/theme/nelfund_typography.dart';
 import '../widgets/apple_frosted_card.dart';
+import 'eligibility/eligibility_view.dart';
 import 'home/home_view.dart';
 
 class MainTabScaffold extends StatefulWidget {
@@ -94,13 +95,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
               case 0:
                 return const HomeView();
               case 1:
-                return _buildPlaceholderView(
-                  title: 'Eligibility Checker',
-                  subtitle: 'Official 2024 Criteria & Disqualification Test',
-                  icon: CupertinoIcons.checkmark_shield_fill,
-                  tabName: 'Eligibility',
-                  segmentBadge: 'Segment 3 Ready',
-                );
+                return const EligibilityView();
               case 2:
                 return _buildPlaceholderView(
                   title: 'Repayment Calculator',

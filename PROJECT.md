@@ -24,13 +24,16 @@ Each segment follows a clean two-step lifecycle:
 - Application Window Status Card (current open session, batch closing countdown, updateable).
 - 3 Core Pillars summary (0% Interest, Direct Institutional Fees, ₦20,000 Monthly Upkeep).
 - Quick-access interactive action cards to jump directly to Calculator, Eligibility Checker, FAQ, and Timeline Tracker.
-- **Status: IN PLANNING (Awaiting Approval)**
+- **Status: COMPLETED (Commit: `feat(home): implement Home tab...`)**
 
 ### Segment 3: Tab 2 — Interactive Eligibility & Disqualification Checker
-- Interactive multi-step checklist (Nationality NIN/BVN, Academic criteria, KYC requirements).
+- Interactive multi-step checklist:
+  - Nationality (NIN + BVN requirement)
+  - Academic Qualification (Fresh Entry, Direct Entry, Full-time Undergraduate)
+  - KYC Requirements (JAMB Number, BVN, NIN, Contact Info, Passport Photograph)
 - Disqualification filter (prior default, active govt scholarship, disciplinary misconduct, criminal convictions, first degree holder).
 - Non-binding diagnostic result banner ("Likely Eligible" vs "May be Disqualified") with actionable guidance and explanations.
-- **Status: Queued**
+- **Status: IN PLANNING (Awaiting Approval)**
 
 ### Segment 4: Tab 3 — Repayment Calculator & Default Escalation Visualizer
 - Segmented toggle: Employed (PAYE) vs Self-employed (IBR).
@@ -65,8 +68,8 @@ Each segment follows a clean two-step lifecycle:
 | Segment | Scope | Status | Walkthrough | Commit Reference |
 |---|---|---|---|---|
 | **Segment 1** | Scaffolding, Logo, Cupertino Shell & Tokens | **COMPLETED** | [Walkthrough 1](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(core): scaffold My NELFund...` |
-| **Segment 2** | Tab 1: Home & Overview | **In Planning (Awaiting Approval)** | Pending | Pending |
-| **Segment 3** | Tab 2: Eligibility & Disqualification Checker | Queued | Pending | Pending |
+| **Segment 2** | Tab 1: Home & Overview | **COMPLETED** | [Walkthrough 2](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(home): implement Home tab...` |
+| **Segment 3** | Tab 2: Eligibility & Disqualification Checker | **In Planning (Awaiting Approval)** | Pending | Pending |
 | **Segment 4** | Tab 3: Repayment Calculator & Default Escalation | Queued | Pending | Pending |
 | **Segment 5** | Tab 4: FAQ Knowledge Base | Queued | Pending | Pending |
 | **Segment 6** | Tab 5: Timeline & SLA Tracker | Queued | Pending | Pending |
