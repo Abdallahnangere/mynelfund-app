@@ -42,13 +42,13 @@ Each segment follows a clean two-step lifecycle:
 - 2-year post-NYSC moratorium countdown / timeline projection.
 - Voluntary extra prepayment slider showing timeline shortening.
 - "Risks of Default" Escalation Panel (Warning → CRMS/Credit Bureau → Defaulter List → GSI Auto-Debit → Legal Action).
-- **Status: IN PLANNING (Awaiting Approval)**
+- **Status: COMPLETED (Commit: `feat(calculator): implement repayment calculator...`)**
 
 ### Segment 5: Tab 4 — FAQ Knowledge Base
 - Stage-based category tabs: **Applying** | **Disbursement** | **Repayment** | **Default**.
 - Real-time search bar and keyword filter.
 - Detailed coverage of critical legal aspects (GSI across all BVN accounts, quarterly employment disclosures, 60-day business disclosure, 15/10/10 SLAs).
-- **Status: Queued**
+- **Status: IN PLANNING (Awaiting Approval)**
 
 ### Segment 6: Tab 5 — Timeline & SLA Tracker
 - Visual journey map with step-by-step SLA indicators.
@@ -70,7 +70,7 @@ Each segment follows a clean two-step lifecycle:
 | **Segment 1** | Scaffolding, Logo, Cupertino Shell & Tokens | **COMPLETED** | [Walkthrough 1](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(core): scaffold My NELFund...` |
 | **Segment 2** | Tab 1: Home & Overview | **COMPLETED** | [Walkthrough 2](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(home): implement Home tab...` |
 | **Segment 3** | Tab 2: Eligibility & Disqualification Checker | **COMPLETED** | [Walkthrough 3](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(eligibility): implement interactive eligibility...` |
-| **Segment 4** | Tab 3: Repayment Calculator & Default Escalation | **In Planning (Awaiting Approval)** | Pending | Pending |
-| **Segment 5** | Tab 4: FAQ Knowledge Base | Queued | Pending | Pending |
+| **Segment 4** | Tab 3: Repayment Calculator & Default Escalation | **COMPLETED** | [Walkthrough 4](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(calculator): implement repayment calculator...` |
+| **Segment 5** | Tab 4: FAQ Knowledge Base | **In Planning (Awaiting Approval)** | Pending | Pending |
 | **Segment 6** | Tab 5: Timeline & SLA Tracker | Queued | Pending | Pending |
 | **Segment 7** | Final Polish, Test Suite & End-to-End Review | Queued | Pending | Pending |

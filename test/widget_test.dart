@@ -55,5 +55,15 @@ void main() {
     expect(find.text('₦15,000'), findsOneWidget);
     expect(find.text('2-Year Post-NYSC Grace Period'), findsOneWidget);
     expect(find.text('Default Escalation Timeline (Section 5.3)'), findsOneWidget);
+
+    // Switch to FAQ tab via bottom bar
+    await tester.tap(find.byIcon(CupertinoIcons.question_circle));
+    await tester.pumpAndSettle();
+
+    // Verify FAQ Tab Content
+    expect(find.text('Official FAQ'), findsOneWidget);
+    expect(find.text('30-Day Institutional Refund Rule (Sec. 4.1.2)'), findsOneWidget);
+    expect(find.text('Global Standing Instruction (GSI) Alert (Sec. 5.3)'), findsOneWidget);
+    expect(find.byType(CupertinoSearchTextField), findsOneWidget);
   });
 }

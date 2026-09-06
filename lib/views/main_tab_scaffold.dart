@@ -4,6 +4,7 @@ import '../core/theme/nelfund_typography.dart';
 import '../widgets/apple_frosted_card.dart';
 import 'calculator/calculator_view.dart';
 import 'eligibility/eligibility_view.dart';
+import 'faq/faq_view.dart';
 import 'home/home_view.dart';
 
 class MainTabScaffold extends StatefulWidget {
@@ -100,13 +101,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
               case 2:
                 return const CalculatorView();
               case 3:
-                return _buildPlaceholderView(
-                  title: 'Official FAQ',
-                  subtitle: 'Applying, Disbursement, GSI & Recovery Rules',
-                  icon: CupertinoIcons.question_circle_fill,
-                  tabName: 'FAQ',
-                  segmentBadge: 'Segment 5 Ready',
-                );
+                return const FaqView();
               case 4:
                 return _buildPlaceholderView(
                   title: 'SLA Timeline Tracker',
