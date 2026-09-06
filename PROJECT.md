@@ -16,7 +16,7 @@ Each segment follows a clean two-step lifecycle:
 - Ingest official NELFUND logo and configure native launcher icons.
 - Build design tokens (`NelfundColors`, `NelfundTypography`, `NelfundTheme`, `AppleFrostedCard`).
 - Setup `CupertinoTabScaffold` hosting 5 core navigation tabs.
-- **Status: COMPLETED (Commit: `feat(core): scaffold My NELFund...`)**
+- **Status: COMPLETED (Commit: `fbafa2e`)**
 
 ### Segment 2: Tab 1 — Home & Overview
 - Hero banner with official NELFUND logo and empathetic student welcome.
@@ -24,7 +24,7 @@ Each segment follows a clean two-step lifecycle:
 - Application Window Status Card (current open session, batch closing countdown, updateable).
 - 3 Core Pillars summary (0% Interest, Direct Institutional Fees, ₦20,000 Monthly Upkeep).
 - Quick-access interactive action cards to jump directly to Calculator, Eligibility Checker, FAQ, and Timeline Tracker.
-- **Status: COMPLETED (Commit: `feat(home): implement Home tab...`)**
+- **Status: COMPLETED (Commit: `8c0d19e`)**
 
 ### Segment 3: Tab 2 — Interactive Eligibility & Disqualification Checker
 - Interactive multi-step checklist:
@@ -33,7 +33,7 @@ Each segment follows a clean two-step lifecycle:
   - KYC Requirements (JAMB Number, BVN, NIN, Contact Info, Passport Photograph)
 - Disqualification filter (prior default, active govt scholarship, disciplinary misconduct, criminal convictions, first degree holder).
 - Non-binding diagnostic result banner ("Likely Eligible" vs "May be Disqualified") with actionable guidance and explanations.
-- **Status: COMPLETED (Commit: `feat(eligibility): implement interactive eligibility...`)**
+- **Status: COMPLETED (Commit: `3362ad0`)**
 
 ### Segment 4: Tab 3 — Repayment Calculator & Default Escalation Visualizer
 - Segmented toggle: Employed (PAYE) vs Self-employed (IBR).
@@ -42,25 +42,25 @@ Each segment follows a clean two-step lifecycle:
 - 2-year post-NYSC moratorium countdown / timeline projection.
 - Voluntary extra prepayment slider showing timeline shortening.
 - "Risks of Default" Escalation Panel (Warning → CRMS/Credit Bureau → Defaulter List → GSI Auto-Debit → Legal Action).
-- **Status: COMPLETED (Commit: `feat(calculator): implement repayment calculator...`)**
+- **Status: COMPLETED (Commit: `264a2d5`)**
 
 ### Segment 5: Tab 4 — FAQ Knowledge Base
 - Stage-based category tabs: **Applying** | **Disbursement** | **Repayment** | **Default**.
 - Real-time search bar and keyword filter.
 - Detailed coverage of critical legal aspects (GSI across all BVN accounts, quarterly employment disclosures, 60-day business disclosure, 15/10/10 SLAs).
-- **Status: COMPLETED (Commit: `feat(faq): implement searchable official FAQ...`)**
+- **Status: COMPLETED (Commit: `b9143ee`)**
 
 ### Segment 6: Tab 5 — Timeline & SLA Tracker
 - Visual application journey map with step-by-step official SLA indicators (20-day ETI verification, 15-day evaluation, 10-day approval, 10-day disbursement, 7-day ETI receipt).
 - Interactive "On-Track Evaluator": User inputs application submission date to check whether processing is on schedule or overdue.
 - Actionable escalation advice when SLA is exceeded.
-- **Status: COMPLETED (Commit: `feat(timeline): implement official SLA timeline tracker...`)**
+- **Status: COMPLETED (Commit: `90385d6`)**
 
-### Segment 7: Final Polish, Automated Tests & Verification
-- Comprehensive test suite (`flutter test`) verifying all tabs, forms, calculations, and SLA validations.
-- Static analysis pass (`flutter analyze`) with 0 errors and 0 warnings.
+### Segment 7: Final Polish, Automated Tests & Release Verification
+- Comprehensive test suite (`flutter test`) verifying all tabs, forms, calculations, and SLA validations (24 automated tests passing).
+- Static analysis pass (`flutter analyze --fatal-infos`) with 0 errors, 0 warnings, and 0 infos.
 - End-to-end walkthrough and release sign-off.
-- **Status: IN PLANNING (Awaiting Approval)**
+- **Status: COMPLETED (Commit: `586e148`)**
 
 ---
 
@@ -68,10 +68,10 @@ Each segment follows a clean two-step lifecycle:
 
 | Segment | Scope | Status | Walkthrough | Commit Reference |
 |---|---|---|---|---|
-| **Segment 1** | Scaffolding, Logo, Cupertino Shell & Tokens | **COMPLETED** | [Walkthrough 1](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(core): scaffold My NELFund...` |
-| **Segment 2** | Tab 1: Home & Overview | **COMPLETED** | [Walkthrough 2](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(home): implement Home tab...` |
-| **Segment 3** | Tab 2: Eligibility & Disqualification Checker | **COMPLETED** | [Walkthrough 3](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(eligibility): implement interactive eligibility...` |
-| **Segment 4** | Tab 3: Repayment Calculator & Default Escalation | **COMPLETED** | [Walkthrough 4](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(calculator): implement repayment calculator...` |
-| **Segment 5** | Tab 4: FAQ Knowledge Base | **COMPLETED** | [Walkthrough 5](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(faq): implement searchable official FAQ...` |
-| **Segment 6** | Tab 5: Timeline & SLA Tracker | **COMPLETED** | [Walkthrough 6](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(timeline): implement official SLA timeline tracker...` |
-| **Segment 7** | Final Polish, Test Suite & End-to-End Review | **In Planning (Awaiting Approval)** | Pending | Pending |
+| **Segment 1** | Scaffolding, Logo, Cupertino Shell & Tokens | **COMPLETED** | [Walkthrough 1](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `fbafa2e` |
+| **Segment 2** | Tab 1: Home & Overview | **COMPLETED** | [Walkthrough 2](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `8c0d19e` |
+| **Segment 3** | Tab 2: Eligibility & Disqualification Checker | **COMPLETED** | [Walkthrough 3](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `3362ad0` |
+| **Segment 4** | Tab 3: Repayment Calculator & Default Escalation | **COMPLETED** | [Walkthrough 4](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `264a2d5` |
+| **Segment 5** | Tab 4: FAQ Knowledge Base | **COMPLETED** | [Walkthrough 5](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `b9143ee` |
+| **Segment 6** | Tab 5: Timeline & SLA Tracker | **COMPLETED** | [Walkthrough 6](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `90385d6` |
+| **Segment 7** | Final Polish, Test Suite & Release Verification | **COMPLETED** | [Walkthrough 7](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `586e148` |

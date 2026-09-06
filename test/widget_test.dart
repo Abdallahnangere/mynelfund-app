@@ -9,7 +9,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    await tester.pumpWidget(const MyNelfundApp());
+    await tester.pumpWidget(const MyNelfundApp(skipSplash: true));
     await tester.pumpAndSettle();
 
     // Verify all 5 Cupertino navigation tab labels exist

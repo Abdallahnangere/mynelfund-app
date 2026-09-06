@@ -10,7 +10,7 @@ void main() {
     addTearDown(() => tester.view.resetPhysicalSize());
 
     // 1. Launch Application
-    await tester.pumpWidget(const MyNelfundApp());
+    await tester.pumpWidget(const MyNelfundApp(skipSplash: true));
     await tester.pumpAndSettle();
 
     // ==========================================

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'core/theme/nelfund_theme.dart';
 import 'views/main_tab_scaffold.dart';
+import 'views/splash/splash_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -8,7 +9,12 @@ void main() {
 }
 
 class MyNelfundApp extends StatelessWidget {
-  const MyNelfundApp({super.key});
+  final bool skipSplash;
+
+  const MyNelfundApp({
+    super.key,
+    this.skipSplash = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +22,7 @@ class MyNelfundApp extends StatelessWidget {
       title: 'My NELFund',
       debugShowCheckedModeBanner: false,
       theme: NelfundTheme.lightTheme,
-      home: const MainTabScaffold(),
+      home: skipSplash ? const MainTabScaffold() : const SplashView(),
     );
   }
 }
