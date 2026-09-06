@@ -44,5 +44,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Portal Currently Open'), findsOneWidget);
+
+    // Switch to Calculator tab via bottom bar
+    await tester.tap(find.byIcon(CupertinoIcons.chart_pie));
+    await tester.pumpAndSettle();
+
+    // Verify Calculator Tab Content
+    expect(find.text('Statutory 10% Repayment Model'), findsOneWidget);
+    expect(find.text('STATUTORY MONTHLY DEDUCTION'), findsOneWidget);
+    expect(find.text('₦15,000'), findsOneWidget);
+    expect(find.text('2-Year Post-NYSC Grace Period'), findsOneWidget);
+    expect(find.text('Default Escalation Timeline (Section 5.3)'), findsOneWidget);
   });
 }

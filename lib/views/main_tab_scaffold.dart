@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import '../core/theme/nelfund_colors.dart';
 import '../core/theme/nelfund_typography.dart';
 import '../widgets/apple_frosted_card.dart';
+import 'calculator/calculator_view.dart';
 import 'eligibility/eligibility_view.dart';
 import 'home/home_view.dart';
 
@@ -97,13 +98,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
               case 1:
                 return const EligibilityView();
               case 2:
-                return _buildPlaceholderView(
-                  title: 'Repayment Calculator',
-                  subtitle: '10% PAYE/IBR & 2-Year Moratorium Simulator',
-                  icon: CupertinoIcons.chart_pie_fill,
-                  tabName: 'Calculator',
-                  segmentBadge: 'Segment 4 Ready',
-                );
+                return const CalculatorView();
               case 3:
                 return _buildPlaceholderView(
                   title: 'Official FAQ',
