@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import '../core/theme/nelfund_colors.dart';
-import '../core/theme/nelfund_typography.dart';
-import '../widgets/apple_frosted_card.dart';
 import 'calculator/calculator_view.dart';
 import 'eligibility/eligibility_view.dart';
 import 'faq/faq_view.dart';
 import 'home/home_view.dart';
+import 'timeline/timeline_view.dart';
 
 class MainTabScaffold extends StatefulWidget {
   final int initialIndex;
@@ -103,13 +102,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
               case 3:
                 return const FaqView();
               case 4:
-                return _buildPlaceholderView(
-                  title: 'SLA Timeline Tracker',
-                  subtitle: 'Official Turnaround Times & Journey Map',
-                  icon: CupertinoIcons.clock_fill,
-                  tabName: 'Timeline',
-                  segmentBadge: 'Segment 6 Ready',
-                );
+                return const TimelineView();
               default:
                 return const CupertinoPageScaffold(
                   child: Center(child: Text('Unknown')),
@@ -118,101 +111,6 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
           },
         );
       },
-    );
-  }
-
-  Widget _buildPlaceholderView({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required String tabName,
-    required String segmentBadge,
-  }) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(tabName),
-        backgroundColor: CupertinoDynamicColor.resolve(
-          CupertinoDynamicColor.withBrightness(
-            color: const Color(0xCCF8FAF8),
-            darkColor: const Color(0xCC161718),
-          ),
-          context,
-        ),
-      ),
-      child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: NelfundTypography.largeTitle.copyWith(
-                      color: NelfundColors.emeraldTint,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: NelfundTypography.subhead,
-                  ),
-                ],
-              ),
-            ),
-            AppleFrostedCard(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: NelfundColors.emerald.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Icon(
-                        icon,
-                        size: 36,
-                        color: NelfundColors.emerald,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: NelfundColors.emerald.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      segmentBadge,
-                      style: NelfundTypography.captionBold.copyWith(
-                        color: NelfundColors.emerald,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Cupertino HIG Layout Active',
-                    style: NelfundTypography.headline,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'This tab will be fully populated in its designated segment.',
-                    textAlign: TextAlign.center,
-                    style: NelfundTypography.footnote,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

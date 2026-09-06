@@ -65,5 +65,14 @@ void main() {
     expect(find.text('30-Day Institutional Refund Rule (Sec. 4.1.2)'), findsOneWidget);
     expect(find.text('Global Standing Instruction (GSI) Alert (Sec. 5.3)'), findsOneWidget);
     expect(find.byType(CupertinoSearchTextField), findsOneWidget);
+
+    // Switch to Timeline tab via bottom bar
+    await tester.tap(find.byIcon(CupertinoIcons.clock));
+    await tester.pumpAndSettle();
+
+    // Verify Timeline Tab Content
+    expect(find.text('Official Service Level Agreements (SLAs)'), findsOneWidget);
+    expect(find.text('Interactive On-Track Evaluator'), findsOneWidget);
+    expect(find.text('Official Grievance & Escalation Directory'), findsOneWidget);
   });
 }
