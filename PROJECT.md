@@ -54,13 +54,13 @@ Each segment follows a clean two-step lifecycle:
 - Visual application journey map with step-by-step official SLA indicators (20-day ETI verification, 15-day evaluation, 10-day approval, 10-day disbursement, 7-day ETI receipt).
 - Interactive "On-Track Evaluator": User inputs application submission date to check whether processing is on schedule or overdue.
 - Actionable escalation advice when SLA is exceeded.
-- **Status: IN PLANNING (Awaiting Approval)**
+- **Status: COMPLETED (Commit: `feat(timeline): implement official SLA timeline tracker...`)**
 
 ### Segment 7: Final Polish, Automated Tests & Verification
 - Comprehensive test suite (`flutter test`) verifying all tabs, forms, calculations, and SLA validations.
 - Static analysis pass (`flutter analyze`) with 0 errors and 0 warnings.
 - End-to-end walkthrough and release sign-off.
-- **Status: Queued**
+- **Status: IN PLANNING (Awaiting Approval)**
 
 ---
 
@@ -73,5 +73,5 @@ Each segment follows a clean two-step lifecycle:
 | **Segment 3** | Tab 2: Eligibility & Disqualification Checker | **COMPLETED** | [Walkthrough 3](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(eligibility): implement interactive eligibility...` |
 | **Segment 4** | Tab 3: Repayment Calculator & Default Escalation | **COMPLETED** | [Walkthrough 4](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(calculator): implement repayment calculator...` |
 | **Segment 5** | Tab 4: FAQ Knowledge Base | **COMPLETED** | [Walkthrough 5](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(faq): implement searchable official FAQ...` |
-| **Segment 6** | Tab 5: Timeline & SLA Tracker | **In Planning (Awaiting Approval)** | Pending | Pending |
-| **Segment 7** | Final Polish, Test Suite & End-to-End Review | Queued | Pending | Pending |
+| **Segment 6** | Tab 5: Timeline & SLA Tracker | **COMPLETED** | [Walkthrough 6](file:///C:/Users/HP/.gemini/antigravity/brain/60e71855-f55c-4a33-8801-2a43a4566c26/walkthrough.md) | `feat(timeline): implement official SLA timeline tracker...` |
+| **Segment 7** | Final Polish, Test Suite & End-to-End Review | **In Planning (Awaiting Approval)** | Pending | Pending |
