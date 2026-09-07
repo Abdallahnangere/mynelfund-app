@@ -58,15 +58,52 @@ void main() {
       expect(provider.mode.title, contains('Self-Employed'));
     });
 
+    test('Session loans onboarding, upkeep calculation, and dynamic portfolio total', () {
+      // Starts with 100 Level: 120,000 tuition + 240,000 upkeep = 360,000
+      expect(provider.sessionLoans.length, 1);
+      expect(provider.loanAmount, 360000.0);
+      expect(provider.sessionLoans.first.totalAmount, 360000.0);
+      expect(provider.sessionLoans.first.upkeepAmount, 240000.0);
+
+      // Add 200 Level loan: 150,000 tuition without upkeep
+      provider.addOrUpdateSessionLoan(
+        const AcademicSessionLoan(
+          level: 200,
+          tuitionFee: 150000.0,
+          includeUpkeep: false,
+        ),
+      );
+
+      expect(provider.sessionLoans.length, 2);
+      expect(provider.loanAmount, 510000.0); // 360k + 150k
+
+      // Update 100 Level
+      provider.addOrUpdateSessionLoan(
+        const AcademicSessionLoan(
+          level: 100,
+          tuitionFee: 100000.0,
+          includeUpkeep: true,
+          upkeepAmount: 240000.0,
+        ),
+      );
+      expect(provider.loanAmount, 490000.0); // (100k + 240k) + 150k
+
+      // Remove session
+      provider.removeSessionLoan(200);
+      expect(provider.sessionLoans.length, 1);
+      expect(provider.loanAmount, 340000.0);
+    });
+
     test('Reset restores standard parameters', () {
       provider.setLoanAmount(3000000);
       provider.setMonthlyIncome(500000);
       provider.setExtraPrepayment(50000);
       provider.reset();
 
-      expect(provider.loanAmount, 1200000.0);
+      expect(provider.loanAmount, 360000.0);
       expect(provider.monthlyIncome, 150000.0);
       expect(provider.extraPrepayment, 0.0);
+      expect(provider.sessionLoans.length, 1);
     });
   });
 }

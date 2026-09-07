@@ -71,11 +71,14 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify Calculator Tab Content
-    expect(find.text('Statutory 10% Repayment Model'), findsOneWidget);
+    expect(find.text('Payment Calculator'), findsOneWidget);
+    expect(find.text('Reset'), findsNothing);
+    expect(find.text('NELFUND WALLET'), findsOneWidget);
+    expect(find.text('Add Loan Year'), findsOneWidget);
     expect(find.text('STATUTORY MONTHLY DEDUCTION'), findsOneWidget);
-    expect(find.text('₦15,000'), findsOneWidget);
+    expect(find.text('Employment & Income Configurator'), findsOneWidget);
     expect(find.text('2-Year Post-NYSC Grace Period'), findsOneWidget);
-    expect(find.text('Default Escalation Timeline (Section 5.3)'), findsOneWidget);
+    expect(find.text('Repayment Support & Compliance Guidelines'), findsOneWidget);
 
     // Switch to FAQ tab via bottom bar
     await tester.tap(find.byIcon(CupertinoIcons.question_circle));

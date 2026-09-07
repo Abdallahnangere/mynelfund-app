@@ -25,6 +25,45 @@ extension RepaymentModeExtension on RepaymentMode {
   }
 }
 
+class AcademicSessionLoan {
+  final int level; // 100, 200, 300, 400, 500, 600
+  final double tuitionFee;
+  final bool includeUpkeep;
+  final double upkeepAmount; // Statutory: ₦20,000 * 12 = ₦240,000
+
+  const AcademicSessionLoan({
+    required this.level,
+    required this.tuitionFee,
+    this.includeUpkeep = true,
+    this.upkeepAmount = 240000.0,
+  });
+
+  double get totalAmount => tuitionFee + (includeUpkeep ? upkeepAmount : 0.0);
+
+  String get levelLabel => '$level Level';
+  String get formattedTuition =>
+      NumberFormat.currency(symbol: '₦', decimalDigits: 0).format(tuitionFee);
+  String get formattedUpkeep =>
+      NumberFormat.currency(symbol: '₦', decimalDigits: 0)
+          .format(includeUpkeep ? upkeepAmount : 0.0);
+  String get formattedTotal =>
+      NumberFormat.currency(symbol: '₦', decimalDigits: 0).format(totalAmount);
+
+  AcademicSessionLoan copyWith({
+    int? level,
+    double? tuitionFee,
+    bool? includeUpkeep,
+    double? upkeepAmount,
+  }) {
+    return AcademicSessionLoan(
+      level: level ?? this.level,
+      tuitionFee: tuitionFee ?? this.tuitionFee,
+      includeUpkeep: includeUpkeep ?? this.includeUpkeep,
+      upkeepAmount: upkeepAmount ?? this.upkeepAmount,
+    );
+  }
+}
+
 class RepaymentProjection {
   final double loanAmount;
   final double monthlyIncome;
@@ -37,6 +76,7 @@ class RepaymentProjection {
   final int monthsSaved;
   final DateTime nyscCompletionDate;
   final DateTime repaymentStartDate;
+  final List<AcademicSessionLoan> sessionLoans;
 
   const RepaymentProjection({
     required this.loanAmount,
@@ -50,6 +90,7 @@ class RepaymentProjection {
     required this.monthsSaved,
     required this.nyscCompletionDate,
     required this.repaymentStartDate,
+    this.sessionLoans = const [],
   });
 
   static final NumberFormat _nairaFormat =
@@ -76,4 +117,10 @@ class RepaymentProjection {
   String get formattedAcceleratedDuration =>
       formatDuration(acceleratedMonths);
   String get formattedTimeSaved => formatDuration(monthsSaved);
+
+  String get formattedPayoffTimeline {
+    if (loanAmount <= 0) return 'No Loans Added';
+    if (statutoryMonthlyDeduction <= 0) return 'Enter Monthly Income';
+    return formattedBaselineDuration;
+  }
 }

@@ -67,8 +67,10 @@ void main() {
     await tester.tap(find.byIcon(CupertinoIcons.chart_pie));
     await tester.pumpAndSettle();
 
-    expect(find.text('Statutory 10% Repayment Model'), findsOneWidget);
-    expect(find.text('₦15,000'), findsOneWidget);
+    expect(find.text('Payment Calculator'), findsOneWidget);
+    expect(find.text('Reset'), findsNothing);
+    expect(find.text('NELFUND WALLET'), findsOneWidget);
+    expect(find.text('STATUTORY MONTHLY DEDUCTION'), findsOneWidget);
 
     // Switch to Self-Employed mode
     await tester.tap(find.text('Self-Employed (Direct)'));
@@ -77,9 +79,9 @@ void main() {
     expect(find.textContaining('10% of monthly business profit'),
         findsOneWidget);
 
-    // Verify Moratorium & Default visualizer
+    // Verify Moratorium & Friendly compliance
     expect(find.text('2-Year Post-NYSC Grace Period'), findsOneWidget);
-    expect(find.text('Default Escalation Timeline (Section 5.3)'),
+    expect(find.text('Repayment Support & Compliance Guidelines'),
         findsOneWidget);
 
     // ==========================================
