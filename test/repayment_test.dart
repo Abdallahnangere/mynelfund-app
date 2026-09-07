@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_nelfund/models/repayment_model.dart';
 import 'package:my_nelfund/providers/repayment_provider.dart';
+import 'package:my_nelfund/views/calculator/calculator_view.dart';
 
 void main() {
   group('RepaymentProvider Statutory Calculation Tests', () {
@@ -13,11 +15,11 @@ void main() {
     test('Computes exact 10% statutory deduction on monthly income', () {
       provider.setMonthlyIncome(150000);
       expect(provider.projection.statutoryMonthlyDeduction, 15000.0);
-      expect(provider.projection.formattedStatutoryDeduction, '₦15,000');
+      expect(provider.projection.formattedStatutoryDeduction, '₦15,000.00');
 
       provider.setMonthlyIncome(70000); // National minimum wage baseline
       expect(provider.projection.statutoryMonthlyDeduction, 7000.0);
-      expect(provider.projection.formattedStatutoryDeduction, '₦7,000');
+      expect(provider.projection.formattedStatutoryDeduction, '₦7,000.00');
     });
 
     test('Calculates accurate baseline duration in months and formatted text', () {
@@ -104,6 +106,77 @@ void main() {
       expect(provider.monthlyIncome, 150000.0);
       expect(provider.extraPrepayment, 0.0);
       expect(provider.sessionLoans.length, 1);
+    });
+
+    test('AcademicSessionLoan formats currency with two decimal digits and commas', () {
+      const loan = AcademicSessionLoan(
+        level: 100,
+        tuitionFee: 120000,
+        includeUpkeep: true,
+        upkeepAmount: 240000,
+      );
+      expect(loan.formattedTuition, '₦120,000.00');
+      expect(loan.formattedUpkeep, '₦240,000.00');
+      expect(loan.formattedTotal, '₦360,000.00');
+    });
+
+    test('ThousandsSeparatorInputFormatter formats raw numbers with commas', () {
+      final formatter = ThousandsSeparatorInputFormatter();
+      const oldVal = TextEditingValue.empty;
+      
+      final res1 = formatter.formatEditUpdate(
+        oldVal,
+        const TextEditingValue(text: '12000'),
+      );
+      expect(res1.text, '12,000');
+
+      final res2 = formatter.formatEditUpdate(
+        oldVal,
+        const TextEditingValue(text: '70000'),
+      );
+      expect(res2.text, '70,000');
+
+      final res3 = formatter.formatEditUpdate(
+        oldVal,
+        const TextEditingValue(text: '1500000'),
+      );
+      expect(res3.text, '1,500,000');
+    });
+  });
+
+  group('CalculatorView UI Tests', () {
+    testWidgets('Renders header, salary helper tip, and single minimum wage chip', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(
+        const CupertinoApp(
+          home: CalculatorView(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Check header
+      expect(find.text('Payment Calculator'), findsOneWidget);
+
+      // Check salary helper tip
+      expect(
+        find.text('Enter the expected salary that you will earn if you get employed.'),
+        findsOneWidget,
+      );
+
+      // Check only minimum wage suggestion is present
+      expect(find.text('₦70,000.00 (Minimum Wage)'), findsOneWidget);
+      expect(find.text('₦150k'), findsNothing);
+      expect(find.text('₦250k'), findsNothing);
+      expect(find.text('₦500k'), findsNothing);
+
+      // Tap minimum wage chip and verify text syncs
+      await tester.tap(find.text('₦70,000.00 (Minimum Wage)'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('₦7,000.00 / mo'), findsOneWidget);
     });
   });
 }

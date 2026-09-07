@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/nelfund_colors.dart';
@@ -6,6 +7,33 @@ import '../../core/theme/nelfund_typography.dart';
 import '../../models/repayment_model.dart';
 import '../../providers/repayment_provider.dart';
 import '../../widgets/apple_frosted_card.dart';
+
+class ThousandsSeparatorInputFormatter extends TextInputFormatter {
+  static final NumberFormat _formatter = NumberFormat('#,###');
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+    final digitsOnly = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+    if (digitsOnly.isEmpty) {
+      return const TextEditingValue();
+    }
+    final number = int.tryParse(digitsOnly);
+    if (number == null) {
+      return oldValue;
+    }
+    final newString = _formatter.format(number);
+    return TextEditingValue(
+      text: newString,
+      selection: TextSelection.collapsed(offset: newString.length),
+    );
+  }
+}
 
 class CalculatorView extends StatelessWidget {
   const CalculatorView({super.key});
@@ -42,8 +70,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
   }
 
   void _syncIncomeText(double income) {
-    final formatted = income.toInt().toString();
-    if (_incomeController.text != formatted) {
+    final formatted = NumberFormat('#,###').format(income.toInt());
+    if (_incomeController.text.replaceAll(',', '') != income.toInt().toString()) {
       _incomeController.text = formatted;
     }
   }
@@ -56,51 +84,113 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     _syncIncomeText(provider.monthlyIncome);
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'Payment Calculator',
-          style: NelfundTypography.headline.copyWith(
-            fontWeight: FontWeight.w700,
-            fontSize: 17,
-            letterSpacing: -0.4,
-          ),
-        ),
-        backgroundColor: CupertinoDynamicColor.resolve(
-          const CupertinoDynamicColor.withBrightness(
-            color: Color(0xCCF8FAF8),
-            darkColor: Color(0xCC161718),
-          ),
-          context,
-        ),
-      ),
       child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+        bottom: false,
+        child: Column(
           children: [
-            _buildTipBanner(context),
-            const SizedBox(height: 16),
-            _buildFintechWalletCard(context, provider, proj),
-            const SizedBox(height: 14),
-            _buildSessionLoansBreakdown(context, provider),
-            const SizedBox(height: 20),
-            _buildEmploymentConfigurator(context, provider, proj),
-            const SizedBox(height: 18),
-            _buildPostNyscGracePeriodCard(context, provider, proj),
-            const SizedBox(height: 18),
-            _buildFriendlyComplianceCard(context),
-            const SizedBox(height: 16),
-            _buildStatutoryNotice(context),
-            const SizedBox(height: 24),
+            _buildFintechHeader(context),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                children: [
+                  _buildTipBanner(context),
+                  const SizedBox(height: 14),
+                  _buildFintechWalletCard(context, provider, proj),
+                  const SizedBox(height: 14),
+                  _buildSessionLoansBreakdown(context, provider),
+                  const SizedBox(height: 16),
+                  _buildEmploymentConfigurator(context, provider, proj),
+                  const SizedBox(height: 16),
+                  _buildPostNyscGracePeriodCard(context, provider, proj),
+                  const SizedBox(height: 16),
+                  _buildFriendlyComplianceCard(context),
+                  const SizedBox(height: 16),
+                  _buildStatutoryNotice(context),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildFintechHeader(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: CupertinoDynamicColor.resolve(
+          const CupertinoDynamicColor.withBrightness(
+            color: Color(0xF2F8FAF8),
+            darkColor: Color(0xF2161718),
+          ),
+          context,
+        ),
+        border: Border(
+          bottom: BorderSide(
+            color: CupertinoDynamicColor.resolve(
+              const CupertinoDynamicColor.withBrightness(
+                color: Color(0x18000000),
+                darkColor: Color(0x28FFFFFF),
+              ),
+              context,
+            ),
+            width: 0.5,
+          ),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Center(
+              child: Text(
+                'Payment Calculator',
+                style: NelfundTypography.headline.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 17,
+                  letterSpacing: -0.4,
+                  color: CupertinoDynamicColor.resolve(
+                    NelfundColors.label,
+                    context,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Emerald ambient lighting separator line
+          Container(
+            height: 2.5,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  NelfundColors.emerald.withValues(alpha: 0.1),
+                  NelfundColors.emerald,
+                  NelfundColors.emerald.withValues(alpha: 0.1),
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: NelfundColors.emerald.withValues(alpha: 0.4),
+                  blurRadius: 6,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTipBanner(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
+        margin: EdgeInsets.zero,
         borderColor: NelfundColors.emerald.withValues(alpha: 0.35),
         backgroundColor: CupertinoDynamicColor.resolve(
           const CupertinoDynamicColor.withBrightness(
@@ -147,81 +237,77 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     RepaymentProjection proj,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0C2B1C),
-              Color(0xFF06180E),
-            ],
+          color: CupertinoDynamicColor.resolve(
+            const CupertinoDynamicColor.withBrightness(
+              color: Color(0xF2F6FAF7),
+              darkColor: Color(0xF214241B),
+            ),
+            context,
           ),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: const Color(0x4D48BB78),
+            color: NelfundColors.emerald.withValues(alpha: 0.35),
             width: 1.2,
           ),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Color(0x38004D25),
-              blurRadius: 18,
-              offset: Offset(0, 8),
+              color: NelfundColors.emerald.withValues(alpha: 0.12),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3.5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: NelfundColors.emerald.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: NelfundColors.emerald.withValues(alpha: 0.25),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        CupertinoIcons.creditcard_fill,
+                        size: 13,
+                        color: NelfundColors.emerald,
                       ),
-                      decoration: BoxDecoration(
-                        color: const Color(0x3348BB78),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: const Color(0x5548BB78),
-                          width: 0.8,
+                      SizedBox(width: 5),
+                      Text(
+                        'NELFUND WALLET',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.0,
+                          color: NelfundColors.emerald,
                         ),
                       ),
-                      child: const Row(
-                        children: [
-                          Icon(
-                            CupertinoIcons.creditcard_fill,
-                            size: 13,
-                            color: Color(0xFF68D391),
-                          ),
-                          SizedBox(width: 5),
-                          Text(
-                            'NELFUND WALLET',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1.1,
-                              color: Color(0xFF68D391),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 CupertinoButton(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 6,
+                    vertical: 5,
                   ),
                   color: NelfundColors.emerald,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(18),
                   minimumSize: Size.zero,
                   onPressed: () => _showAddOrEditLoanDialog(context, provider),
                   child: const Row(
@@ -229,14 +315,14 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                     children: [
                       Icon(
                         CupertinoIcons.plus_circle_fill,
-                        size: 15,
+                        size: 14,
                         color: CupertinoColors.white,
                       ),
                       SizedBox(width: 5),
                       Text(
                         'Add Loan Year',
                         style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: CupertinoColors.white,
                         ),
@@ -246,62 +332,74 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 ),
               ],
             ),
-            const SizedBox(height: 18),
-            const Text(
+            const SizedBox(height: 10),
+            Text(
               'TOTAL LOAN PORTFOLIO',
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10.5,
                 fontWeight: FontWeight.w600,
-                letterSpacing: 1.0,
-                color: Color(0xA0CBD5E0),
+                letterSpacing: 0.9,
+                color: CupertinoDynamicColor.resolve(
+                  NelfundColors.secondaryLabel,
+                  context,
+                ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               proj.formattedLoanAmount,
-              style: const TextStyle(
-                fontSize: 32,
+              style: TextStyle(
+                fontSize: 26,
                 fontWeight: FontWeight.w800,
-                letterSpacing: -0.6,
-                color: CupertinoColors.white,
+                letterSpacing: -0.5,
+                color: CupertinoDynamicColor.resolve(
+                  NelfundColors.label,
+                  context,
+                ),
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 10),
             Container(
               height: 0.8,
-              color: const Color(0x28FFFFFF),
+              color: NelfundColors.emerald.withValues(alpha: 0.18),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'STATUTORY MONTHLY DEDUCTION',
                         style: TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 0.8,
-                          color: Color(0xA0CBD5E0),
+                          letterSpacing: 0.7,
+                          color: CupertinoDynamicColor.resolve(
+                            NelfundColors.secondaryLabel,
+                            context,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       Text(
                         '${proj.formattedStatutoryDeduction} / mo',
                         style: const TextStyle(
-                          fontSize: 17,
+                          fontSize: 15.5,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF68D391),
+                          color: NelfundColors.emerald,
                         ),
                       ),
                       const SizedBox(height: 1),
-                      const Text(
+                      Text(
                         '10% Statutory Rate',
                         style: TextStyle(
-                          fontSize: 11,
-                          color: Color(0x80CBD5E0),
+                          fontSize: 10.5,
+                          color: CupertinoDynamicColor.resolve(
+                            NelfundColors.tertiaryLabel,
+                            context,
+                          ),
                         ),
                       ),
                     ],
@@ -309,40 +407,49 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 ),
                 Container(
                   width: 0.8,
-                  height: 40,
-                  color: const Color(0x28FFFFFF),
+                  height: 30,
+                  color: NelfundColors.emerald.withValues(alpha: 0.18),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'EXPECTED PAYOFF TIME',
                         style: TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 0.8,
-                          color: Color(0xA0CBD5E0),
+                          letterSpacing: 0.7,
+                          color: CupertinoDynamicColor.resolve(
+                            NelfundColors.secondaryLabel,
+                            context,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       Text(
                         proj.formattedPayoffTimeline,
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: CupertinoColors.white,
+                          color: CupertinoDynamicColor.resolve(
+                            NelfundColors.label,
+                            context,
+                          ),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 1),
-                      const Text(
+                      Text(
                         '0% Zero Interest',
                         style: TextStyle(
-                          fontSize: 11,
-                          color: Color(0x80CBD5E0),
+                          fontSize: 10.5,
+                          color: CupertinoDynamicColor.resolve(
+                            NelfundColors.tertiaryLabel,
+                            context,
+                          ),
                         ),
                       ),
                     ],
@@ -362,8 +469,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
   ) {
     if (provider.sessionLoans.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: AppleFrostedCard(
+          margin: EdgeInsets.zero,
           padding: const EdgeInsets.all(14),
           child: Row(
             children: [
@@ -391,7 +499,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -431,6 +539,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   existingLoan: session,
                 ),
                 child: AppleFrostedCard(
+                  margin: EdgeInsets.zero,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 10,
@@ -520,7 +629,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
 
     double tuition = existingLoan?.tuitionFee ?? 120000.0;
     bool includeUpkeep = existingLoan?.includeUpkeep ?? true;
-    final tuitionCtrl = TextEditingController(text: tuition.toInt().toString());
+    final tuitionCtrl = TextEditingController(
+      text: NumberFormat('#,###').format(tuition.toInt()),
+    );
 
     showCupertinoModalPopup<void>(
       context: context,
@@ -531,7 +642,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             final double currentTotal = tuition + currentUpkeep;
             final totalFormatted = NumberFormat.currency(
               symbol: '₦',
-              decimalDigits: 0,
+              decimalDigits: 2,
             ).format(currentTotal);
 
             return Container(
@@ -621,10 +732,22 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       'Institutional / Tuition Fee (₦):',
                       style: NelfundTypography.captionBold,
                     ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Enter the institutional fee loan amount of this year',
+                      style: NelfundTypography.caption.copyWith(
+                        color: CupertinoColors.systemGrey,
+                        fontSize: 12,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     CupertinoTextField(
                       controller: tuitionCtrl,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        ThousandsSeparatorInputFormatter(),
+                      ],
                       prefix: const Padding(
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
@@ -635,7 +758,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                           ),
                         ),
                       ),
-                      placeholder: 'e.g. 150000',
+                      placeholder: 'e.g. 150,000',
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
                         vertical: 12,
@@ -653,7 +776,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       ),
                       onChanged: (val) {
                         setDialogState(() {
-                          tuition = double.tryParse(val) ?? 0.0;
+                          final cleanVal = val.replaceAll(',', '');
+                          tuition = double.tryParse(cleanVal) ?? 0.0;
                         });
                       },
                     ),
@@ -780,8 +904,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     final startStr = DateFormat('MMMM yyyy').format(proj.repaymentStartDate);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
+        margin: EdgeInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -946,10 +1071,22 @@ class _CalculatorContentState extends State<_CalculatorContent> {
               'Expected Monthly Income (₦):',
               style: NelfundTypography.headline.copyWith(fontSize: 14),
             ),
+            const SizedBox(height: 3),
+            Text(
+              'Enter the expected salary that you will earn if you get employed.',
+              style: NelfundTypography.caption.copyWith(
+                color: CupertinoColors.systemGrey,
+                fontSize: 12,
+              ),
+            ),
             const SizedBox(height: 6),
             CupertinoTextField(
               controller: _incomeController,
               keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                ThousandsSeparatorInputFormatter(),
+              ],
               prefix: const Padding(
                 padding: EdgeInsets.only(left: 10),
                 child: Text(
@@ -960,7 +1097,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   ),
                 ),
               ),
-              placeholder: 'e.g. 150000',
+              placeholder: 'e.g. 70,000',
               padding: const EdgeInsets.symmetric(
                 horizontal: 10,
                 vertical: 12,
@@ -977,20 +1114,19 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 ),
               ),
               onChanged: (val) {
-                final income = double.tryParse(val) ?? 0.0;
+                final clean = val.replaceAll(',', '');
+                final income = double.tryParse(clean) ?? 0.0;
                 provider.setMonthlyIncome(income);
               },
             ),
             const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 6,
-              children: [
-                _buildIncomeChip(provider, 70000, '₦70k (Min Wage)'),
-                _buildIncomeChip(provider, 150000, '₦150k'),
-                _buildIncomeChip(provider, 250000, '₦250k'),
-                _buildIncomeChip(provider, 500000, '₦500k'),
-              ],
+            Align(
+              alignment: Alignment.centerLeft,
+              child: _buildIncomeChip(
+                provider,
+                70000,
+                '₦70,000.00 (Minimum Wage)',
+              ),
             ),
           ],
         ),
@@ -1007,9 +1143,10 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     return GestureDetector(
       onTap: () {
         provider.setMonthlyIncome(amount);
+        _incomeController.text = NumberFormat('#,###').format(amount.toInt());
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: isSelected
               ? NelfundColors.emerald
@@ -1026,7 +1163,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 12.5,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             color: isSelected ? CupertinoColors.white : null,
           ),
@@ -1044,8 +1181,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     final startStr = DateFormat('MMMM yyyy').format(proj.repaymentStartDate);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
+        margin: EdgeInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1210,8 +1348,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
 
   Widget _buildFriendlyComplianceCard(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
+        margin: EdgeInsets.zero,
         borderColor: NelfundColors.emerald.withValues(alpha: 0.3),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1333,7 +1472,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
 
   Widget _buildStatutoryNotice(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Text(
         'Legal Notice: All simulations are modeled strictly at 0% zero interest under the Students Loans (Access to Higher Education) Act 2024. Voluntary prepayments or accelerated installments incur zero penalty fees.',
         style: NelfundTypography.caption.copyWith(

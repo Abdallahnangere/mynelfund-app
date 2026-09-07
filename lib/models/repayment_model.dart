@@ -42,12 +42,12 @@ class AcademicSessionLoan {
 
   String get levelLabel => '$level Level';
   String get formattedTuition =>
-      NumberFormat.currency(symbol: '₦', decimalDigits: 0).format(tuitionFee);
+      NumberFormat.currency(symbol: '₦', decimalDigits: 2).format(tuitionFee);
   String get formattedUpkeep =>
-      NumberFormat.currency(symbol: '₦', decimalDigits: 0)
+      NumberFormat.currency(symbol: '₦', decimalDigits: 2)
           .format(includeUpkeep ? upkeepAmount : 0.0);
   String get formattedTotal =>
-      NumberFormat.currency(symbol: '₦', decimalDigits: 0).format(totalAmount);
+      NumberFormat.currency(symbol: '₦', decimalDigits: 2).format(totalAmount);
 
   AcademicSessionLoan copyWith({
     int? level,
@@ -94,7 +94,7 @@ class RepaymentProjection {
   });
 
   static final NumberFormat _nairaFormat =
-      NumberFormat.currency(symbol: '₦', decimalDigits: 0);
+      NumberFormat.currency(symbol: '₦', decimalDigits: 2);
 
   String get formattedLoanAmount => _nairaFormat.format(loanAmount);
   String get formattedMonthlyIncome => _nairaFormat.format(monthlyIncome);
