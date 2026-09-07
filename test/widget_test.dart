@@ -87,7 +87,7 @@ void main() {
     // Verify FAQ Tab Content
     expect(find.text('Official FAQ'), findsOneWidget);
     expect(find.text('30-Day Institutional Refund Rule (Sec. 4.1.2)'), findsOneWidget);
-    expect(find.text('Global Standing Instruction (GSI) Alert (Sec. 5.3)'), findsOneWidget);
+    expect(find.text('Global Standing Instruction (GSI) Alert (Sec. 5.3)'), findsNothing);
     expect(find.byType(CupertinoSearchTextField), findsOneWidget);
 
     // Switch to Timeline tab via bottom bar

@@ -94,7 +94,7 @@ void main() {
     expect(find.text('30-Day Institutional Refund Rule (Sec. 4.1.2)'),
         findsOneWidget);
     expect(find.text('Global Standing Instruction (GSI) Alert (Sec. 5.3)'),
-        findsOneWidget);
+        findsNothing);
 
     // Test real-time search
     await tester.enterText(find.byType(CupertinoSearchTextField), 'GSI');

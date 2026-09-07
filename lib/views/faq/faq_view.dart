@@ -156,93 +156,47 @@ class _FaqContentState extends State<_FaqContent> {
   }
 
   Widget _buildSpotlightCarousel(BuildContext context) {
-    return Column(
-      children: [
-        AppleFrostedCard(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          padding: const EdgeInsets.all(12),
-          backgroundColor: CupertinoDynamicColor.resolve(
-            const CupertinoDynamicColor.withBrightness(
-              color: Color(0xF2F0FBF5),
-              darkColor: Color(0xD0132B1D),
-            ),
-            context,
-          ),
-          borderColor: NelfundColors.emerald.withValues(alpha: 0.3),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(
-                CupertinoIcons.arrow_2_circlepath_circle_fill,
-                color: NelfundColors.emerald,
-                size: 22,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '30-Day Institutional Refund Rule (Sec. 4.1.2)',
-                      style: NelfundTypography.headline.copyWith(
-                        fontSize: 14,
-                        color: NelfundColors.emerald,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'If you already paid tuition before your loan approval, your tertiary institution is mandated by law to refund your payment within 30 days of receiving NELFUND funds.',
-                      style: NelfundTypography.footnote.copyWith(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+    return AppleFrostedCard(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.all(12),
+      backgroundColor: CupertinoDynamicColor.resolve(
+        const CupertinoDynamicColor.withBrightness(
+          color: Color(0xF2F0FBF5),
+          darkColor: Color(0xD0132B1D),
         ),
-        AppleFrostedCard(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          padding: const EdgeInsets.all(12),
-          backgroundColor: CupertinoDynamicColor.resolve(
-            const CupertinoDynamicColor.withBrightness(
-              color: Color(0xF2FFF4F4),
-              darkColor: Color(0xD02D1515),
-            ),
-            context,
+        context,
+      ),
+      borderColor: NelfundColors.emerald.withValues(alpha: 0.3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            CupertinoIcons.arrow_2_circlepath_circle_fill,
+            color: NelfundColors.emerald,
+            size: 22,
           ),
-          borderColor: CupertinoColors.systemRed.withValues(alpha: 0.3),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(
-                CupertinoIcons.creditcard_fill,
-                color: CupertinoColors.systemRed,
-                size: 22,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Global Standing Instruction (GSI) Alert (Sec. 5.3)',
-                      style: NelfundTypography.headline.copyWith(
-                        fontSize: 14,
-                        color: CupertinoColors.systemRed,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Willful default triggers CBN GSI auto-sweeps from all commercial bank accounts linked to your BVN and NIN nationwide.',
-                      style: NelfundTypography.footnote.copyWith(fontSize: 12),
-                    ),
-                  ],
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '30-Day Institutional Refund Rule (Sec. 4.1.2)',
+                  style: NelfundTypography.headline.copyWith(
+                    fontSize: 14,
+                    color: NelfundColors.emerald,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  'If you already paid tuition before your loan approval, your tertiary institution is mandated by law to refund your payment within 30 days of receiving NELFUND funds.',
+                  style: NelfundTypography.footnote.copyWith(fontSize: 12),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
