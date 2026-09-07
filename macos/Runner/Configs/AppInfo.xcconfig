@@ -8,7 +8,7 @@
 PRODUCT_NAME = my_nelfund
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.nelfund.app.myNelfund
+PRODUCT_BUNDLE_IDENTIFIER = com.mynelfund.app
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.nelfund.app. All rights reserved.

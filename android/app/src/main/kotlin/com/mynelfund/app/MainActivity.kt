@@ -1,4 +1,4 @@
-package com.nelfund.app.my_nelfund
+package com.mynelfund.app
 
 import io.flutter.embedding.android.FlutterActivity
 

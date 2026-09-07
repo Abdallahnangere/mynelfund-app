@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/services/review_service.dart';
+import '../../core/services/update_service.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
 import '../../widgets/apple_frosted_card.dart';
@@ -96,6 +98,8 @@ class AboutView extends StatelessWidget {
             _buildClarificationNoticeCard(context),
             const SizedBox(height: 16),
             _buildOfficialNelfundChannelsCard(context),
+            const SizedBox(height: 16),
+            _buildAppManagementCard(context),
             const SizedBox(height: 24),
             _buildFooter(context),
             const SizedBox(height: 20),
@@ -707,6 +711,153 @@ class AboutView extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAppManagementCard(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: AppleFrostedCard(
+        borderColor: NelfundColors.emerald.withValues(alpha: 0.3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  CupertinoIcons.sparkles,
+                  color: NelfundColors.emerald,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'App Store & Community',
+                    style: NelfundTypography.headline.copyWith(
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: NelfundColors.emerald.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    'v1.0.0',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w800,
+                      color: NelfundColors.emerald,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Help other Nigerian students discover zero-interest financing by rating the app, or check for the latest official updates.',
+              style: NelfundTypography.footnote.copyWith(
+                color: CupertinoDynamicColor.resolve(
+                  NelfundColors.secondaryLabel,
+                  context,
+                ),
+                fontSize: 12.5,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: CupertinoButton(
+                    padding: const EdgeInsets.symmetric(vertical: 11),
+                    color: NelfundColors.emerald,
+                    borderRadius: BorderRadius.circular(12),
+                    minimumSize: Size.zero,
+                    onPressed: () => ReviewService.instance.openStoreListing(),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          CupertinoIcons.star_fill,
+                          size: 15,
+                          color: Color(0xFFFFD700),
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          'Rate & Review',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: CupertinoColors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: CupertinoButton(
+                    padding: const EdgeInsets.symmetric(vertical: 11),
+                    color: CupertinoDynamicColor.resolve(
+                      CupertinoColors.systemGrey5,
+                      context,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    minimumSize: Size.zero,
+                    onPressed: () => UpdateService.instance.checkForUpdates(
+                      context,
+                      userInitiated: true,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          CupertinoIcons.arrow_clockwise_circle_fill,
+                          size: 16,
+                          color: CupertinoDynamicColor.resolve(
+                            NelfundColors.label,
+                            context,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Check Update',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: CupertinoDynamicColor.resolve(
+                              NelfundColors.label,
+                              context,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Center(
+              child: Text(
+                'Package: com.mynelfund.app',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontFamily: 'monospace',
+                  color: CupertinoDynamicColor.resolve(
+                    NelfundColors.tertiaryLabel,
+                    context,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

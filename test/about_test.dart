@@ -45,6 +45,12 @@ void main() {
     expect(find.text('Open Portal'), findsOneWidget);
     expect(find.text('Send Email'), findsOneWidget);
 
+    // App Store & Community Card
+    expect(find.text('App Store & Community'), findsOneWidget);
+    expect(find.text('Rate & Review'), findsOneWidget);
+    expect(find.text('Check Update'), findsOneWidget);
+    expect(find.textContaining('com.mynelfund.app'), findsOneWidget);
+
     // Footer
     expect(find.textContaining('for Nigerian Students'), findsOneWidget);
     expect(find.text('www.anjalventures.com'), findsWidgets);
