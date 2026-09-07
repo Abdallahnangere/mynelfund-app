@@ -524,7 +524,7 @@ class HomeView extends StatelessWidget {
                   icon: CupertinoIcons.question_circle_fill,
                   iconColor: CupertinoColors.systemTeal,
                   title: 'Official FAQ',
-                  description: 'GSI mandate, quarterly reporting & recovery',
+                  description: 'Institutional refund rules, FAQs & recovery',
                   tabIndex: 3,
                 ),
               ),
@@ -532,10 +532,10 @@ class HomeView extends StatelessWidget {
               Expanded(
                 child: _buildActionCard(
                   context: context,
-                  icon: CupertinoIcons.clock_fill,
+                  icon: CupertinoIcons.info_circle_fill,
                   iconColor: CupertinoColors.systemOrange,
-                  title: 'SLA Timeline',
-                  description: 'Journey map & check if your app is on-track',
+                  title: 'About & Support',
+                  description: 'Developer contact, awareness guide & channels',
                   tabIndex: 4,
                 ),
               ),

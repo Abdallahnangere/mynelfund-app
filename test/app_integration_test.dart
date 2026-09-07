@@ -110,30 +110,20 @@ void main() {
     await tester.pumpAndSettle();
 
     // ==========================================
-    // TAB 4: TIMELINE & SLA TRACKER
+    // TAB 4: ABOUT & SUPPORT
     // ==========================================
-    await tester.tap(find.byIcon(CupertinoIcons.clock));
+    await tester.tap(find.byIcon(CupertinoIcons.info_circle));
     await tester.pumpAndSettle();
 
-    expect(find.text('Official Service Level Agreements (SLAs)'),
-        findsOneWidget);
-    expect(find.text('Interactive On-Track Evaluator'), findsOneWidget);
-    expect(find.text('Official Grievance & Escalation Directory'),
-        findsOneWidget);
-
-    // Tap 40 Days Ago preset to trigger overdue diagnosis
-    await tester.tap(find.text('40 Days Ago'));
-    await tester.pumpAndSettle();
-    expect(find.text('SLA Deadline Exceeded'), findsOneWidget);
-
-    // Tap 3 Days Ago preset to return to on track
-    await tester.tap(find.text('3 Days Ago'));
-    await tester.pumpAndSettle();
-    expect(find.text('Processing On Schedule'), findsOneWidget);
-
-    // Tap Reset
-    await tester.tap(find.text('Reset'));
-    await tester.pumpAndSettle();
+    expect(find.text('About & Support'), findsOneWidget);
+    expect(find.text('09076872520'), findsOneWidget);
+    expect(find.text('Chat Directly on WhatsApp'), findsOneWidget);
+    expect(find.text('Abdullahi Adam Usman'), findsWidgets);
+    expect(find.text('Founder, Anjal Ventures'), findsWidgets);
+    expect(find.text('Official Clarification & Disclaimer'), findsOneWidget);
+    expect(find.text('Official NELFUND Channels'), findsOneWidget);
+    expect(find.text('nelf.gov.ng'), findsOneWidget);
+    expect(find.text('info@nelf.gov.ng'), findsOneWidget);
 
     // Return to Home tab
     await tester.tap(find.byIcon(CupertinoIcons.house));

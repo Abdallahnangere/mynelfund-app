@@ -4,7 +4,7 @@ import 'calculator/calculator_view.dart';
 import 'eligibility/eligibility_view.dart';
 import 'faq/faq_view.dart';
 import 'home/home_view.dart';
-import 'timeline/timeline_view.dart';
+import 'about/about_view.dart';
 
 class MainTabScaffold extends StatefulWidget {
   final int initialIndex;
@@ -83,9 +83,9 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
             label: 'FAQ',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.clock),
-            activeIcon: Icon(CupertinoIcons.clock_fill),
-            label: 'Timeline',
+            icon: Icon(CupertinoIcons.info_circle),
+            activeIcon: Icon(CupertinoIcons.info_circle_fill),
+            label: 'About',
           ),
         ],
       ),
@@ -102,7 +102,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
               case 3:
                 return const FaqView();
               case 4:
-                return const TimelineView();
+                return const AboutView();
               default:
                 return const CupertinoPageScaffold(
                   child: Center(child: Text('Unknown')),

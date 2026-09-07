@@ -17,7 +17,7 @@ void main() {
     expect(find.text('Eligibility'), findsWidgets);
     expect(find.text('Calculator'), findsWidgets);
     expect(find.text('FAQ'), findsWidgets);
-    expect(find.text('Timeline'), findsWidgets);
+    expect(find.text('About'), findsWidgets);
 
     // Verify Home Tab Content
     expect(find.text('My NELFund'), findsWidgets);
@@ -90,13 +90,17 @@ void main() {
     expect(find.text('Global Standing Instruction (GSI) Alert (Sec. 5.3)'), findsNothing);
     expect(find.byType(CupertinoSearchTextField), findsOneWidget);
 
-    // Switch to Timeline tab via bottom bar
-    await tester.tap(find.byIcon(CupertinoIcons.clock));
+    // Switch to About tab via bottom bar
+    await tester.tap(find.byIcon(CupertinoIcons.info_circle));
     await tester.pumpAndSettle();
 
-    // Verify Timeline Tab Content
-    expect(find.text('Official Service Level Agreements (SLAs)'), findsOneWidget);
-    expect(find.text('Interactive On-Track Evaluator'), findsOneWidget);
-    expect(find.text('Official Grievance & Escalation Directory'), findsOneWidget);
+    // Verify About Tab Content
+    expect(find.text('About & Support'), findsOneWidget);
+    expect(find.text('09076872520'), findsOneWidget);
+    expect(find.text('Chat Directly on WhatsApp'), findsOneWidget);
+    expect(find.text('Abdullahi Adam Usman'), findsWidgets);
+    expect(find.text('Founder, Anjal Ventures'), findsWidgets);
+    expect(find.text('Official Clarification & Disclaimer'), findsOneWidget);
+    expect(find.text('Official NELFUND Channels'), findsOneWidget);
   });
 }
