@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'core/services/analytics_service.dart';
@@ -10,18 +11,31 @@ import 'views/splash/splash_view.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase Core, Analytics, and FCM Push Notifications
+  // Initialize native Firebase Core SDK
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    await AnalyticsService.instance.initialize();
-    await NotificationService.instance.initialize();
   } catch (e) {
     debugPrint('[Main] Firebase initialization note: $e');
   }
 
+  // Paint the first frame immediately so the native Android launch screen
+  // dismisses in milliseconds instead of waiting for internet connections
   runApp(const MyNelfundApp());
+
+  // Asynchronously initialize Analytics and Push Notification services
+  // in the background without blocking the UI rendering thread
+  unawaited(_initializeBackgroundServices());
+}
+
+Future<void> _initializeBackgroundServices() async {
+  try {
+    await AnalyticsService.instance.initialize();
+    await NotificationService.instance.initialize();
+  } catch (e) {
+    debugPrint('[Main] Background services note: $e');
+  }
 }
 
 class MyNelfundApp extends StatelessWidget {

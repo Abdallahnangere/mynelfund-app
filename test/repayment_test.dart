@@ -61,7 +61,19 @@ void main() {
     });
 
     test('Session loans onboarding, upkeep calculation, and dynamic portfolio total', () {
-      // Starts with 100 Level: 120,000 tuition + 240,000 upkeep = 360,000
+      // Starts with zero session loans and zero loan amount
+      expect(provider.sessionLoans.isEmpty, true);
+      expect(provider.loanAmount, 0.0);
+
+      // Add 100 Level: 120,000 tuition + 240,000 upkeep = 360,000
+      provider.addOrUpdateSessionLoan(
+        const AcademicSessionLoan(
+          level: 100,
+          tuitionFee: 120000.0,
+          includeUpkeep: true,
+          upkeepAmount: 240000.0,
+        ),
+      );
       expect(provider.sessionLoans.length, 1);
       expect(provider.loanAmount, 360000.0);
       expect(provider.sessionLoans.first.totalAmount, 360000.0);
@@ -96,16 +108,16 @@ void main() {
       expect(provider.loanAmount, 340000.0);
     });
 
-    test('Reset restores standard parameters', () {
+    test('Reset restores standard zero parameters', () {
       provider.setLoanAmount(3000000);
       provider.setMonthlyIncome(500000);
       provider.setExtraPrepayment(50000);
       provider.reset();
 
-      expect(provider.loanAmount, 360000.0);
-      expect(provider.monthlyIncome, 150000.0);
+      expect(provider.loanAmount, 0.0);
+      expect(provider.monthlyIncome, 0.0);
       expect(provider.extraPrepayment, 0.0);
-      expect(provider.sessionLoans.length, 1);
+      expect(provider.sessionLoans.isEmpty, true);
     });
 
     test('AcademicSessionLoan formats currency with two decimal digits and commas', () {

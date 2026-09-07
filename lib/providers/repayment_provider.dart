@@ -4,17 +4,10 @@ import '../core/services/analytics_service.dart';
 import '../models/repayment_model.dart';
 
 class RepaymentProvider extends ChangeNotifier {
-  final List<AcademicSessionLoan> _sessionLoans = [
-    const AcademicSessionLoan(
-      level: 100,
-      tuitionFee: 120000.0,
-      includeUpkeep: true,
-      upkeepAmount: 240000.0,
-    ),
-  ];
+  final List<AcademicSessionLoan> _sessionLoans = [];
 
-  double _loanAmount = 360000.0;
-  double _monthlyIncome = 150000.0;
+  double _loanAmount = 0.0;
+  double _monthlyIncome = 0.0;
   double _extraPrepayment = 0.0;
   RepaymentMode _mode = RepaymentMode.employedPaye;
   int _nyscGraduationYear = DateTime.now().year;
@@ -118,16 +111,8 @@ class RepaymentProvider extends ChangeNotifier {
 
   void reset() {
     _sessionLoans.clear();
-    _sessionLoans.add(
-      const AcademicSessionLoan(
-        level: 100,
-        tuitionFee: 120000.0,
-        includeUpkeep: true,
-        upkeepAmount: 240000.0,
-      ),
-    );
-    _syncTotalLoanAmount();
-    _monthlyIncome = 150000.0;
+    _loanAmount = 0.0;
+    _monthlyIncome = 0.0;
     _extraPrepayment = 0.0;
     _mode = RepaymentMode.employedPaye;
     _nyscGraduationYear = DateTime.now().year;

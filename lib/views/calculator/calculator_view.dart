@@ -70,6 +70,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
   }
 
   void _syncIncomeText(double income) {
+    if (income <= 0) return;
     final formatted = NumberFormat('#,###').format(income.toInt());
     if (_incomeController.text.replaceAll(',', '') != income.toInt().toString()) {
       _incomeController.text = formatted;
