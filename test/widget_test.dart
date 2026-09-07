@@ -21,10 +21,20 @@ void main() {
 
     // Verify Home Tab Content
     expect(find.text('My NELFund'), findsWidgets);
+    expect(find.text('Student Loan Guide'), findsOneWidget);
+    expect(find.byIcon(CupertinoIcons.bell_fill), findsOneWidget);
     expect(find.text('Portal Currently Open'), findsOneWidget);
     expect(find.text('0% Zero Interest'), findsOneWidget);
     expect(find.text('₦20,000 Monthly Upkeep'), findsOneWidget);
     expect(find.text('Key Loan Pillars (Act 2024)'), findsOneWidget);
+
+    // Verify Notification Modal Popup
+    await tester.tap(find.byIcon(CupertinoIcons.bell_fill));
+    await tester.pumpAndSettle();
+    expect(find.text('Official Bulletins'), findsOneWidget);
+    expect(find.text('2024/2025 Application Window Open'), findsOneWidget);
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
 
     // Verify Quick-Access card to Eligibility Checker
     final eligibilityActionCard = find.text('Eligibility Checker');

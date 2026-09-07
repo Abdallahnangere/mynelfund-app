@@ -17,6 +17,7 @@ void main() {
     // TAB 0: HOME
     // ==========================================
     expect(find.text('My NELFund'), findsAtLeastNWidgets(1));
+    expect(find.text('Student Loan Guide'), findsOneWidget);
     expect(find.text('Federal Republic of Nigeria'), findsOneWidget);
     expect(find.text('Portal Currently Open'), findsOneWidget);
     expect(find.text('0% Zero Interest'), findsOneWidget);

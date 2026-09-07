@@ -11,52 +11,361 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Row(
-          mainAxisSize: MainAxisSize.min,
+      child: SafeArea(
+        bottom: false,
+        child: Column(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image.asset(
-                'assets/images/nelfund_logo.png',
-                width: 22,
-                height: 22,
-                fit: BoxFit.contain,
+            _buildFintechHeader(context),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                children: [
+                  _buildHeroHeader(context),
+                  const SizedBox(height: 12),
+                  _buildWindowStatusCard(context),
+                  const SizedBox(height: 16),
+                  _buildSectionHeader('Key Loan Pillars (Act 2024)'),
+                  _buildCorePillars(context),
+                  const SizedBox(height: 16),
+                  _buildSectionHeader('Explore Tools & Guides'),
+                  _buildQuickAccessGrid(context),
+                  const SizedBox(height: 16),
+                  _buildSectionHeader('Program Overview'),
+                  _buildActOverviewCard(context),
+                  const SizedBox(height: 16),
+                  _buildDisclaimerCard(context),
+                  const SizedBox(height: 32),
+                ],
               ),
             ),
-            const SizedBox(width: 8),
-            const Text('My NELFund'),
           ],
         ),
-        backgroundColor: CupertinoDynamicColor.resolve(
+      ),
+    );
+  }
+
+  Widget _buildFintechHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+      decoration: BoxDecoration(
+        color: CupertinoDynamicColor.resolve(
           const CupertinoDynamicColor.withBrightness(
-            color: Color(0xCCF8FAF8),
-            darkColor: Color(0xCC161718),
+            color: Color(0xF2F8FAF8),
+            darkColor: Color(0xF2161718),
           ),
           context,
         ),
-      ),
-      child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          children: [
-            _buildHeroHeader(context),
-            const SizedBox(height: 12),
-            _buildWindowStatusCard(context),
-            const SizedBox(height: 16),
-            _buildSectionHeader('Key Loan Pillars (Act 2024)'),
-            _buildCorePillars(context),
-            const SizedBox(height: 16),
-            _buildSectionHeader('Explore Tools & Guides'),
-            _buildQuickAccessGrid(context),
-            const SizedBox(height: 16),
-            _buildSectionHeader('Program Overview'),
-            _buildActOverviewCard(context),
-            const SizedBox(height: 16),
-            _buildDisclaimerCard(context),
-            const SizedBox(height: 24),
-          ],
+        border: Border(
+          bottom: BorderSide(
+            color: CupertinoDynamicColor.resolve(
+              const CupertinoDynamicColor.withBrightness(
+                color: Color(0x18000000),
+                darkColor: Color(0x28FFFFFF),
+              ),
+              context,
+            ),
+            width: 0.5,
+          ),
         ),
+      ),
+      child: Row(
+        children: [
+          // Top Left: NELFUND icon
+          Container(
+            width: 44,
+            height: 44,
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: CupertinoColors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: NelfundColors.emerald.withValues(alpha: 0.18),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+              border: Border.all(
+                color: NelfundColors.emerald.withValues(alpha: 0.35),
+                width: 1.2,
+              ),
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/nelfund_logo.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+
+          // Title & Sub-tagline
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'My NELFund',
+                  style: NelfundTypography.title2.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.4,
+                  ),
+                ),
+                const SizedBox(height: 1),
+                Text(
+                  'Student Loan Guide',
+                  style: NelfundTypography.footnote.copyWith(
+                    color: CupertinoDynamicColor.resolve(
+                      NelfundColors.secondaryLabel,
+                      context,
+                    ),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Top Right: Notification Bell Button
+          _buildNotificationButton(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotificationButton(BuildContext context) {
+    final isDark = CupertinoTheme.of(context).brightness == Brightness.dark;
+
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      onPressed: () => _showNotificationsSheet(context),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: CupertinoDynamicColor.resolve(
+                const CupertinoDynamicColor.withBrightness(
+                  color: Color(0xFFF0F4F1),
+                  darkColor: Color(0xFF242C26),
+                ),
+                context,
+              ),
+              border: Border.all(
+                color: NelfundColors.emerald.withValues(alpha: 0.25),
+                width: 1,
+              ),
+            ),
+            child: const Center(
+              child: Icon(
+                CupertinoIcons.bell_fill,
+                size: 20,
+                color: NelfundColors.emerald,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              width: 11,
+              height: 11,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE53935),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isDark ? const Color(0xFF161718) : CupertinoColors.white,
+                  width: 1.8,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showNotificationsSheet(BuildContext context) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext modalContext) {
+        return Container(
+          height: MediaQuery.of(modalContext).size.height * 0.65,
+          padding: const EdgeInsets.only(top: 12),
+          decoration: BoxDecoration(
+            color: CupertinoDynamicColor.resolve(
+              const CupertinoDynamicColor.withBrightness(
+                color: Color(0xFFFAFCFA),
+                darkColor: Color(0xFF161A17),
+              ),
+              modalContext,
+            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                Container(
+                  width: 38,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: CupertinoColors.systemGrey4,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            CupertinoIcons.bell_fill,
+                            color: NelfundColors.emerald,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Official Bulletins',
+                            style: NelfundTypography.title3.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                      CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () => Navigator.of(modalContext).pop(),
+                        child: Text(
+                          'Done',
+                          style: NelfundTypography.headline.copyWith(
+                            color: NelfundColors.emerald,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 8),
+                    children: [
+                      _buildNotificationItem(
+                        context: modalContext,
+                        title: '2024/2025 Application Window Open',
+                        body:
+                            'Applications for public tertiary institutions are actively underway. Full-time students can submit their requests on nelf.gov.ng without any charges.',
+                        timestamp: 'Active Now • 2024/2025 Session',
+                        badge: 'Portal Open',
+                        badgeColor: CupertinoColors.systemGreen,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildNotificationItem(
+                        context: modalContext,
+                        title: '0% Zero-Interest Protection',
+                        body:
+                            'Under Section 15 of the Students Loans Act 2024, all approved loan facilities carry zero interest rate with no hidden bank charges.',
+                        timestamp: 'Statutory Act 2024',
+                        badge: 'Guaranteed',
+                        badgeColor: NelfundColors.emerald,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildNotificationItem(
+                        context: modalContext,
+                        title: 'Mandatory SVS Profile Upload',
+                        body:
+                            'Your institution must upload your complete verified matriculation data to the Student Verification System (SVS) before your application can clear verification.',
+                        timestamp: 'Guidelines S. 4.2',
+                        badge: 'Advisory',
+                        badgeColor: const Color(0xFFE67E22),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNotificationItem({
+    required BuildContext context,
+    required String title,
+    required String body,
+    required String timestamp,
+    required String badge,
+    required Color badgeColor,
+  }) {
+    return AppleFrostedCard(
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.all(14),
+      borderColor: NelfundColors.emerald.withValues(alpha: 0.18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: badgeColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  badge,
+                  style: NelfundTypography.captionBold.copyWith(
+                    color: badgeColor,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              Text(
+                timestamp,
+                style: NelfundTypography.caption.copyWith(
+                  color: CupertinoDynamicColor.resolve(
+                    NelfundColors.secondaryLabel,
+                    context,
+                  ),
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: NelfundTypography.headline.copyWith(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            body,
+            style: NelfundTypography.footnote.copyWith(
+              color: CupertinoDynamicColor.resolve(
+                NelfundColors.secondaryLabel,
+                context,
+              ),
+              height: 1.35,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -64,81 +373,74 @@ class HomeView extends StatelessWidget {
   Widget _buildHeroHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: 68,
-                height: 68,
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: CupertinoColors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0x1F000000),
-                    width: 0.8,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x12000000),
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
+      child: AppleFrostedCard(
+        margin: EdgeInsets.zero,
+        padding: const EdgeInsets.all(16),
+        borderColor: NelfundColors.emerald.withValues(alpha: 0.25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: NelfundColors.emerald.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: NelfundColors.emerald.withValues(alpha: 0.25),
+                      width: 1,
                     ),
-                  ],
-                ),
-                child: Image.asset(
-                  'assets/images/nelfund_logo.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: NelfundColors.emerald.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: const BoxDecoration(
+                          color: NelfundColors.emerald,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                      child: Text(
+                      const SizedBox(width: 6),
+                      Text(
                         'Federal Republic of Nigeria',
                         style: NelfundTypography.captionBold.copyWith(
                           color: NelfundColors.emerald,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'My NELFund',
-                      style: NelfundTypography.title2.copyWith(
-                        color: NelfundColors.label,
-                      ),
-                    ),
-                    Text(
-                      'Student Loan Program Guide',
-                      style: NelfundTypography.subhead,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Text(
-            'Understand your eligibility, calculate your statutory repayment, track official evaluation timelines, and learn how the zero-interest student loan works.',
-            style: NelfundTypography.body.copyWith(
-              color: CupertinoDynamicColor.resolve(
-                  NelfundColors.secondaryLabel, context),
-              fontSize: 15,
+                const Spacer(),
+                Text(
+                  'Act 2024',
+                  style: NelfundTypography.caption.copyWith(
+                    color: CupertinoDynamicColor.resolve(
+                      NelfundColors.secondaryLabel,
+                      context,
+                    ),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Text(
+              'Understand your eligibility, calculate statutory repayments, track turnaround SLAs, and explore verified guidelines for the zero-interest student loan program.',
+              style: NelfundTypography.body.copyWith(
+                color: CupertinoDynamicColor.resolve(
+                  NelfundColors.label,
+                  context,
+                ),
+                fontSize: 14.5,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
