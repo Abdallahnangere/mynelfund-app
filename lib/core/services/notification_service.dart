@@ -17,7 +17,21 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (_) {}
-  debugPrint('[NotificationService] Background message received: ${message.messageId}');
+
+  final title = message.notification?.title ??
+      message.data['title'] ??
+      message.data['header'] ??
+      message.data['subject'] ??
+      '';
+  final body = message.notification?.body ??
+      message.data['body'] ??
+      message.data['message'] ??
+      message.data['content'] ??
+      '';
+
+  debugPrint(
+    '[NotificationService] Background message received: ${message.messageId} (title: "$title", body: "$body", data: ${message.data})',
+  );
 }
 
 /// Production-grade Push Notification Service for My NELFund.
@@ -141,9 +155,13 @@ class NotificationService {
     RemoteMessage message, {
     required bool isTerminatedLaunch,
   }) {
-    final title = message.notification?.title ?? 'Notification';
+    final title = message.notification?.title ??
+        message.data['title'] ??
+        message.data['header'] ??
+        message.data['subject'] ??
+        'Notification';
     debugPrint(
-      '[NotificationService] Notification opened ($title), isTerminatedLaunch: $isTerminatedLaunch',
+      '[NotificationService] Notification opened ($title), isTerminatedLaunch: $isTerminatedLaunch, data: ${message.data}',
     );
 
     AnalyticsService.instance.logNotificationInteraction(
@@ -161,11 +179,19 @@ class NotificationService {
     if (_messaging == null) return null;
 
     return FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final notification = message.notification;
-      if (notification == null) return;
+      final title = message.notification?.title ??
+          message.data['title'] ??
+          message.data['header'] ??
+          message.data['subject'] ??
+          'My NELFund Alert';
 
-      final title = notification.title ?? 'My NELFund Alert';
-      final body = notification.body ?? '';
+      final body = message.notification?.body ??
+          message.data['body'] ??
+          message.data['message'] ??
+          message.data['content'] ??
+          '';
+
+      if (title.isEmpty && body.isEmpty) return;
 
       AnalyticsService.instance.logNotificationInteraction(
         title: title,
