@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import '../../core/services/analytics_service.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
 import '../../models/faq_model.dart';
@@ -100,6 +101,12 @@ class _FaqContentState extends State<_FaqContent> {
         controller: _searchController,
         placeholder: 'Search questions, GSI, refund, moratorium...',
         onChanged: provider.setSearchQuery,
+        onSubmitted: (query) {
+          AnalyticsService.instance.logFaqSearch(
+            query: query,
+            matchCount: provider.filteredItems.length,
+          );
+        },
         onSuffixTap: () {
           _searchController.clear();
           provider.setSearchQuery('');

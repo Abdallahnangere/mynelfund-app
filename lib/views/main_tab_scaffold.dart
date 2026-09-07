@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import '../core/services/analytics_service.dart';
+import '../core/services/notification_service.dart';
 import '../core/services/review_service.dart';
 import '../core/services/update_service.dart';
 import '../core/theme/nelfund_colors.dart';
@@ -24,10 +26,19 @@ class MainTabScaffold extends StatefulWidget {
 }
 
 class _MainTabScaffoldState extends State<MainTabScaffold> {
+  static const List<String> _tabNames = [
+    'Home',
+    'Eligibility',
+    'Calculator',
+    'FAQ',
+    'About',
+  ];
+
   late final CupertinoTabController _tabController;
   DateTime? _lastBackPressTime;
   OverlayEntry? _toastEntry;
   Timer? _toastTimer;
+  StreamSubscription? _foregroundNotificationSub;
 
   final List<GlobalKey<NavigatorState>> _tabNavKeys = [
     GlobalKey<NavigatorState>(debugLabel: 'HomeNav'),
@@ -41,11 +52,22 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
   void initState() {
     super.initState();
     _tabController = CupertinoTabController(initialIndex: widget.initialIndex);
+    _tabController.addListener(_onTabChanged);
     _initAppServices();
+  }
+
+  void _onTabChanged() {
+    final index = _tabController.index;
+    if (index >= 0 && index < _tabNames.length) {
+      AnalyticsService.instance.logTabSelected(index, _tabNames[index]);
+      AnalyticsService.instance.logScreenView(_tabNames[index]);
+    }
   }
 
   void _initAppServices() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _foregroundNotificationSub = NotificationService.instance
+          .attachForegroundListener(context);
       await ReviewService.instance.recordAppLaunch();
       if (!mounted) return;
       await UpdateService.instance.checkForUpdates(context);
@@ -153,10 +175,12 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
 
   @override
   void dispose() {
+    _foregroundNotificationSub?.cancel();
     _toastTimer?.cancel();
     _toastTimer = null;
     _toastEntry?.remove();
     _toastEntry = null;
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }

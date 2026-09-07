@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/services/analytics_service.dart';
 import '../../core/services/review_service.dart';
 import '../../core/services/update_service.dart';
 import '../../core/theme/nelfund_colors.dart';
@@ -19,6 +20,27 @@ class AboutView extends StatelessWidget {
   static const String nelfundEmail = 'info@nelf.gov.ng';
 
   Future<void> _launch(BuildContext context, String urlString) async {
+    final isTel = urlString.startsWith('tel:');
+    final isWa = urlString.contains('wa.me');
+    final isMail = urlString.startsWith('mailto:');
+    final isAnjal = urlString.contains('anjalventures');
+    final isNelfund = urlString.contains('nelf.gov.ng');
+
+    if (isTel) {
+      AnalyticsService.instance.logDeveloperContact(method: 'call_phone');
+    } else if (isWa) {
+      AnalyticsService.instance.logDeveloperContact(method: 'whatsapp');
+    } else if (isMail) {
+      AnalyticsService.instance.logDeveloperContact(method: 'email_nelfund');
+    } else {
+      AnalyticsService.instance.logExternalLink(
+        destination: isAnjal
+            ? 'Anjal Ventures Website'
+            : (isNelfund ? 'NELFUND Official' : 'External Link'),
+        url: urlString,
+      );
+    }
+
     final uri = Uri.parse(urlString);
     try {
       final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -33,6 +55,7 @@ class AboutView extends StatelessWidget {
   }
 
   void _copyToClipboard(BuildContext context, String text, String label) {
+    AnalyticsService.instance.logDeveloperContact(method: 'copy_$label');
     Clipboard.setData(ClipboardData(text: text));
     showCupertinoDialog<void>(
       context: context,

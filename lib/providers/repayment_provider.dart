@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../core/constants/nelfund_data.dart';
+import '../core/services/analytics_service.dart';
 import '../models/repayment_model.dart';
 
 class RepaymentProvider extends ChangeNotifier {
@@ -52,6 +53,7 @@ class RepaymentProvider extends ChangeNotifier {
     _sessionLoans.sort((a, b) => a.level.compareTo(b.level));
     _syncTotalLoanAmount();
     notifyListeners();
+    _logAnalytics();
   }
 
   void removeSessionLoan(int level) {
@@ -62,17 +64,36 @@ class RepaymentProvider extends ChangeNotifier {
       _syncTotalLoanAmount();
     }
     notifyListeners();
+    _logAnalytics();
   }
 
   // Setters
   void setLoanAmount(double value) {
     _loanAmount = value;
     notifyListeners();
+    _logAnalytics();
   }
 
   void setMonthlyIncome(double value) {
     _monthlyIncome = value;
     notifyListeners();
+    _logAnalytics();
+  }
+
+  void _logAnalytics() {
+    final proj = projection;
+    final tuitionTotal =
+        _sessionLoans.fold<double>(0.0, (sum, s) => sum + s.tuitionFee);
+    final upkeepTotal =
+        _sessionLoans.fold<double>(0.0, (sum, s) => sum + s.upkeepAmount);
+    AnalyticsService.instance.logLoanCalculation(
+      institutionalFees: tuitionTotal,
+      upkeepTotal: upkeepTotal,
+      totalLoan: proj.loanAmount,
+      expectedIncome: proj.monthlyIncome,
+      monthlyDeduction: proj.statutoryMonthlyDeduction,
+      repaymentMonths: proj.baselineMonths,
+    );
   }
 
   void setExtraPrepayment(double value) {

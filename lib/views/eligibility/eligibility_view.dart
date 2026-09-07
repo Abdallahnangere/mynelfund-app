@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/services/analytics_service.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
 import '../../models/eligibility_model.dart';
@@ -23,6 +24,10 @@ class _EligibilityContent extends StatelessWidget {
   const _EligibilityContent();
 
   Future<void> _launchNelfundPortal(BuildContext context) async {
+    AnalyticsService.instance.logExternalLink(
+      destination: 'NELFUND Application Portal',
+      url: 'https://nelf.gov.ng',
+    );
     final uri = Uri.parse('https://nelf.gov.ng');
     try {
       final launched = await launchUrl(
@@ -60,6 +65,13 @@ class _EligibilityContent extends StatelessWidget {
   void _showEligibilityModal(BuildContext context, EligibilityReport report) {
     final bool isEligible = report.isLikelyEligible;
     final bool hasDisqualifiers = report.disqualificationReasons.isNotEmpty;
+
+    AnalyticsService.instance.logEligibilityCheck(
+      isEligible: isEligible,
+      metCriteriaCount: report.passedCriteria.length,
+      unmetCount: report.pendingRequirements.length,
+      disqualifierCount: report.disqualificationReasons.length,
+    );
 
     showCupertinoDialog(
       context: context,
