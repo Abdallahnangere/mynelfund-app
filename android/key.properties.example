@@ -1,0 +1,8 @@
+# Example key.properties for production release signing
+# Copy this file to key.properties and replace with your secure passwords and path.
+# DO NOT commit the actual key.properties file to version control.
+
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=upload
+storeFile=upload-keystore.jks
