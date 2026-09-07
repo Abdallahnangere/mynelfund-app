@@ -47,49 +47,129 @@ class _FaqContentState extends State<_FaqContent> {
     final items = provider.filteredItems;
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: const Text('Official FAQ'),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: NelfundColors.emerald.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            '${items.length} ${items.length == 1 ? 'Topic' : 'Topics'}',
-            style: NelfundTypography.captionBold.copyWith(
-              color: NelfundColors.emerald,
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            _buildFintechHeader(context, items.length),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                children: [
+                  _buildSearchBox(context, provider),
+                  const SizedBox(height: 10),
+                  _buildCategoryFilterStrip(context, provider),
+                  const SizedBox(height: 12),
+                  if (provider.searchQuery.isEmpty &&
+                      provider.selectedCategory == FaqCategory.all) ...[
+                    _buildSpotlightCarousel(context),
+                    const SizedBox(height: 12),
+                  ],
+                  if (items.isEmpty)
+                    _buildEmptySearchState(context, provider)
+                  else
+                    ...items.map((item) => _buildFaqTile(context, provider, item)),
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
-        backgroundColor: CupertinoDynamicColor.resolve(
+      ),
+    );
+  }
+
+  Widget _buildFintechHeader(BuildContext context, int count) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: CupertinoDynamicColor.resolve(
           const CupertinoDynamicColor.withBrightness(
-            color: Color(0xCCF8FAF8),
-            darkColor: Color(0xCC161718),
+            color: Color(0xF2F8FAF8),
+            darkColor: Color(0xF2161718),
           ),
           context,
         ),
-      ),
-      child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          children: [
-            _buildSearchBox(context, provider),
-            const SizedBox(height: 10),
-            _buildCategoryFilterStrip(context, provider),
-            const SizedBox(height: 12),
-            if (provider.searchQuery.isEmpty &&
-                provider.selectedCategory == FaqCategory.all) ...[
-              _buildSpotlightCarousel(context),
-              const SizedBox(height: 12),
-            ],
-            if (items.isEmpty)
-              _buildEmptySearchState(context, provider)
-            else
-              ...items.map((item) => _buildFaqTile(context, provider, item)),
-            const SizedBox(height: 24),
-          ],
+        border: Border(
+          bottom: BorderSide(
+            color: CupertinoDynamicColor.resolve(
+              const CupertinoDynamicColor.withBrightness(
+                color: Color(0x18000000),
+                darkColor: Color(0x28FFFFFF),
+              ),
+              context,
+            ),
+            width: 0.5,
+          ),
         ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(
+                  child: Text(
+                    'Official FAQ',
+                    style: NelfundTypography.headline.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                      letterSpacing: -0.4,
+                      color: CupertinoDynamicColor.resolve(
+                        NelfundColors.label,
+                        context,
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: NelfundColors.emerald.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '$count ${count == 1 ? 'Topic' : 'Topics'}',
+                      style: NelfundTypography.captionBold.copyWith(
+                        color: NelfundColors.emerald,
+                        fontSize: 11.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Emerald ambient lighting separator line
+          Container(
+            height: 2.5,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  NelfundColors.emerald.withValues(alpha: 0.1),
+                  NelfundColors.emerald,
+                  NelfundColors.emerald.withValues(alpha: 0.1),
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: NelfundColors.emerald.withValues(alpha: 0.4),
+                  blurRadius: 6,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

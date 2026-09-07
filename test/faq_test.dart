@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_nelfund/models/faq_model.dart';
 import 'package:my_nelfund/providers/faq_provider.dart';
+import 'package:my_nelfund/views/faq/faq_view.dart';
 
 void main() {
   group('FaqProvider Search & Filtering Tests', () {
@@ -60,6 +62,20 @@ void main() {
       expect(provider.searchQuery, isEmpty);
       expect(provider.isExpanded('rep_5'), isFalse);
       expect(provider.filteredItems.length, FaqItem.defaultList.length);
+    });
+  });
+
+  group('FaqView UI Tests', () {
+    testWidgets('Renders fintech header with Official FAQ title and topics badge', (tester) async {
+      await tester.pumpWidget(
+        const CupertinoApp(
+          home: FaqView(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Official FAQ'), findsOneWidget);
+      expect(find.textContaining('Topics'), findsOneWidget);
     });
   });
 }
