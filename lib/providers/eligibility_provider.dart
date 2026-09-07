@@ -5,18 +5,18 @@ class EligibilityProvider extends ChangeNotifier {
   AcademicEntryType _academicType = AcademicEntryType.freshEntry;
 
   // Core Eligibility Criteria (Section 2.0)
-  bool _isNigerianCitizen = true;
-  bool _isEnrolledInPublicEti = true;
-  bool _isAcademicAdmissionVerified = true;
-  bool _isSchoolDataUploaded = true;
+  bool _isNigerianCitizen = false;
+  bool _isEnrolledInPublicEti = false;
+  bool _isAcademicAdmissionVerified = false;
+  bool _isSchoolDataUploaded = false;
 
   // KYC Readiness Checklist (Section 2.3)
-  bool _hasJambNumber = true;
-  bool _hasBvn = true;
-  bool _hasNin = true;
-  bool _hasPersonalInfo = true;
-  bool _hasPassportPhoto = true;
-  bool _hasAdmissionOrStudentId = true;
+  bool _hasJambNumber = false;
+  bool _hasBvn = false;
+  bool _hasNin = false;
+  bool _hasPersonalInfo = false;
+  bool _hasPassportPhoto = false;
+  bool _hasAdmissionOrStudentId = false;
 
   // Disqualification Flags (Section 3.0 & 4.1.3)
   bool _hasPriorLoanDefault = false;
@@ -129,16 +129,16 @@ class EligibilityProvider extends ChangeNotifier {
 
   void reset() {
     _academicType = AcademicEntryType.freshEntry;
-    _isNigerianCitizen = true;
-    _isEnrolledInPublicEti = true;
-    _isAcademicAdmissionVerified = true;
-    _isSchoolDataUploaded = true;
-    _hasJambNumber = true;
-    _hasBvn = true;
-    _hasNin = true;
-    _hasPersonalInfo = true;
-    _hasPassportPhoto = true;
-    _hasAdmissionOrStudentId = true;
+    _isNigerianCitizen = false;
+    _isEnrolledInPublicEti = false;
+    _isAcademicAdmissionVerified = false;
+    _isSchoolDataUploaded = false;
+    _hasJambNumber = false;
+    _hasBvn = false;
+    _hasNin = false;
+    _hasPersonalInfo = false;
+    _hasPassportPhoto = false;
+    _hasAdmissionOrStudentId = false;
     _hasPriorLoanDefault = false;
     _hasActiveScholarship = false;
     _hasAcademicMisconduct = false;

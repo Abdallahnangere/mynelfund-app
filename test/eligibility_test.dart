@@ -10,7 +10,20 @@ void main() {
       provider = EligibilityProvider();
     });
 
-    test('Initial state qualifies as likely eligible with zero disqualifications', () {
+    test('Initial state starts with all unchecked boxes pending verification', () {
+      final report = provider.report;
+      expect(report.isLikelyEligible, isFalse);
+      expect(report.disqualificationReasons, isEmpty);
+      expect(report.pendingRequirements.length, 4);
+      expect(report.summaryTitle, contains('Action Required'));
+    });
+
+    test('Satisfying all core criteria qualifies as likely eligible', () {
+      provider.toggleNigerianCitizen(true);
+      provider.toggleEnrolledInPublicEti(true);
+      provider.toggleAcademicAdmissionVerified(true);
+      provider.toggleSchoolDataUploaded(true);
+
       final report = provider.report;
       expect(report.isLikelyEligible, isTrue);
       expect(report.disqualificationReasons, isEmpty);
@@ -36,7 +49,10 @@ void main() {
       expect(report.disqualificationReasons.length, 2);
     });
 
-    test('Missing Nigerian citizenship or BVN places application in pending requirements', () {
+    test('Missing Nigerian citizenship places application in pending requirements', () {
+      provider.toggleEnrolledInPublicEti(true);
+      provider.toggleAcademicAdmissionVerified(true);
+      provider.toggleSchoolDataUploaded(true);
       provider.toggleNigerianCitizen(false);
       final report = provider.report;
 
@@ -54,14 +70,16 @@ void main() {
       expect(provider.academicType.academicRequirementLabel, contains('JAMB Admission Letter'));
     });
 
-    test('Reset clears all disqualifications and restores baseline', () {
+    test('Reset clears all disqualifications and restores unchecked baseline', () {
+      provider.toggleNigerianCitizen(true);
       provider.togglePriorLoanDefault(true);
       provider.toggleHoldsFirstDegree(true);
       expect(provider.report.isLikelyEligible, isFalse);
 
       provider.reset();
-      expect(provider.report.isLikelyEligible, isTrue);
+      expect(provider.report.isLikelyEligible, isFalse);
       expect(provider.report.disqualificationReasons, isEmpty);
+      expect(provider.report.pendingRequirements.length, 4);
     });
   });
 }

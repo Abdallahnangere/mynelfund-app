@@ -45,10 +45,20 @@ void main() {
     await tester.pumpAndSettle();
 
     // Now Eligibility tab is active
-    expect(find.text('Official Eligibility Audit'), findsOneWidget);
+    expect(find.textContaining('Assess your statutory eligibility'), findsOneWidget);
+    expect(find.text('Reset'), findsNothing);
     expect(find.text('Fresh Entry'), findsOneWidget);
-    expect(find.text('Likely Eligible for NELFUND Loan'), findsOneWidget);
+    expect(find.text('Evaluate My Eligibility'), findsOneWidget);
+    expect(find.text('Open NELFUND Portal (nelf.gov.ng)'), findsOneWidget);
     expect(find.text('Statutory Disqualification Bars'), findsOneWidget);
+
+    // Verify Evaluate modal popup opens
+    await tester.tap(find.text('Evaluate My Eligibility'));
+    await tester.pumpAndSettle();
+    expect(find.text('Incomplete Requirements'), findsOneWidget);
+    expect(find.text('Review Checklist'), findsOneWidget);
+    await tester.tap(find.text('Review Checklist'));
+    await tester.pumpAndSettle();
 
     // Switch back to Home tab via bottom bar
     await tester.tap(find.byIcon(CupertinoIcons.house));

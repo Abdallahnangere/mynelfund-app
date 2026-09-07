@@ -32,26 +32,34 @@ void main() {
     // ==========================================
     // TAB 1: ELIGIBILITY CHECKER
     // ==========================================
-    expect(find.text('Official Eligibility Audit'), findsOneWidget);
-    expect(find.text('Likely Eligible for NELFUND Loan'), findsOneWidget);
+    expect(find.textContaining('Assess your statutory eligibility'), findsOneWidget);
+    expect(find.text('Reset'), findsNothing);
+    expect(find.text('Evaluate My Eligibility'), findsOneWidget);
 
     // Switch academic stream
     await tester.tap(find.text('Direct Entry'));
     await tester.pumpAndSettle();
 
-    // Trigger disqualification switch
-    final switches = find.byType(CupertinoSwitch);
-    expect(switches, findsWidgets);
-    await tester.tap(switches.last);
+    // Verify Checkboxes are present and toggle one
+    final checkboxes = find.byType(CupertinoCheckbox);
+    expect(checkboxes, findsWidgets);
+    await tester.tap(checkboxes.first);
     await tester.pumpAndSettle();
 
-    // Verify diagnostic changes
-    expect(find.text('May Be Disqualified Under NELFUND Rules'), findsOneWidget);
-
-    // Reset checker
-    await tester.tap(find.text('Reset'));
+    // Trigger disqualification checkbox (e.g. last checkbox)
+    await tester.tap(checkboxes.last);
     await tester.pumpAndSettle();
-    expect(find.text('Likely Eligible for NELFUND Loan'), findsOneWidget);
+
+    // Verify center modal dialog opens with disqualification details
+    await tester.tap(find.text('Evaluate My Eligibility'));
+    await tester.pumpAndSettle();
+    expect(find.text('Statutory Disqualification'), findsOneWidget);
+    expect(find.text('Review Checklist'), findsOneWidget);
+    await tester.tap(find.text('Review Checklist'));
+    await tester.pumpAndSettle();
+
+    // Verify bottom diagnostic card and portal button exist
+    expect(find.text('Open NELFUND Portal (nelf.gov.ng)'), findsOneWidget);
 
     // ==========================================
     // TAB 2: REPAYMENT CALCULATOR
