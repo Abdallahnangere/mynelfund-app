@@ -18,11 +18,12 @@ void main() {
     // ==========================================
     expect(find.text('My NELFund'), findsAtLeastNWidgets(1));
     expect(find.text('Student Loan Guide'), findsOneWidget);
-    expect(find.text('Federal Republic of Nigeria'), findsOneWidget);
-    expect(find.text('Portal Currently Open'), findsOneWidget);
+    expect(find.text('Program Overview'), findsOneWidget);
+    expect(find.text('Key Loan Pillars'), findsOneWidget);
     expect(find.text('0% Zero Interest'), findsOneWidget);
     expect(find.text('Direct Tuition Disbursement'), findsOneWidget);
     expect(find.text('₦20,000 Monthly Upkeep'), findsOneWidget);
+    expect(find.text('Explore Tools & Guides'), findsOneWidget);
 
     // Tap quick action to navigate to Eligibility
     await tester.tap(find.text('Eligibility Checker').first);
@@ -127,6 +128,6 @@ void main() {
     // Return to Home tab
     await tester.tap(find.byIcon(CupertinoIcons.house));
     await tester.pumpAndSettle();
-    expect(find.text('Portal Currently Open'), findsOneWidget);
+    expect(find.text('Program Overview'), findsOneWidget);
   });
 }

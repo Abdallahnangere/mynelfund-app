@@ -20,21 +20,15 @@ class HomeView extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 children: [
-                  _buildHeroHeader(context),
-                  const SizedBox(height: 12),
-                  _buildWindowStatusCard(context),
+                  _buildSectionHeader('Program Overview'),
+                  _buildActOverviewCard(context),
                   const SizedBox(height: 16),
-                  _buildSectionHeader('Key Loan Pillars (Act 2024)'),
+                  _buildSectionHeader('Key Loan Pillars'),
                   _buildCorePillars(context),
                   const SizedBox(height: 16),
                   _buildSectionHeader('Explore Tools & Guides'),
                   _buildQuickAccessGrid(context),
-                  const SizedBox(height: 16),
-                  _buildSectionHeader('Program Overview'),
-                  _buildActOverviewCard(context),
-                  const SizedBox(height: 16),
-                  _buildDisclaimerCard(context),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -370,174 +364,7 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildHeroHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: AppleFrostedCard(
-        margin: EdgeInsets.zero,
-        padding: const EdgeInsets.all(16),
-        borderColor: NelfundColors.emerald.withValues(alpha: 0.25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: NelfundColors.emerald.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: NelfundColors.emerald.withValues(alpha: 0.25),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 7,
-                        height: 7,
-                        decoration: const BoxDecoration(
-                          color: NelfundColors.emerald,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Federal Republic of Nigeria',
-                        style: NelfundTypography.captionBold.copyWith(
-                          color: NelfundColors.emerald,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  'Act 2024',
-                  style: NelfundTypography.caption.copyWith(
-                    color: CupertinoDynamicColor.resolve(
-                      NelfundColors.secondaryLabel,
-                      context,
-                    ),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Understand your eligibility, calculate statutory repayments, track turnaround SLAs, and explore verified guidelines for the zero-interest student loan program.',
-              style: NelfundTypography.body.copyWith(
-                color: CupertinoDynamicColor.resolve(
-                  NelfundColors.label,
-                  context,
-                ),
-                fontSize: 14.5,
-                height: 1.4,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _buildWindowStatusCard(BuildContext context) {
-    return AppleFrostedCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: CupertinoColors.systemGreen,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    NelfundData.windowStatusText,
-                    style: NelfundTypography.headline.copyWith(
-                      color: CupertinoColors.systemGreen,
-                      fontSize: 15,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: NelfundColors.emerald.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  NelfundData.currentAcademicSession,
-                  style: NelfundTypography.captionBold.copyWith(
-                    color: NelfundColors.emerald,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            NelfundData.currentBatchName,
-            style: NelfundTypography.headline.copyWith(fontSize: 17),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            NelfundData.windowAdvisory,
-            style: NelfundTypography.footnote.copyWith(
-              color: CupertinoDynamicColor.resolve(
-                  NelfundColors.secondaryLabel, context),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: CupertinoDynamicColor.resolve(
-                const CupertinoDynamicColor.withBrightness(
-                  color: Color(0x0C008751),
-                  darkColor: Color(0x1F008751),
-                ),
-                context,
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  CupertinoIcons.info_circle_fill,
-                  size: 16,
-                  color: NelfundColors.emerald,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Official Portal: nelf.gov.ng • Free to apply (No fee)',
-                    style: NelfundTypography.captionBold.copyWith(
-                      color: NelfundColors.emerald,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildSectionHeader(String title) {
     return Padding(
@@ -848,42 +675,4 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildDisclaimerCard(BuildContext context) {
-    return AppleFrostedCard(
-      backgroundColor: CupertinoDynamicColor.resolve(
-        const CupertinoDynamicColor.withBrightness(
-          color: Color(0xF2F5F5F7),
-          darkColor: Color(0xF21C1C1E),
-        ),
-        context,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                CupertinoIcons.shield_lefthalf_fill,
-                size: 16,
-                color: CupertinoColors.secondaryLabel,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'Transparency Notice',
-                style: NelfundTypography.captionBold,
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            NelfundData.independentDisclaimer,
-            style: NelfundTypography.caption.copyWith(
-              color: CupertinoDynamicColor.resolve(
-                  NelfundColors.tertiaryLabel, context),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

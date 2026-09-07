@@ -23,10 +23,11 @@ void main() {
     expect(find.text('My NELFund'), findsWidgets);
     expect(find.text('Student Loan Guide'), findsOneWidget);
     expect(find.byIcon(CupertinoIcons.bell_fill), findsOneWidget);
-    expect(find.text('Portal Currently Open'), findsOneWidget);
+    expect(find.text('Program Overview'), findsOneWidget);
+    expect(find.text('Key Loan Pillars'), findsOneWidget);
     expect(find.text('0% Zero Interest'), findsOneWidget);
     expect(find.text('₦20,000 Monthly Upkeep'), findsOneWidget);
-    expect(find.text('Key Loan Pillars (Act 2024)'), findsOneWidget);
+    expect(find.text('Explore Tools & Guides'), findsOneWidget);
 
     // Verify Notification Modal Popup
     await tester.tap(find.byIcon(CupertinoIcons.bell_fill));
@@ -53,7 +54,7 @@ void main() {
     await tester.tap(find.byIcon(CupertinoIcons.house));
     await tester.pumpAndSettle();
 
-    expect(find.text('Portal Currently Open'), findsOneWidget);
+    expect(find.text('Program Overview'), findsOneWidget);
 
     // Switch to Calculator tab via bottom bar
     await tester.tap(find.byIcon(CupertinoIcons.chart_pie));

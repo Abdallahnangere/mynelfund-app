@@ -44,7 +44,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Main tab scaffold should now be loaded
-      expect(find.text('Portal Currently Open'), findsOneWidget);
+      expect(find.text('Program Overview'), findsOneWidget);
       expect(find.text('0% Zero Interest'), findsOneWidget);
     });
 
@@ -63,7 +63,7 @@ void main() {
       await tester.tap(find.byType(SplashView));
       await tester.pumpAndSettle();
 
-      expect(find.text('Portal Currently Open'), findsOneWidget);
+      expect(find.text('Program Overview'), findsOneWidget);
     });
   });
 }
