@@ -32,7 +32,8 @@ void main() {
     // ==========================================
     // TAB 1: ELIGIBILITY CHECKER
     // ==========================================
-    expect(find.textContaining('Assess your statutory eligibility'), findsOneWidget);
+    expect(find.text('Student Eligibility Guide'), findsOneWidget);
+    expect(find.textContaining('Follow through the following steps to check if you are eligible'), findsOneWidget);
     expect(find.text('Reset'), findsNothing);
     expect(find.text('Evaluate My Eligibility'), findsOneWidget);
 
@@ -58,8 +59,8 @@ void main() {
     await tester.tap(find.text('Review Checklist'));
     await tester.pumpAndSettle();
 
-    // Verify bottom diagnostic card and portal button exist
-    expect(find.text('Open NELFUND Portal (nelf.gov.ng)'), findsOneWidget);
+    // Verify bottom diagnostic card reflects triggered disqualification and portal button exists
+    expect(find.text('Visit Official Portal for Guidelines'), findsOneWidget);
 
     // ==========================================
     // TAB 2: REPAYMENT CALCULATOR

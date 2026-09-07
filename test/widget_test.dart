@@ -45,12 +45,13 @@ void main() {
     await tester.pumpAndSettle();
 
     // Now Eligibility tab is active
-    expect(find.textContaining('Assess your statutory eligibility'), findsOneWidget);
+    expect(find.text('Student Eligibility Guide'), findsOneWidget);
+    expect(find.textContaining('Follow through the following steps to check if you are eligible'), findsOneWidget);
     expect(find.text('Reset'), findsNothing);
     expect(find.text('Fresh Entry'), findsOneWidget);
     expect(find.text('Evaluate My Eligibility'), findsOneWidget);
-    expect(find.text('Open NELFUND Portal (nelf.gov.ng)'), findsOneWidget);
-    expect(find.text('Statutory Disqualification Bars'), findsOneWidget);
+    expect(find.text('Visit Official Portal for Guidelines'), findsOneWidget);
+    expect(find.text('3. Statutory Disqualification Bars'), findsOneWidget);
 
     // Verify Evaluate modal popup opens
     await tester.tap(find.text('Evaluate My Eligibility'));

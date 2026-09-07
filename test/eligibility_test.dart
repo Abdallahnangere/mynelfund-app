@@ -37,7 +37,7 @@ void main() {
       expect(report.isLikelyEligible, isFalse);
       expect(report.disqualificationReasons.length, 1);
       expect(report.disqualificationReasons.first, contains('Prior loan default'));
-      expect(report.summaryTitle, contains('May Be Disqualified'));
+      expect(report.summaryTitle, contains('Disqualification'));
     });
 
     test('Flagging exam misconduct or felony convictions disqualifies applicant', () {
@@ -62,6 +62,22 @@ void main() {
       expect(report.summaryTitle, contains('Action Required'));
     });
 
+    test('Detailed 3-section report correctly tracks Core, KYC, and Disqualification counts', () {
+      provider.toggleNigerianCitizen(true);
+      provider.toggleEnrolledInPublicEti(true);
+      provider.toggleJambNumber(true);
+      provider.toggleBvn(true);
+      provider.toggleNin(true);
+
+      final report = provider.report;
+      expect(report.coreMetCount, 2);
+      expect(report.coreTotalCount, 4);
+      expect(report.kycMetCount, 3);
+      expect(report.kycTotalCount, 6);
+      expect(report.disqualifierCount, 0);
+      expect(report.hasDisqualifiers, isFalse);
+    });
+
     test('Switching academic entry stream dynamically updates requirement label', () {
       provider.setAcademicType(AcademicEntryType.undergraduate);
       expect(provider.academicType.academicRequirementLabel, contains('Matriculation Number'));
@@ -79,7 +95,9 @@ void main() {
       provider.reset();
       expect(provider.report.isLikelyEligible, isFalse);
       expect(provider.report.disqualificationReasons, isEmpty);
-      expect(provider.report.pendingRequirements.length, 4);
+      expect(reportAfterReset().pendingRequirements.length, 4);
     });
   });
 }
+
+EligibilityReport reportAfterReset() => EligibilityProvider().report;

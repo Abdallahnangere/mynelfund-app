@@ -22,13 +22,12 @@ void main() {
       expect(
           find.text('Students Loans (Access to Higher Education) Act 2024'),
           findsOneWidget);
-      expect(find.text('Continue to Portal'), findsOneWidget);
-      expect(
-          find.text('Portal Ready • Official Version 1.0.0'), findsOneWidget);
-      expect(find.byType(CupertinoActivityIndicator), findsOneWidget);
+      expect(find.text('Proceed to App'), findsOneWidget);
+      expect(find.text('Version 1.0.0'), findsOneWidget);
+      expect(find.byType(CupertinoActivityIndicator), findsNothing);
     });
 
-    testWidgets('Tapping Continue to Portal button transitions to MainTabScaffold',
+    testWidgets('Tapping Proceed to App button transitions to MainTabScaffold',
         (WidgetTester tester) async {
       tester.view.physicalSize = const Size(1080, 2400);
       tester.view.devicePixelRatio = 1.0;
@@ -37,10 +36,10 @@ void main() {
       await tester.pumpWidget(const MyNelfundApp());
       await tester.pump(const Duration(milliseconds: 1800));
 
-      expect(find.text('Continue to Portal'), findsOneWidget);
+      expect(find.text('Proceed to App'), findsOneWidget);
 
-      // Tap on the Continue to Portal button
-      await tester.tap(find.text('Continue to Portal'));
+      // Tap on the Proceed to App button
+      await tester.tap(find.text('Proceed to App'));
       await tester.pumpAndSettle();
 
       // Main tab scaffold should now be loaded

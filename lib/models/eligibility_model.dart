@@ -39,21 +39,52 @@ extension AcademicEntryTypeExtension on AcademicEntryType {
   }
 }
 
-/// Structured diagnostic report generated from the eligibility evaluation.
+/// Structured diagnostic report generated from the eligibility evaluation across all 3 sections.
 class EligibilityReport {
   final bool isLikelyEligible;
-  final List<String> passedCriteria;
-  final List<String> pendingRequirements;
-  final List<String> disqualificationReasons;
   final String summaryTitle;
   final String summaryMessage;
 
+  // Section 1: Statutory Core Criteria
+  final int coreMetCount;
+  final int coreTotalCount;
+  final List<String> passedCoreCriteria;
+  final List<String> pendingCoreCriteria;
+
+  // Section 2: KYC & Identity Verification
+  final int kycMetCount;
+  final int kycTotalCount;
+  final List<String> passedKycItems;
+  final List<String> pendingKycItems;
+
+  // Section 3: Statutory Disqualification Bars
+  final int disqualifierCount;
+  final List<String> activeDisqualifiers;
+
+  // Backward-compatibility aliases
+  List<String> get passedCriteria => passedCoreCriteria;
+  List<String> get pendingRequirements => pendingCoreCriteria;
+  List<String> get disqualificationReasons => activeDisqualifiers;
+
+  bool get hasDisqualifiers => disqualifierCount > 0;
+  bool get hasPendingCore => pendingCoreCriteria.isNotEmpty;
+  bool get hasPendingKyc => pendingKycItems.isNotEmpty;
+  bool get isFullySatisfied =>
+      !hasDisqualifiers && !hasPendingCore && !hasPendingKyc;
+
   const EligibilityReport({
     required this.isLikelyEligible,
-    required this.passedCriteria,
-    required this.pendingRequirements,
-    required this.disqualificationReasons,
     required this.summaryTitle,
     required this.summaryMessage,
+    required this.coreMetCount,
+    required this.coreTotalCount,
+    required this.passedCoreCriteria,
+    required this.pendingCoreCriteria,
+    required this.kycMetCount,
+    required this.kycTotalCount,
+    required this.passedKycItems,
+    required this.pendingKycItems,
+    required this.disqualifierCount,
+    required this.activeDisqualifiers,
   });
 }

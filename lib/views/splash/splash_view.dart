@@ -331,7 +331,7 @@ class _SplashViewState extends State<SplashView>
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Continue to Portal',
+                                'Proceed to App',
                                 style: NelfundTypography.headline.copyWith(
                                   color: CupertinoColors.white,
                                   fontWeight: FontWeight.w600,
@@ -352,27 +352,18 @@ class _SplashViewState extends State<SplashView>
 
                     const Spacer(flex: 2),
 
-                    // Staggered Stage 5: Activity Indicator & Status
+                    // Staggered Stage 5: Version Status (no spinner)
                     FadeTransition(
                       opacity: _footerFadeAnimation,
-                      child: Column(
-                        children: [
-                          const CupertinoActivityIndicator(
-                            radius: 11,
-                            color: NelfundColors.emerald,
+                      child: Text(
+                        'Version 1.0.0',
+                        style: NelfundTypography.caption.copyWith(
+                          color: CupertinoDynamicColor.resolve(
+                            NelfundColors.secondaryLabel,
+                            context,
                           ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'Portal Ready • Official Version 1.0.0',
-                            style: NelfundTypography.caption.copyWith(
-                              color: CupertinoDynamicColor.resolve(
-                                NelfundColors.secondaryLabel,
-                                context,
-                              ),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                          fontSize: 12,
+                        ),
                       ),
                     ),
 

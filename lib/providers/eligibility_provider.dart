@@ -148,36 +148,83 @@ class EligibilityProvider extends ChangeNotifier {
   }
 
   EligibilityReport get report {
-    final passed = <String>[];
-    final pending = <String>[];
-    final disqualifiers = <String>[];
+    // -----------------------------------------------------------
+    // SECTION 1: Statutory Core Criteria (Section 2.0)
+    // -----------------------------------------------------------
+    final passedCore = <String>[];
+    final pendingCore = <String>[];
 
-    // Check Core Criteria
     if (_isNigerianCitizen) {
-      passed.add('Nigerian Citizenship confirmed (NIN & BVN)');
+      passedCore.add('Nigerian Citizenship confirmed via NIN & BVN (Sec. 2.1)');
     } else {
-      pending.add('Proof of Nigerian citizenship via NIN & BVN is required (Sec. 2.1).');
+      pendingCore.add('Nigerian citizenship verification via NIN & BVN is required.');
     }
 
     if (_isEnrolledInPublicEti) {
-      passed.add('Admitted to an approved Public Tertiary Institution (Sec. 2.2)');
+      passedCore.add('Enrolled in an approved Federal or State public tertiary institution (Sec. 2.2)');
     } else {
-      pending.add('Only approved Federal and State public tertiary institutions qualify.');
+      pendingCore.add('Enrollment in an approved Federal or State public tertiary institution is required.');
     }
 
     if (_isAcademicAdmissionVerified) {
-      passed.add(_academicType.academicRequirementLabel);
+      passedCore.add(_academicType.academicRequirementLabel);
     } else {
-      pending.add('Valid admission verification or matriculation required.');
+      pendingCore.add('Valid academic admission letter or official matriculation number required.');
     }
 
     if (_isSchoolDataUploaded) {
-      passed.add('School uploaded data to Student Verification System (SVS)');
+      passedCore.add('Institution uploaded student roster to Student Verification System (SVS)');
     } else {
-      pending.add('Your institution must upload your academic data to NELFUND SVS.');
+      pendingCore.add('Your institution must upload your student data to the NELFUND SVS portal.');
     }
 
-    // Check Disqualifications
+    // -----------------------------------------------------------
+    // SECTION 2: KYC & Identity Verification Readiness (Section 2.3)
+    // -----------------------------------------------------------
+    final passedKyc = <String>[];
+    final pendingKyc = <String>[];
+
+    if (_hasJambNumber) {
+      passedKyc.add('JAMB Registration Number ready');
+    } else {
+      pendingKyc.add('JAMB Registration Number');
+    }
+
+    if (_hasBvn) {
+      passedKyc.add('Bank Verification Number (BVN) ready');
+    } else {
+      pendingKyc.add('Bank Verification Number (BVN)');
+    }
+
+    if (_hasNin) {
+      passedKyc.add('National Identity Number (NIN) ready');
+    } else {
+      pendingKyc.add('National Identity Number (NIN)');
+    }
+
+    if (_hasPersonalInfo) {
+      passedKyc.add('Complete Personal Bio-data ready');
+    } else {
+      pendingKyc.add('Personal Bio-data (Date of Birth, State, LGA)');
+    }
+
+    if (_hasPassportPhoto) {
+      passedKyc.add('Digital Passport Photograph ready');
+    } else {
+      pendingKyc.add('Digital Passport Photograph (white background)');
+    }
+
+    if (_hasAdmissionOrStudentId) {
+      passedKyc.add('Admission Letter or Student ID card ready');
+    } else {
+      pendingKyc.add('Official Admission Letter or Institution ID Card');
+    }
+
+    // -----------------------------------------------------------
+    // SECTION 3: Statutory Disqualification Bars (Section 3.0 & 4.1.3)
+    // -----------------------------------------------------------
+    final disqualifiers = <String>[];
+
     if (_hasPriorLoanDefault) {
       disqualifiers.add(
         'Prior loan default: Defaulted in respect of any previous education loan granted by the FG, state government, or their agencies (Sec. 3.1).',
@@ -185,62 +232,65 @@ class EligibilityProvider extends ChangeNotifier {
     }
     if (_hasActiveScholarship) {
       disqualifiers.add(
-        'Concurrent aid: Currently a beneficiary of another education loan or government scholarship scheme (Sec. 3.1).',
+        'Concurrent Aid: Currently receiving another Federal/State education loan or scholarship (Sec. 3.1).',
       );
     }
     if (_hasAcademicMisconduct) {
       disqualifiers.add(
-        'Disciplinary sanction: Found culpable of exam malpractice, plagiarism, cultism, violence, or submitting forged documents (Sec. 3.1).',
+        'Institutional Misconduct: Sanctioned for examination malpractice, cultism, violence, or forged documents (Sec. 3.1).',
       );
     }
     if (_hasCriminalConviction) {
       disqualifiers.add(
-        'Criminal record: Convicted of fraud, forgery, drug offenses, felony, or dishonesty (Sec. 3.1).',
+        'Criminal Conviction: Convicted of fraud, forgery, drug offenses, felony, or dishonesty (Sec. 3.1).',
       );
     }
     if (_holdsFirstDegree) {
       disqualifiers.add(
-        'Prior degree: Already a holder of a first degree or foreign equivalent (Sec. 4.1.3 Attestation).',
+        'Prior Degree Bar: Already a holder of a first degree or foreign equivalent (Sec. 4.1.3 Attestation).',
       );
     }
 
-    // Check KYC Readiness
-    int kycCount = 0;
-    if (_hasJambNumber) kycCount++;
-    if (_hasBvn) kycCount++;
-    if (_hasNin) kycCount++;
-    if (_hasPersonalInfo) kycCount++;
-    if (_hasPassportPhoto) kycCount++;
-    if (_hasAdmissionOrStudentId) kycCount++;
-
+    // High-Level Diagnostics
     final bool isDisqualified = disqualifiers.isNotEmpty;
-    final bool hasCoreCriteria = pending.isEmpty;
-    final bool isEligible = !isDisqualified && hasCoreCriteria;
+    final bool hasAllCore = pendingCore.isEmpty;
+    final bool isEligible = !isDisqualified && hasAllCore;
 
     String title;
     String message;
 
     if (isDisqualified) {
-      title = 'May Be Disqualified Under NELFUND Rules';
+      title = 'Statutory Disqualification Bar(s) Active';
       message =
-          'You flagged ${disqualifiers.length} statutory disqualification factor(s). Under Section 3.0 of the 2024 Guidelines, applicants with these conditions cannot access the Fund.';
-    } else if (!hasCoreCriteria) {
-      title = 'Action Required on Basic Requirements';
+          'You flagged ${disqualifiers.length} statutory disqualification bar(s). Under Section 3.0 of the Students Loans Act 2024, applicants with these conditions are legally barred from the Fund.';
+    } else if (!hasAllCore) {
+      title = 'Incomplete Core Criteria — Action Required';
       message =
-          'You meet no disqualification bars, but have ${pending.length} pending prerequisite(s) before you can submit an application.';
+          'You have 0 disqualification bars, but ${pendingCore.length} statutory prerequisite(s) remain pending in Section 1 before you can apply.';
+    } else if (pendingKyc.isNotEmpty) {
+      title = 'Likely Eligible • KYC Documents Pending';
+      message =
+          'You meet all statutory core criteria with 0 disqualifications! However, you still need to prepare ${pendingKyc.length} required KYC document(s) before portal submission.';
     } else {
-      title = 'Likely Eligible for NELFUND Loan';
+      title = 'Statutory Clearance: Likely Eligible';
       message =
-          'You satisfy all statutory criteria under the 2024 Act and have flagged zero disqualification factors. Your KYC document readiness is $kycCount/6 items.';
+          'Congratulations! You satisfy all core statutory criteria, have prepared all 6 KYC documents, and carry 0 disqualification bars under the 2024 Act.';
     }
 
     return EligibilityReport(
       isLikelyEligible: isEligible,
-      passedCriteria: passed,
-      pendingRequirements: pending,
-      disqualificationReasons: disqualifiers,
       summaryTitle: title,
       summaryMessage: message,
+      coreMetCount: passedCore.length,
+      coreTotalCount: 4,
+      passedCoreCriteria: passedCore,
+      pendingCoreCriteria: pendingCore,
+      kycMetCount: passedKyc.length,
+      kycTotalCount: 6,
+      passedKycItems: passedKyc,
+      pendingKycItems: pendingKyc,
+      disqualifierCount: disqualifiers.length,
+      activeDisqualifiers: disqualifiers,
     );
   }
 }
