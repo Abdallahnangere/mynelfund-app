@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,6 +16,13 @@ class ReviewService {
   static const String playStoreMarketUrl =
       'market://details?id=$androidPackageName';
   static const String iosAppStoreId = 'com.mynelfund.app';
+  static const String iosAppStoreWebUrl =
+      'https://apps.apple.com/app/id$iosAppStoreId';
+
+  static bool get isIOS => defaultTargetPlatform == TargetPlatform.iOS;
+  static String get storeName => isIOS ? 'App Store' : 'Play Store';
+  static String get rateActionLabel =>
+      isIOS ? 'Rate on App Store ★★★★★' : 'Rate on Play Store ★★★★★';
 
   static const String _prefLaunchCount = 'review_launch_count';
   static const String _prefHasRatedOrDeclined = 'review_has_rated_or_declined';
@@ -93,17 +101,27 @@ class ReviewService {
       }
     } catch (_) {}
 
-    // Fallback: direct intent / browser URL
-    try {
-      final Uri marketUri = Uri.parse(playStoreMarketUrl);
-      if (await canLaunchUrl(marketUri)) {
-        await launchUrl(marketUri, mode: LaunchMode.externalApplication);
-        return;
-      }
-    } catch (_) {}
+    // Fallback: direct intent / browser URL based on platform
+    if (isIOS) {
+      try {
+        final Uri appStoreUri = Uri.parse(iosAppStoreWebUrl);
+        if (await canLaunchUrl(appStoreUri)) {
+          await launchUrl(appStoreUri, mode: LaunchMode.externalApplication);
+          return;
+        }
+      } catch (_) {}
+    } else {
+      try {
+        final Uri marketUri = Uri.parse(playStoreMarketUrl);
+        if (await canLaunchUrl(marketUri)) {
+          await launchUrl(marketUri, mode: LaunchMode.externalApplication);
+          return;
+        }
+      } catch (_) {}
 
-    final Uri webUri = Uri.parse(playStoreWebUrl);
-    await launchUrl(webUri, mode: LaunchMode.externalApplication);
+      final Uri webUri = Uri.parse(playStoreWebUrl);
+      await launchUrl(webUri, mode: LaunchMode.externalApplication);
+    }
   }
 
   /// Beautiful Cupertino In-App Rating Dialog
@@ -148,9 +166,9 @@ class ReviewService {
               await setHasRatedOrDeclined(true);
               await requestReviewOrOpenStore();
             },
-            child: const Text(
-              'Rate on Play Store ★★★★★',
-              style: TextStyle(
+            child: Text(
+              rateActionLabel,
+              style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 color: NelfundColors.emerald,
               ),

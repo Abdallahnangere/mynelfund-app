@@ -15,10 +15,18 @@ class UpdateService {
   static const String packageName = 'com.mynelfund.app';
   static const String playStoreUrl =
       'https://play.google.com/store/apps/details?id=$packageName';
+  static const String appStoreUrl =
+      'https://apps.apple.com/app/com.mynelfund.app';
+
+  static bool get isIOS => defaultTargetPlatform == TargetPlatform.iOS;
+  static String get storeName => isIOS ? 'App Store' : 'Play Store';
+  static String get storeFullName =>
+      isIOS ? 'Apple App Store' : 'Google Play Store';
+  static String get currentStoreUrl => isIOS ? appStoreUrl : playStoreUrl;
 
   bool _isChecking = false;
 
-  /// Check Google Play Store for in-app updates
+  /// Check Google Play Store or App Store for updates
   Future<void> checkForUpdates(BuildContext context,
       {bool userInitiated = false}) async {
     if (_isChecking) return;
@@ -28,7 +36,11 @@ class UpdateService {
       // In-App Update API is Android Google Play specific
       if (kIsWeb || !Platform.isAndroid) {
         if (userInitiated && context.mounted) {
-          _showUpToDateDialog(context, 'You are running the latest version ($appVersion).');
+          _showUpToDateDialog(
+            context,
+            'You are running version $appVersion.\n\nAll official updates and security patches are served via the $storeFullName.',
+            showStoreLink: true,
+          );
         }
         return;
       }
@@ -58,7 +70,7 @@ class UpdateService {
       if (userInitiated && context.mounted) {
         _showUpToDateDialog(
           context,
-          'You are running version $appVersion.\n\nAll official updates and security patches are served via the Google Play Store.',
+          'You are running version $appVersion.\n\nAll official updates and security patches are served via the $storeFullName.',
           showStoreLink: true,
         );
       }
@@ -103,13 +115,13 @@ class UpdateService {
               onPressed: () {
                 Navigator.of(ctx).pop();
                 launchUrl(
-                  Uri.parse(playStoreUrl),
+                  Uri.parse(currentStoreUrl),
                   mode: LaunchMode.externalApplication,
                 );
               },
-              child: const Text(
-                'Open Google Play',
-                style: TextStyle(
+              child: Text(
+                'Open $storeName',
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   color: NelfundColors.emerald,
                 ),
@@ -130,10 +142,10 @@ class UpdateService {
       context: context,
       builder: (ctx) => CupertinoAlertDialog(
         title: const Text('New Update Available'),
-        content: const Padding(
-          padding: EdgeInsets.only(top: 8),
+        content: Padding(
+          padding: const EdgeInsets.only(top: 8),
           child: Text(
-            'A new version of My NELFund is available on Google Play Store with updated policy rules and improvements.',
+            'A new version of My NELFund is available on the $storeFullName with updated policy rules and improvements.',
           ),
         ),
         actions: [
@@ -142,7 +154,7 @@ class UpdateService {
             onPressed: () {
               Navigator.of(ctx).pop();
               launchUrl(
-                Uri.parse(playStoreUrl),
+                Uri.parse(currentStoreUrl),
                 mode: LaunchMode.externalApplication,
               );
             },
