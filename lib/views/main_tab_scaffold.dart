@@ -196,46 +196,56 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
       child: CupertinoTabScaffold(
         controller: _tabController,
         tabBar: CupertinoTabBar(
-          height: 56,
-          activeColor: NelfundColors.emeraldTint,
-          inactiveColor: CupertinoColors.secondaryLabel,
+          height: 58,
+          iconSize: 22,
+          activeColor: NelfundColors.emerald,
+          inactiveColor: CupertinoDynamicColor.resolve(
+            CupertinoColors.systemGrey,
+            context,
+          ),
           backgroundColor: CupertinoDynamicColor.resolve(
-            CupertinoDynamicColor.withBrightness(
-              color: const Color(0xEBF8FAF8),
-              darkColor: const Color(0xE8181A18),
+            const CupertinoDynamicColor.withBrightness(
+              color: Color(0xF2F8FAF8),
+              darkColor: Color(0xF2161816),
             ),
             context,
           ),
-          border: const Border(
+          border: Border(
             top: BorderSide(
-              color: Color(0x1F000000),
-              width: 0.5,
+              color: CupertinoDynamicColor.resolve(
+                const CupertinoDynamicColor.withBrightness(
+                  color: Color(0x24008751),
+                  darkColor: Color(0x3848BB78),
+                ),
+                context,
+              ),
+              width: 0.6,
             ),
           ),
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.house),
-              activeIcon: Icon(CupertinoIcons.house_fill),
+              icon: Icon(CupertinoIcons.house_alt),
+              activeIcon: Icon(CupertinoIcons.house_alt_fill),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.checkmark_shield),
-              activeIcon: Icon(CupertinoIcons.checkmark_shield_fill),
+              icon: Icon(CupertinoIcons.checkmark_seal),
+              activeIcon: Icon(CupertinoIcons.checkmark_seal_fill),
               label: 'Eligibility',
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.chart_pie),
-              activeIcon: Icon(CupertinoIcons.chart_pie_fill),
+              icon: Icon(CupertinoIcons.creditcard),
+              activeIcon: Icon(CupertinoIcons.creditcard_fill),
               label: 'Calculator',
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.question_circle),
-              activeIcon: Icon(CupertinoIcons.question_circle_fill),
+              icon: Icon(CupertinoIcons.bubble_left_bubble_right),
+              activeIcon: Icon(CupertinoIcons.bubble_left_bubble_right_fill),
               label: 'FAQ',
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.info_circle),
-              activeIcon: Icon(CupertinoIcons.info_circle_fill),
+              icon: Icon(CupertinoIcons.person_crop_circle),
+              activeIcon: Icon(CupertinoIcons.person_crop_circle_fill),
               label: 'About',
             ),
           ],

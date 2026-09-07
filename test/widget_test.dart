@@ -62,13 +62,13 @@ void main() {
     await tester.pumpAndSettle();
 
     // Switch back to Home tab via bottom bar
-    await tester.tap(find.byIcon(CupertinoIcons.house));
+    await tester.tap(find.byIcon(CupertinoIcons.house_alt));
     await tester.pumpAndSettle();
 
     expect(find.text('Program Overview'), findsOneWidget);
 
     // Switch to Calculator tab via bottom bar
-    await tester.tap(find.byIcon(CupertinoIcons.chart_pie));
+    await tester.tap(find.byIcon(CupertinoIcons.creditcard));
     await tester.pumpAndSettle();
 
     // Verify Calculator Tab Content
@@ -82,7 +82,7 @@ void main() {
     expect(find.text('Repayment Support & Compliance Guidelines'), findsOneWidget);
 
     // Switch to FAQ tab via bottom bar
-    await tester.tap(find.byIcon(CupertinoIcons.question_circle));
+    await tester.tap(find.byIcon(CupertinoIcons.bubble_left_bubble_right));
     await tester.pumpAndSettle();
 
     // Verify FAQ Tab Content
@@ -92,7 +92,7 @@ void main() {
     expect(find.byType(CupertinoSearchTextField), findsOneWidget);
 
     // Switch to About tab via bottom bar
-    await tester.tap(find.byIcon(CupertinoIcons.info_circle));
+    await tester.tap(find.byIcon(CupertinoIcons.person_crop_circle));
     await tester.pumpAndSettle();
 
     // Verify About Tab Content

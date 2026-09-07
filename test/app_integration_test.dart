@@ -65,7 +65,7 @@ void main() {
     // ==========================================
     // TAB 2: REPAYMENT CALCULATOR
     // ==========================================
-    await tester.tap(find.byIcon(CupertinoIcons.chart_pie));
+    await tester.tap(find.byIcon(CupertinoIcons.creditcard));
     await tester.pumpAndSettle();
 
     expect(find.text('Payment Calculator'), findsOneWidget);
@@ -88,7 +88,7 @@ void main() {
     // ==========================================
     // TAB 3: FAQ KNOWLEDGE BASE
     // ==========================================
-    await tester.tap(find.byIcon(CupertinoIcons.question_circle));
+    await tester.tap(find.byIcon(CupertinoIcons.bubble_left_bubble_right));
     await tester.pumpAndSettle();
 
     expect(find.text('Official FAQ'), findsOneWidget);
@@ -113,7 +113,7 @@ void main() {
     // ==========================================
     // TAB 4: ABOUT & SUPPORT
     // ==========================================
-    await tester.tap(find.byIcon(CupertinoIcons.info_circle));
+    await tester.tap(find.byIcon(CupertinoIcons.person_crop_circle));
     await tester.pumpAndSettle();
 
     expect(find.text('About & Support'), findsOneWidget);
@@ -127,7 +127,7 @@ void main() {
     expect(find.text('info@nelf.gov.ng'), findsOneWidget);
 
     // Return to Home tab
-    await tester.tap(find.byIcon(CupertinoIcons.house));
+    await tester.tap(find.byIcon(CupertinoIcons.house_alt));
     await tester.pumpAndSettle();
     expect(find.text('Program Overview'), findsOneWidget);
   });

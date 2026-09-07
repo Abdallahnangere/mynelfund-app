@@ -26,7 +26,7 @@ void main() {
     expect(find.text('Program Overview'), findsOneWidget);
 
     // 1. Switch to Eligibility Tab (Tab 1)
-    await tester.tap(find.byIcon(CupertinoIcons.checkmark_shield));
+    await tester.tap(find.byIcon(CupertinoIcons.checkmark_seal));
     await tester.pumpAndSettle();
     expect(find.text('Eligibility Checker'), findsOneWidget);
 
@@ -38,7 +38,7 @@ void main() {
     expect(find.text('Program Overview'), findsOneWidget);
 
     // 2. Switch to Calculator Tab (Tab 2)
-    await tester.tap(find.byIcon(CupertinoIcons.chart_pie));
+    await tester.tap(find.byIcon(CupertinoIcons.creditcard));
     await tester.pumpAndSettle();
     expect(find.text('Payment Calculator'), findsOneWidget);
 
@@ -50,7 +50,7 @@ void main() {
     expect(find.text('Program Overview'), findsOneWidget);
 
     // 3. Switch to FAQ Tab (Tab 3)
-    await tester.tap(find.byIcon(CupertinoIcons.question_circle));
+    await tester.tap(find.byIcon(CupertinoIcons.bubble_left_bubble_right));
     await tester.pumpAndSettle();
     expect(find.text('Official FAQ'), findsOneWidget);
 
@@ -62,7 +62,7 @@ void main() {
     expect(find.text('Program Overview'), findsOneWidget);
 
     // 4. Switch to About Tab (Tab 4)
-    await tester.tap(find.byIcon(CupertinoIcons.info_circle));
+    await tester.tap(find.byIcon(CupertinoIcons.person_crop_circle));
     await tester.pumpAndSettle();
     expect(find.text('About & Support'), findsOneWidget);
 
