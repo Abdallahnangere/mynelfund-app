@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/services/analytics_service.dart';
@@ -93,94 +94,176 @@ class AboutView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'About & Support',
-          style: NelfundTypography.headline.copyWith(
-            fontWeight: FontWeight.w700,
-            fontSize: 17,
-            letterSpacing: -0.4,
-          ),
-        ),
-        backgroundColor: CupertinoDynamicColor.resolve(
-          const CupertinoDynamicColor.withBrightness(
-            color: Color(0xCCF8FAF8),
-            darkColor: Color(0xCC161718),
-          ),
-          context,
-        ),
-      ),
       child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+        bottom: false,
+        child: Column(
           children: [
-            _buildDeveloperProfileCard(context),
-            const SizedBox(height: 16),
-            _buildDeveloperContactCard(context),
-            const SizedBox(height: 16),
-            _buildClarificationNoticeCard(context),
-            const SizedBox(height: 16),
-            _buildOfficialNelfundChannelsCard(context),
-            const SizedBox(height: 16),
-            _buildAppManagementCard(context),
-            const SizedBox(height: 24),
-            _buildFooter(context),
-            const SizedBox(height: 20),
+            _buildFintechHeader(context),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                children: [
+                  _buildDeveloperProfileCard(context),
+                  const SizedBox(height: 16),
+                  _buildDeveloperContactCard(context),
+                  const SizedBox(height: 16),
+                  _buildClarificationNoticeCard(context),
+                  const SizedBox(height: 16),
+                  _buildOfficialNelfundChannelsCard(context),
+                  const SizedBox(height: 16),
+                  _buildAppManagementCard(context),
+                  const SizedBox(height: 24),
+                  _buildFooter(context),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildFintechHeader(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: CupertinoDynamicColor.resolve(
+          const CupertinoDynamicColor.withBrightness(
+            color: Color(0xF2F8FAF8),
+            darkColor: Color(0xF2161718),
+          ),
+          context,
+        ),
+        border: Border(
+          bottom: BorderSide(
+            color: CupertinoDynamicColor.resolve(
+              const CupertinoDynamicColor.withBrightness(
+                color: Color(0x18000000),
+                darkColor: Color(0x28FFFFFF),
+              ),
+              context,
+            ),
+            width: 0.5,
+          ),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Center(
+              child: Text(
+                'About & Support',
+                style: NelfundTypography.headline.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 17,
+                  letterSpacing: -0.4,
+                  color: CupertinoDynamicColor.resolve(
+                    NelfundColors.label,
+                    context,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Emerald ambient lighting separator line
+          Container(
+            height: 2.5,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  NelfundColors.emerald.withValues(alpha: 0.1),
+                  NelfundColors.emerald,
+                  NelfundColors.emerald.withValues(alpha: 0.1),
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: NelfundColors.emerald.withValues(alpha: 0.4),
+                  blurRadius: 6,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDeveloperProfileCard(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0C2B1C),
-              Color(0xFF071F14),
-            ],
-          ),
-          border: Border.all(
-            color: const Color(0x4D48BB78),
-            width: 1.2,
-          ),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x38004D25),
-              blurRadius: 18,
-              offset: Offset(0, 8),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: AppleFrostedCard(
+        margin: EdgeInsets.zero,
+        borderColor: NelfundColors.emerald.withValues(alpha: 0.35),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Top Section Badge & Contextual Description
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(
+                color: NelfundColors.emerald.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: NelfundColors.emerald.withValues(alpha: 0.25),
+                  width: 0.8,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    CupertinoIcons.person_badge_plus_fill,
+                    size: 13,
+                    color: NelfundColors.emerald,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'ABOUT DEVELOPER & BUILDER',
+                    style: NelfundTypography.captionBold.copyWith(
+                      color: NelfundColors.emerald,
+                      fontSize: 11,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'My NELFund is an independent civic initiative developed and built by:',
+              style: NelfundTypography.footnote.copyWith(
+                color: CupertinoDynamicColor.resolve(
+                  NelfundColors.secondaryLabel,
+                  context,
+                ),
+                fontSize: 13,
+                height: 1.35,
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // Profile Identity Row
             Row(
               children: [
                 Container(
-                  width: 58,
-                  height: 58,
+                  width: 54,
+                  height: 54,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
                       colors: [NelfundColors.emerald, Color(0xFF68D391)],
                     ),
-                    border: Border.all(
-                      color: CupertinoColors.white,
-                      width: 2,
-                    ),
-                    boxShadow: const [
+                    boxShadow: [
                       BoxShadow(
-                        color: Color(0x44000000),
-                        blurRadius: 8,
-                        offset: Offset(0, 3),
+                        color: NelfundColors.emerald.withValues(alpha: 0.25),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
@@ -188,10 +271,10 @@ class AboutView extends StatelessWidget {
                     child: Text(
                       'AU',
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 20,
                         fontWeight: FontWeight.w900,
                         color: CupertinoColors.white,
-                        letterSpacing: 1.2,
+                        letterSpacing: 1.1,
                       ),
                     ),
                   ),
@@ -201,35 +284,40 @@ class AboutView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Abdullahi Adam Usman',
-                        style: TextStyle(
-                          fontSize: 18,
+                        style: NelfundTypography.title2.copyWith(
+                          fontSize: 17.5,
                           fontWeight: FontWeight.w800,
-                          color: CupertinoColors.white,
-                          letterSpacing: -0.4,
+                          letterSpacing: -0.3,
                         ),
                       ),
                       const SizedBox(height: 3),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
-                          vertical: 3,
+                          vertical: 2.5,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0x3348BB78),
+                          color: NelfundColors.emerald.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: const Color(0x5548BB78),
-                            width: 0.8,
+                            color: NelfundColors.emerald.withValues(alpha: 0.3),
+                            width: 0.6,
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Founder, Anjal Ventures',
                           style: TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF68D391),
+                            color: CupertinoDynamicColor.resolve(
+                              const CupertinoDynamicColor.withBrightness(
+                                color: Color(0xFF007A48),
+                                darkColor: Color(0xFF68D391),
+                              ),
+                              context,
+                            ),
                           ),
                         ),
                       ),
@@ -238,28 +326,32 @@ class AboutView extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             Container(
               height: 0.8,
-              color: const Color(0x28FFFFFF),
+              color: CupertinoDynamicColor.resolve(
+                CupertinoColors.systemGrey5,
+                context,
+              ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
+
+            // Credentials with full stops
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Icon(
                   CupertinoIcons.book_fill,
                   size: 16,
-                  color: Color(0xFF68D391),
+                  color: NelfundColors.emerald,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '300 Level Student of International Studies',
-                    style: TextStyle(
-                      fontSize: 13,
+                    '300 Level Student of International Studies.',
+                    style: NelfundTypography.footnote.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: CupertinoColors.white.withValues(alpha: 0.95),
+                      fontSize: 13,
                     ),
                   ),
                 ),
@@ -272,26 +364,29 @@ class AboutView extends StatelessWidget {
                 const Icon(
                   CupertinoIcons.building_2_fill,
                   size: 16,
-                  color: Color(0xFF68D391),
+                  color: NelfundColors.emerald,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Ahmadu Bello University (ABU), Zaria',
-                    style: TextStyle(
-                      fontSize: 13,
+                    'Ahmadu Bello University (ABU), Zaria.',
+                    style: NelfundTypography.footnote.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: CupertinoColors.white.withValues(alpha: 0.85),
+                      fontSize: 13,
+                      color: CupertinoDynamicColor.resolve(
+                        NelfundColors.secondaryLabel,
+                        context,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             SizedBox(
               width: double.infinity,
               child: CupertinoButton(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 11),
                 color: NelfundColors.emerald,
                 borderRadius: BorderRadius.circular(12),
                 minimumSize: Size.zero,
@@ -301,14 +396,14 @@ class AboutView extends StatelessWidget {
                   children: [
                     Icon(
                       CupertinoIcons.globe,
-                      size: 17,
+                      size: 16,
                       color: CupertinoColors.white,
                     ),
                     SizedBox(width: 8),
                     Text(
                       'Visit www.anjalventures.com',
                       style: TextStyle(
-                        fontSize: 13.5,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: CupertinoColors.white,
                       ),
@@ -325,9 +420,10 @@ class AboutView extends StatelessWidget {
 
   Widget _buildDeveloperContactCard(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
-        borderColor: NelfundColors.emerald.withValues(alpha: 0.4),
+        margin: EdgeInsets.zero,
+        borderColor: NelfundColors.emerald.withValues(alpha: 0.35),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -520,8 +616,9 @@ class AboutView extends StatelessWidget {
 
   Widget _buildClarificationNoticeCard(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
+        margin: EdgeInsets.zero,
         borderColor: CupertinoColors.systemOrange.withValues(alpha: 0.35),
         backgroundColor: CupertinoDynamicColor.resolve(
           const CupertinoDynamicColor.withBrightness(
@@ -555,7 +652,7 @@ class AboutView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'This application was developed as an independent student initiative created solely for public awareness, education, and enlightenment regarding the Nigerian student loan scheme.',
+              'This application was developed as an independent student initiative created solely for public awareness, education, and financial enlightenment regarding the Nigerian student loan scheme.',
               style: NelfundTypography.footnote.copyWith(
                 fontSize: 13,
                 height: 1.4,
@@ -572,14 +669,14 @@ class AboutView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Icon(
-                    CupertinoIcons.exclamationmark_triangle_fill,
+                    CupertinoIcons.info_circle_fill,
                     size: 16,
                     color: CupertinoColors.systemOrange,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Not an Official NELFUND App: This app is not affiliated with, authorized by, or endorsed by the National Higher Education Support Fund (NELFUND) or the Federal Government of Nigeria.',
+                      'Independent Civic Initiative: This application is not from NELFUND (Nigerian Education Loan Fund) or the Federal Government of Nigeria. It was developed as an independent civic guide created solely for student education, awareness, and financial empowerment under the Students Loans Act 2024.',
                       style: NelfundTypography.captionBold.copyWith(
                         fontSize: 12,
                         height: 1.35,
@@ -591,7 +688,7 @@ class AboutView extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'No Personal Data Storage: This app does NOT collect, store, or transmit your National Identity Number (NIN), Bank Verification Number (BVN), JAMB details, or academic credentials. All calculations and simulations operate entirely offline on your device.',
+              'Zero Personal Data Collection: This application does not collect, store, or transmit your name, loan amount, financial data, Bank Verification Number (BVN), National Identity Number (NIN), or academic credentials. This app is completely data-free, private, and functions entirely offline solely for your statutory calculation and simulation.',
               style: NelfundTypography.footnote.copyWith(
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.secondaryLabel,
@@ -609,8 +706,9 @@ class AboutView extends StatelessWidget {
 
   Widget _buildOfficialNelfundChannelsCard(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
+        margin: EdgeInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -739,9 +837,14 @@ class AboutView extends StatelessWidget {
   }
 
   Widget _buildAppManagementCard(BuildContext context) {
+    final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
+    final storeTitle = isIOS ? 'App Store & Community' : 'Play Store & Community';
+    final rateButtonLabel = isIOS ? 'Rate on App Store' : 'Rate on Play Store';
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
+        margin: EdgeInsets.zero,
         borderColor: NelfundColors.emerald.withValues(alpha: 0.3),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -756,7 +859,7 @@ class AboutView extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'App Store & Community',
+                    storeTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
                       fontWeight: FontWeight.w700,
@@ -801,19 +904,19 @@ class AboutView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     minimumSize: Size.zero,
                     onPressed: () => ReviewService.instance.openStoreListing(),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           CupertinoIcons.star_fill,
                           size: 15,
                           color: Color(0xFFFFD700),
                         ),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Text(
-                          'Rate & Review',
-                          style: TextStyle(
-                            fontSize: 13,
+                          rateButtonLabel,
+                          style: const TextStyle(
+                            fontSize: 12.5,
                             fontWeight: FontWeight.w700,
                             color: CupertinoColors.white,
                           ),
@@ -928,7 +1031,7 @@ class AboutView extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            '300 Level Student of International Studies\nAhmadu Bello University, Zaria\nFounder of Anjal Ventures',
+            '300 Level Student of International Studies.\nAhmadu Bello University, Zaria.\nFounder of Anjal Ventures',
             textAlign: TextAlign.center,
             style: NelfundTypography.caption.copyWith(
               color: CupertinoDynamicColor.resolve(
