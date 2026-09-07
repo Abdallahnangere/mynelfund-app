@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
 import '../../widgets/apple_frosted_card.dart';
@@ -12,7 +13,7 @@ class SplashView extends StatefulWidget {
   const SplashView({
     super.key,
     this.duration = const Duration(milliseconds: 2400),
-    this.autoNavigate = true,
+    this.autoNavigate = false,
   });
 
   @override
@@ -27,6 +28,8 @@ class _SplashViewState extends State<SplashView>
   late final Animation<Offset> _badgeSlideAnimation;
   late final Animation<double> _badgeFadeAnimation;
   late final Animation<double> _titleFadeAnimation;
+  late final Animation<double> _buttonFadeAnimation;
+  late final Animation<double> _buttonScaleAnimation;
   late final Animation<double> _footerFadeAnimation;
 
   Timer? _navigationTimer;
@@ -40,7 +43,7 @@ class _SplashViewState extends State<SplashView>
       duration: const Duration(milliseconds: 1800),
     );
 
-    // 1. Emblem entrance: Scale from 0.85 -> 1.0 & Fade 0.0 -> 1.0 (0% - 50%)
+    // 1. Emblem entrance: Scale from 0.85 -> 1.0 & Fade 0.0 -> 1.0 (0% - 55%)
     _logoScaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -54,7 +57,7 @@ class _SplashViewState extends State<SplashView>
       ),
     );
 
-    // 2. Republic Badge entrance: Slide up & Fade (30% - 70%)
+    // 2. Republic Badge entrance: Slide up & Fade (25% - 65%)
     _badgeSlideAnimation = Tween<Offset>(
       begin: const Offset(0.0, 0.4),
       end: Offset.zero,
@@ -71,19 +74,33 @@ class _SplashViewState extends State<SplashView>
       ),
     );
 
-    // 3. App Title & Subtitle: Fade & Gentle scale (50% - 85%)
+    // 3. App Title & Subtitle: Fade (45% - 80%)
     _titleFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.45, 0.85, curve: Curves.easeOut),
+        curve: const Interval(0.45, 0.80, curve: Curves.easeOut),
       ),
     );
 
-    // 4. Loading indicator & statutory caption (70% - 100%)
+    // 4. Continue Button: Fade & gentle scale up (55% - 90%)
+    _buttonFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.55, 0.90, curve: Curves.easeIn),
+      ),
+    );
+    _buttonScaleAnimation = Tween<double>(begin: 0.90, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.55, 0.90, curve: Curves.easeOutBack),
+      ),
+    );
+
+    // 5. Activity Indicator & Footer (70% - 100%)
     _footerFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.65, 1.0, curve: Curves.easeIn),
+        curve: const Interval(0.70, 1.0, curve: Curves.easeIn),
       ),
     );
 
@@ -99,7 +116,7 @@ class _SplashViewState extends State<SplashView>
     _navigationTimer?.cancel();
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 600),
+        transitionDuration: const Duration(milliseconds: 550),
         pageBuilder: (context, animation, secondaryAnimation) =>
             const MainTabScaffold(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -200,7 +217,7 @@ class _SplashViewState extends State<SplashView>
                       ),
                     ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 24),
 
                     // Staggered Stage 2: Federal Republic of Nigeria Pill Badge
                     SlideTransition(
@@ -245,9 +262,9 @@ class _SplashViewState extends State<SplashView>
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
 
-                    // Staggered Stage 3: Title & Subtitle
+                    // Staggered Stage 3: Title & Subtitle & Act 2024 Citation
                     FadeTransition(
                       opacity: _titleFadeAnimation,
                       child: Column(
@@ -273,7 +290,7 @@ class _SplashViewState extends State<SplashView>
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
@@ -292,43 +309,74 @@ class _SplashViewState extends State<SplashView>
                       ),
                     ),
 
-                    const Spacer(flex: 3),
+                    const SizedBox(height: 26),
 
-                    // Staggered Stage 4: Activity Indicator & Progress
+                    // Stage 4: Manual "Continue" Action Button
+                    FadeTransition(
+                      opacity: _buttonFadeAnimation,
+                      child: ScaleTransition(
+                        scale: _buttonScaleAnimation,
+                        child: CupertinoButton(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 28,
+                            vertical: 13,
+                          ),
+                          color: NelfundColors.emerald,
+                          borderRadius: BorderRadius.circular(22),
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            _navigateToHome();
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Continue to Portal',
+                                style: NelfundTypography.headline.copyWith(
+                                  color: CupertinoColors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                CupertinoIcons.arrow_right,
+                                color: CupertinoColors.white,
+                                size: 18,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const Spacer(flex: 2),
+
+                    // Staggered Stage 5: Activity Indicator & Status
                     FadeTransition(
                       opacity: _footerFadeAnimation,
                       child: Column(
                         children: [
                           const CupertinoActivityIndicator(
-                            radius: 12,
+                            radius: 11,
                             color: NelfundColors.emerald,
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 10),
                           Text(
-                            'Initializing Statutory Guidelines...',
+                            'Portal Ready • Official Version 1.0.0',
                             style: NelfundTypography.caption.copyWith(
                               color: CupertinoDynamicColor.resolve(
                                 NelfundColors.secondaryLabel,
                                 context,
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Tap anywhere to skip',
-                            style: NelfundTypography.caption.copyWith(
-                              color: CupertinoDynamicColor.resolve(
-                                NelfundColors.secondaryLabel,
-                                context,
-                              ).withValues(alpha: 0.5),
-                              fontSize: 11,
+                              fontSize: 12,
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
