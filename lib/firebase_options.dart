@@ -61,8 +61,8 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAhEgTtw6gViL14Grq5d7FzlTMHABacU4o',
-    appId: '1:503752839824:ios:9aac48064edd6a437dfe15',
+    apiKey: 'AIzaSyAehglEKUa0cNP7QDzBqbUk4tbsgWMX_CY',
+    appId: '1:503752839824:ios:aa98db9fad67e4e77dfe15',
     messagingSenderId: '503752839824',
     projectId: 'my-nelfund',
     storageBucket: 'my-nelfund.firebasestorage.app',
@@ -70,8 +70,8 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAhEgTtw6gViL14Grq5d7FzlTMHABacU4o',
-    appId: '1:503752839824:ios:9aac48064edd6a437dfe15',
+    apiKey: 'AIzaSyAehglEKUa0cNP7QDzBqbUk4tbsgWMX_CY',
+    appId: '1:503752839824:ios:aa98db9fad67e4e77dfe15',
     messagingSenderId: '503752839824',
     projectId: 'my-nelfund',
     storageBucket: 'my-nelfund.firebasestorage.app',

@@ -31,10 +31,10 @@ jobs:
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-          # Securely decode certificate and provisioning profile using Python (handles CRLF and padding)
+          # Securely decode certificate and provisioning profile using Python (strips UTF-8 BOM, CRLF, and handles padding)
           export CERTIFICATE_PATH PP_PATH
-          python3 -c "import base64, os; open(os.environ['CERTIFICATE_PATH'], 'wb').write(base64.b64decode(os.environ['BUILD_CERTIFICATE_BASE64'].strip()))"
-          python3 -c "import base64, os; open(os.environ['PP_PATH'], 'wb').write(base64.b64decode(os.environ['BUILD_PROVISION_PROFILE_BASE64'].strip()))"
+          python3 -c "import base64, os; open(os.environ['CERTIFICATE_PATH'], 'wb').write(base64.b64decode(os.environ['BUILD_CERTIFICATE_BASE64'].replace('\ufeff', '').strip()))"
+          python3 -c "import base64, os; open(os.environ['PP_PATH'], 'wb').write(base64.b64decode(os.environ['BUILD_PROVISION_PROFILE_BASE64'].replace('\ufeff', '').strip()))"
 
           # Create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
@@ -75,7 +75,7 @@ jobs:
           if [ -n "$APP_STORE_CONNECT_ISSUER_ID" ] && [ -n "$APP_STORE_CONNECT_KEY_ID" ] && [ -n "$APP_STORE_CONNECT_API_KEY_BASE64" ]; then
             echo "App Store Connect credentials detected. Uploading to TestFlight..."
             mkdir -p ~/.appstoreconnect/private_keys
-            python3 -c "import base64, os; open(os.path.expanduser(f'~/.appstoreconnect/private_keys/AuthKey_{os.environ[\"APP_STORE_CONNECT_KEY_ID\"]}.p8'), 'wb').write(base64.b64decode(os.environ['APP_STORE_CONNECT_API_KEY_BASE64'].strip()))"
+            python3 -c "import base64, os; open(os.path.expanduser(f'~/.appstoreconnect/private_keys/AuthKey_{os.environ[\"APP_STORE_CONNECT_KEY_ID\"]}.p8'), 'wb').write(base64.b64decode(os.environ['APP_STORE_CONNECT_API_KEY_BASE64'].replace('\ufeff', '').strip()))"
             xcrun altool --upload-app -f build/ios/ipa/*.ipa -t ios --apiKey "$APP_STORE_CONNECT_KEY_ID" --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
             echo "Successfully uploaded to TestFlight!"
           else
