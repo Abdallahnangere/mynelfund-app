@@ -31,10 +31,16 @@ jobs:
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-          # Securely decode certificate and provisioning profile using Python (strips UTF-8 BOM, CRLF, and handles padding)
+          # Securely decode certificate and provisioning profile using Python
           export CERTIFICATE_PATH PP_PATH
           python3 -c "import base64, os; open(os.environ['CERTIFICATE_PATH'], 'wb').write(base64.b64decode(os.environ['BUILD_CERTIFICATE_BASE64'].replace('\ufeff', '').strip()))"
           python3 -c "import base64, os; open(os.environ['PP_PATH'], 'wb').write(base64.b64decode(os.environ['BUILD_PROVISION_PROFILE_BASE64'].replace('\ufeff', '').strip()))"
+
+          # Clean password
+          CLEAN_P12_PASSWORD=$(echo -n "$P12_PASSWORD" | tr -d '\r\n\ufeff')
+
+          # Verify with OpenSSL
+          openssl pkcs12 -in $CERTIFICATE_PATH -passin "pass:$CLEAN_P12_PASSWORD" -info -noout
 
           # Create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
@@ -42,7 +48,7 @@ jobs:
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
           # Import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import $CERTIFICATE_PATH -P "$CLEAN_P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security list-keychains -d user -s $KEYCHAIN_PATH $(security list-keychains -d user | tr -d '"')
 
