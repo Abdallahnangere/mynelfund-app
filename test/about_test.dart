@@ -23,17 +23,17 @@ void main() {
     expect(find.text('ABOUT DEVELOPER & BUILDER'), findsOneWidget);
     expect(find.textContaining('My NELFund is an independent civic initiative'), findsOneWidget);
     expect(find.text('Abdullahi Adam Usman'), findsWidgets);
-    expect(find.text('Founder, Anjal Ventures'), findsWidgets);
+    expect(find.text('Co-Founder, Anjal Solutions Ltd'), findsWidgets);
     expect(find.text('300 Level Student of International Studies.'), findsWidgets);
     expect(find.text('Ahmadu Bello University (ABU), Zaria.'), findsWidgets);
-    expect(find.text('Visit www.anjalventures.com'), findsOneWidget);
+    expect(find.text('Visit www.anjalsolutionsltd.com'), findsOneWidget);
 
     // Developer Contact Section
     expect(find.text('Contact Developer'), findsOneWidget);
-    expect(find.text('09076872520'), findsOneWidget);
-    expect(find.text('Call Now'), findsOneWidget);
-    expect(find.text('Copy'), findsOneWidget);
-    expect(find.text('Chat Directly on WhatsApp'), findsOneWidget);
+    expect(find.text('08164135836'), findsWidgets);
+    expect(find.text('Call: 08164135836'), findsOneWidget);
+    expect(find.text('Chat on WhatsApp (WhatsApp Only)'), findsOneWidget);
+    expect(find.text('09076872520'), findsNothing);
 
     // Clarification & Disclaimer Card
     expect(find.text('Official Clarification & Disclaimer'), findsOneWidget);
@@ -56,6 +56,6 @@ void main() {
 
     // Footer
     expect(find.textContaining('for Nigerian Students'), findsOneWidget);
-    expect(find.text('www.anjalventures.com'), findsWidgets);
+    expect(find.text('www.anjalsolutionsltd.com'), findsWidgets);
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../core/localization/app_locale.dart';
 import '../models/eligibility_model.dart';
 
 class EligibilityProvider extends ChangeNotifier {
@@ -147,7 +148,11 @@ class EligibilityProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  EligibilityReport get report {
+  EligibilityReport get report => getReport(AppLanguage.english);
+
+  EligibilityReport getReport([AppLanguage lang = AppLanguage.english]) {
+    final isHa = lang == AppLanguage.hausa;
+
     // -----------------------------------------------------------
     // SECTION 1: Statutory Core Criteria (Section 2.0)
     // -----------------------------------------------------------
@@ -155,27 +160,41 @@ class EligibilityProvider extends ChangeNotifier {
     final pendingCore = <String>[];
 
     if (_isNigerianCitizen) {
-      passedCore.add('Nigerian Citizenship confirmed via NIN & BVN (Sec. 2.1)');
+      passedCore.add(isHa
+          ? 'Tabbatar da zama dan Najeriya ta hanyar lambobin dan kasa NIN da kuma na banki BVN (Sashe na 2.1)'
+          : 'Nigerian Citizenship confirmed via NIN & BVN (Sec. 2.1)');
     } else {
-      pendingCore.add('Nigerian citizenship verification via NIN & BVN is required.');
+      pendingCore.add(isHa
+          ? 'Ana bukatar tabbatar da zama dan Najeriya ta hanyar lambar NIN da BVN.'
+          : 'Nigerian citizenship verification via NIN & BVN is required.');
     }
 
     if (_isEnrolledInPublicEti) {
-      passedCore.add('Enrolled in an approved Federal or State public tertiary institution (Sec. 2.2)');
+      passedCore.add(isHa
+          ? 'Kasancewa dalibi a jami\'a, kwalejin foliteknik ko kwalejin ilimi ta gwamnatin tarayya ko jiha (Sashe na 2.2)'
+          : 'Enrolled in an approved Federal or State public tertiary institution (Sec. 2.2)');
     } else {
-      pendingCore.add('Enrollment in an approved Federal or State public tertiary institution is required.');
+      pendingCore.add(isHa
+          ? 'Dole ne ka kasance mai karatu a manyan makarantun gwamnatin tarayya ko na jiha.'
+          : 'Enrollment in an approved Federal or State public tertiary institution is required.');
     }
 
     if (_isAcademicAdmissionVerified) {
-      passedCore.add(_academicType.academicRequirementLabel);
+      passedCore.add(_academicType.getAcademicRequirementLabel(lang));
     } else {
-      pendingCore.add('Valid academic admission letter or official matriculation number required.');
+      pendingCore.add(isHa
+          ? 'Ana bukatar ingantacciyar takardar shiga makaranta ko lambar rajista (Matric Number).'
+          : 'Valid academic admission letter or official matriculation number required.');
     }
 
     if (_isSchoolDataUploaded) {
-      passedCore.add('Institution uploaded student roster to Student Verification System (SVS)');
+      passedCore.add(isHa
+          ? 'Makarantarku ta riga ta loda sunanku a Tsarin Tabbatar da Dalibai na NELFUND (SVS)'
+          : 'Institution uploaded student roster to Student Verification System (SVS)');
     } else {
-      pendingCore.add('Your institution must upload your student data to the NELFUND SVS portal.');
+      pendingCore.add(isHa
+          ? 'Dole ne makarantarku ta loda bayananku a shafin SVS na NELFUND kafin a tantance ku.'
+          : 'Your institution must upload your student data to the NELFUND SVS portal.');
     }
 
     // -----------------------------------------------------------
@@ -185,39 +204,41 @@ class EligibilityProvider extends ChangeNotifier {
     final pendingKyc = <String>[];
 
     if (_hasJambNumber) {
-      passedKyc.add('JAMB Registration Number ready');
+      passedKyc.add(isHa ? 'Lambar Rajistar JAMB a shirye take' : 'JAMB Registration Number ready');
     } else {
-      pendingKyc.add('JAMB Registration Number');
+      pendingKyc.add(isHa ? 'Lambar Rajistar JAMB' : 'JAMB Registration Number');
     }
 
     if (_hasBvn) {
-      passedKyc.add('Bank Verification Number (BVN) ready');
+      passedKyc.add(isHa ? 'Lambar Tantance Asusun Banki (BVN) a shirye take' : 'Bank Verification Number (BVN) ready');
     } else {
-      pendingKyc.add('Bank Verification Number (BVN)');
+      pendingKyc.add(isHa ? 'Lambar Tantance Asusun Banki (BVN)' : 'Bank Verification Number (BVN)');
     }
 
     if (_hasNin) {
-      passedKyc.add('National Identity Number (NIN) ready');
+      passedKyc.add(isHa ? 'Lambar Shaida ta Kasa (NIN) a shirye take' : 'National Identity Number (NIN) ready');
     } else {
-      pendingKyc.add('National Identity Number (NIN)');
+      pendingKyc.add(isHa ? 'Lambar Shaida ta Kasa (NIN)' : 'National Identity Number (NIN)');
     }
 
     if (_hasPersonalInfo) {
-      passedKyc.add('Complete Personal Bio-data ready');
+      passedKyc.add(isHa ? 'Cikakkun bayanan kashin kai a shirye suke' : 'Complete Personal Bio-data ready');
     } else {
-      pendingKyc.add('Personal Bio-data (Date of Birth, State, LGA)');
+      pendingKyc.add(isHa
+          ? 'Cikakkun bayanan kashin kai (Ranar haihuwa, Jiha, Karamar Hukuma)'
+          : 'Personal Bio-data (Date of Birth, State, LGA)');
     }
 
     if (_hasPassportPhoto) {
-      passedKyc.add('Digital Passport Photograph ready');
+      passedKyc.add(isHa ? 'Hoton fasfo na zamani mai farin baya a shirye yake' : 'Digital Passport Photograph ready');
     } else {
-      pendingKyc.add('Digital Passport Photograph (white background)');
+      pendingKyc.add(isHa ? 'Hoton fasfo na zamani mai farin baya' : 'Digital Passport Photograph (white background)');
     }
 
     if (_hasAdmissionOrStudentId) {
-      passedKyc.add('Admission Letter or Student ID card ready');
+      passedKyc.add(isHa ? 'Takardar shiga makaranta ko katin dalibi a shirye yake' : 'Admission Letter or Student ID card ready');
     } else {
-      pendingKyc.add('Official Admission Letter or Institution ID Card');
+      pendingKyc.add(isHa ? 'Takardar shiga makaranta ta hukuma ko katin dalibi' : 'Official Admission Letter or Institution ID Card');
     }
 
     // -----------------------------------------------------------
@@ -226,29 +247,29 @@ class EligibilityProvider extends ChangeNotifier {
     final disqualifiers = <String>[];
 
     if (_hasPriorLoanDefault) {
-      disqualifiers.add(
-        'Prior loan default: Defaulted in respect of any previous education loan granted by the FG, state government, or their agencies (Sec. 3.1).',
-      );
+      disqualifiers.add(isHa
+          ? 'Kin biyan tsohon bashi: Wanda ya gaza biyan wani lamunin karatu da gwamnatin tarayya ko jiha ko hukumominsu suka bayar a baya (Sashe na 3.1).'
+          : 'Prior loan default: Defaulted in respect of any previous education loan granted by the FG, state government, or their agencies (Sec. 3.1).');
     }
     if (_hasActiveScholarship) {
-      disqualifiers.add(
-        'Concurrent Aid: Currently receiving another Federal/State education loan or scholarship (Sec. 3.1).',
-      );
+      disqualifiers.add(isHa
+          ? 'Daukar nauyin karatu na yanzu: Wanda yake karbar wani tallafin karatu ko lamuni na gwamnatin tarayya ko jiha a halin yanzu (Sashe na 3.1).'
+          : 'Concurrent Aid: Currently receiving another Federal/State education loan or scholarship (Sec. 3.1).');
     }
     if (_hasAcademicMisconduct) {
-      disqualifiers.add(
-        'Institutional Misconduct: Sanctioned for examination malpractice, cultism, violence, or forged documents (Sec. 3.1).',
-      );
+      disqualifiers.add(isHa
+          ? 'Laifin rashin da\'a a makaranta: Wanda makaranta ta hukunta saboda magudin jarrabawa, kungiyar asiri, tashin hankali, ko takardar jabu (Sashe na 3.1).'
+          : 'Institutional Misconduct: Sanctioned for examination malpractice, cultism, violence, or forged documents (Sec. 3.1).');
     }
     if (_hasCriminalConviction) {
-      disqualifiers.add(
-        'Criminal Conviction: Convicted of fraud, forgery, drug offenses, felony, or dishonesty (Sec. 3.1).',
-      );
+      disqualifiers.add(isHa
+          ? 'Hukuncin laifi a kotu: Wanda kotu ta taba yankewa hukunci kan damfara, takardar bogi, safarar miyagun kwayoyi, ko rashin gaskiya (Sashe na 3.1).'
+          : 'Criminal Conviction: Convicted of fraud, forgery, drug offenses, felony, or dishonesty (Sec. 3.1).');
     }
     if (_holdsFirstDegree) {
-      disqualifiers.add(
-        'Prior Degree Bar: Already a holder of a first degree or foreign equivalent (Sec. 4.1.3 Attestation).',
-      );
+      disqualifiers.add(isHa
+          ? 'Mallaƙar digiri a baya: Wanda ya riga ya kammala digiri na farko ko makamancinsa a Najeriya ko kasashen waje (Sashe na 4.1.3).'
+          : 'Prior Degree Bar: Already a holder of a first degree or foreign equivalent (Sec. 4.1.3 Attestation).');
     }
 
     // High-Level Diagnostics
@@ -260,21 +281,25 @@ class EligibilityProvider extends ChangeNotifier {
     String message;
 
     if (isDisqualified) {
-      title = 'Statutory Disqualification Bar(s) Active';
-      message =
-          'You flagged ${disqualifiers.length} statutory disqualification bar(s). Under Section 3.0 of the Students Loans Act 2024, applicants with these conditions are legally barred from the Fund.';
+      title = isHa ? 'Akwai Shingen Doka da Ya Hana Samun Bashi' : 'Statutory Disqualification Bar(s) Active';
+      message = isHa
+          ? 'Karkashin Sashe na 3.0 na Dokar Lamunin Dalibai ta 2024, wadanda suke da wadannan matsaloli doka ta hana su samun wannan asusu.'
+          : 'You flagged ${disqualifiers.length} statutory disqualification bar(s). Under Section 3.0 of the Students Loans Act 2024, applicants with these conditions are legally barred from the Fund.';
     } else if (!hasAllCore) {
-      title = 'Incomplete Core Criteria — Action Required';
-      message =
-          'You have 0 disqualification bars, but ${pendingCore.length} statutory prerequisite(s) remain pending in Section 1 before you can apply.';
+      title = isHa ? 'Ba a Kammala Muhimman Sharudda Ba — Ana Bukatar Daukar Mataki' : 'Incomplete Core Criteria — Action Required';
+      message = isHa
+          ? 'Ba ka da wani shingen hana samun bashi, sai dai akwai muhimman sharuddan da ya zama dole ka cika kafin cika fom.'
+          : 'You have 0 disqualification bars, but ${pendingCore.length} statutory prerequisite(s) remain pending in Section 1 before you can apply.';
     } else if (pendingKyc.isNotEmpty) {
-      title = 'Likely Eligible • KYC Documents Pending';
-      message =
-          'You meet all statutory core criteria with 0 disqualifications! However, you still need to prepare ${pendingKyc.length} required KYC document(s) before portal submission.';
+      title = isHa ? 'Ka Cancanta • Amma Akwai Takardun KYC da Za Ka Shirya' : 'Likely Eligible • KYC Documents Pending';
+      message = isHa
+          ? 'Ka cika dukkan muhimman sharudda ba tare da wani shinge ba! Sai dai har yanzu kana bukatar shirya takardun tantancewa kafin shiga shafin cika fom.'
+          : 'You meet all statutory core criteria with 0 disqualifications! However, you still need to prepare ${pendingKyc.length} required KYC document(s) before portal submission.';
     } else {
-      title = 'Statutory Clearance: Likely Eligible';
-      message =
-          'Congratulations! You satisfy all core statutory criteria, have prepared all 6 KYC documents, and carry 0 disqualification bars under the 2024 Act.';
+      title = isHa ? 'Tantancewar Doka: Ka Cancanta!' : 'Statutory Clearance: Likely Eligible';
+      message = isHa
+          ? 'Muna taya ka murna! Ka cika dukkan sharuddan dokar 2024, kana da takardun tantancewa 6, kuma ba ka da wani shingen da doka ta gindaya.'
+          : 'Congratulations! You satisfy all core statutory criteria, have prepared all 6 KYC documents, and carry 0 disqualification bars under the 2024 Act.';
     }
 
     return EligibilityReport(

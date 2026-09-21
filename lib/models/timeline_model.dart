@@ -1,3 +1,5 @@
+import '../core/localization/app_locale.dart';
+
 enum SlaStage {
   etiVerification,
   nelfundEvaluation,
@@ -24,6 +26,13 @@ class SlaStageInfo {
   final String milestone;
   final String escalationAction;
 
+  final String titleHa;
+  final String durationLabelHa;
+  final String actorHa;
+  final String descriptionHa;
+  final String milestoneHa;
+  final String escalationActionHa;
+
   const SlaStageInfo({
     required this.stage,
     required this.stageNumber,
@@ -35,7 +44,31 @@ class SlaStageInfo {
     required this.description,
     required this.milestone,
     required this.escalationAction,
+    required this.titleHa,
+    required this.durationLabelHa,
+    required this.actorHa,
+    required this.descriptionHa,
+    required this.milestoneHa,
+    required this.escalationActionHa,
   });
+
+  String getTitle(AppLanguage lang) =>
+      lang == AppLanguage.hausa ? titleHa : title;
+
+  String getDurationLabel(AppLanguage lang) =>
+      lang == AppLanguage.hausa ? durationLabelHa : durationLabel;
+
+  String getActor(AppLanguage lang) =>
+      lang == AppLanguage.hausa ? actorHa : actor;
+
+  String getDescription(AppLanguage lang) =>
+      lang == AppLanguage.hausa ? descriptionHa : description;
+
+  String getMilestone(AppLanguage lang) =>
+      lang == AppLanguage.hausa ? milestoneHa : milestone;
+
+  String getEscalationAction(AppLanguage lang) =>
+      lang == AppLanguage.hausa ? escalationActionHa : escalationAction;
 
   static const List<SlaStageInfo> allStages = [
     SlaStageInfo(
@@ -51,6 +84,14 @@ class SlaStageInfo {
       milestone: 'Verified candidate roster submitted to NELFUND',
       escalationAction:
           'Contact your institution’s Dean of Student Affairs or designated NELFUND Desk Officer with your Matric/JAMB number.',
+      titleHa: 'Tantancewa a Tsarin SVS na Makaranta',
+      durationLabelHa: 'Kwanakin Aiki 20',
+      actorHa: 'Jami\'in Makarantarku a Hukumar Dalibai / SVS',
+      descriptionHa:
+          'Makarantarku za ta tantance lambar JAMB, shigar dalibi da tsarin kudin makaranta a tsarin NELFUND SVS.',
+      milestoneHa: 'Tura sunayen daliban da aka tantance zuwa NELFUND',
+      escalationActionHa:
+          'Tuntubi Shugaban Sashen Dalibai (Dean of Student Affairs) ko jami\'in NELFUND na makarantarku tare da lambar rajistarku.',
     ),
     SlaStageInfo(
       stage: SlaStage.nelfundEvaluation,
@@ -65,6 +106,14 @@ class SlaStageInfo {
       milestone: 'Candidate recommended for formal approval',
       escalationAction:
           'Check nelf.gov.ng application portal for any KYC discrepancy flags, or email support@nelf.gov.ng.',
+      titleHa: 'Tantancewar Hukumar NELFUND',
+      durationLabelHa: 'Kwanaki 15 a Kalanda',
+      actorHa: 'Sashen Bincike na NELFUND',
+      descriptionHa:
+          'Binciken asalin lambar NIN a NIMC, lambar BVN a NIBSS, takardar shiga a JAMB CAPS da binciken shingen doka na Sashe na 3.0.',
+      milestoneHa: 'Ba da shawarar amincewa da dalibi a hukumance',
+      escalationActionHa:
+          'Bincika shafinku a nelf.gov.ng domin ganin ko akwai kuskuren bayani, ko tura imel zuwa support@nelf.gov.ng.',
     ),
     SlaStageInfo(
       stage: SlaStage.approval,
@@ -79,6 +128,14 @@ class SlaStageInfo {
       milestone: 'Application status marked "Approved"',
       escalationAction:
           'Monitor your registered email and SMS for formal approval notification and payment schedule.',
+      titleHa: 'Amincewar Hukumar Zartarwa',
+      durationLabelHa: 'Kwanakin Aiki 10',
+      actorHa: 'Kwamitin Zartarwa na NELFUND',
+      descriptionHa:
+          'Amincewa ta karshe kan fitar da kudaden makaranta da alawus na dalibi, tare da fitar da takardun amincewa.',
+      milestoneHa: 'Sauya matsayin fom zuwa "Approved" (An Amince)',
+      escalationActionHa:
+          'Kula da sakon imel da wayarku domin samun takardar amincewa ta hukuma da tsarin biya.',
     ),
     SlaStageInfo(
       stage: SlaStage.disbursement,
@@ -93,6 +150,14 @@ class SlaStageInfo {
       milestone: 'Funds debited from NELFUND treasury and credited to ETI',
       escalationAction:
           'File a formal inquiry with NELFUND disbursement desk if your institution has not acknowledged payment within 10 working days.',
+      titleHa: 'Fitar da Kudade ta Banki',
+      durationLabelHa: 'Kwanakin Aiki 10',
+      actorHa: 'Babban Bankin Najeriya (CBN) / Bankunan Kasuwanci',
+      descriptionHa:
+          'Tura kudin makaranta 100% kai-tsaye zuwa asusun makaranta, da tsara tura alawus na ₦20,000 zuwa asusun dalibi na kashin kai.',
+      milestoneHa: 'Cire kudi daga baitulmalin NELFUND tare da shigar da su asusun makaranta',
+      escalationActionHa:
+          'Tuntubi ofishin biyan kudi na NELFUND idan makarantarku ba ta tabbatar da samun kudin ba bayan kwanakin aiki 10.',
     ),
     SlaStageInfo(
       stage: SlaStage.etiReceipt,
@@ -107,6 +172,14 @@ class SlaStageInfo {
       milestone: 'Official Bursary receipt issued and exam clearance granted',
       escalationAction:
           'Present your NELFUND disbursement notification and Application ID to your school bursary department.',
+      titleHa: 'Tabbatarwar Makarantarku & Izinin Jarrabawa',
+      durationLabelHa: 'Kwanakin Aiki 7',
+      actorHa: 'Sashen Kudi na Makarantarku (Bursary)',
+      descriptionHa:
+          'Bayar da rasidin makaranta na hukuma, sabunta shafinku na makaranta, da ba ku izinin zana jarrabawa.',
+      milestoneHa: 'Fitar da rasidin Bursary na hukuma da ba da izinin jarrabawa',
+      escalationActionHa:
+          'Nuna shaidar biyan kudi ta NELFUND da lambar neman lamuninku a ofishin kudi (Bursary) na makarantarku.',
     ),
   ];
 

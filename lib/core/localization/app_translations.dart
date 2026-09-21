@@ -1,0 +1,319 @@
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+import 'app_locale.dart';
+import 'locale_provider.dart';
+
+class AppTranslations {
+  final AppLanguage language;
+
+  const AppTranslations(this.language);
+
+  static AppTranslations of(BuildContext context) {
+    try {
+      final provider = Provider.of<LocaleProvider?>(context, listen: true);
+      if (provider != null) {
+        return AppTranslations(provider.currentLanguage);
+      }
+    } catch (_) {}
+    return const AppTranslations(AppLanguage.english);
+  }
+
+  static AppTranslations from(AppLanguage language) {
+    return AppTranslations(language);
+  }
+
+  bool get isHausa => language == AppLanguage.hausa;
+
+  // ----------------------------------------------------
+  // Navigation & Bottom Bar Tabs
+  // ----------------------------------------------------
+  String get tabHome => isHausa ? 'Gida' : 'Home';
+  String get tabEligibility => isHausa ? 'Cancanta' : 'Eligibility';
+  String get tabCalculator => isHausa ? 'Lissafa Bashi' : 'Calculator';
+  String get tabFaq => isHausa ? 'Tambayoyi' : 'FAQ';
+  String get tabAbout => isHausa ? 'Game da Mu' : 'About';
+
+  String get appTitle => 'My NELFund';
+  String get appSubtitle => isHausa
+      ? 'Fahimtar Bashin Karatu na Dalibai.'
+      : 'Student Loan Guide';
+
+  String get backToExitToast => isHausa
+      ? 'Ka sake danna madannin baya domin fita'
+      : 'Press back again to exit';
+
+  String get buttonDone => isHausa ? 'An Kammala' : 'Done';
+  String get buttonReset => isHausa ? 'Sake Farawa' : 'Reset';
+  String get buttonOk => isHausa ? 'Toh' : 'OK';
+  String get buttonCopy => isHausa ? 'Kwafi' : 'Copy';
+  String get buttonCallNow => isHausa ? 'Kira Yanzu' : 'Call Now';
+  String get buttonOpenPortal => isHausa ? 'Bude Shafin Hukumar NELFUND' : 'Open Portal';
+  String get buttonSendEmail => isHausa ? 'Aika Imel' : 'Send Email';
+  String get buttonCheckUpdate => isHausa ? 'Duba Sabuntawa' : 'Check Update';
+  String get buttonRateApp => isHausa ? 'Bada Tauraro' : 'Rate on Store';
+  String get buttonAddLoanYear => isHausa ? 'Kara Bashin Wata Shekara' : 'Add Loan Year';
+  String get buttonUpdateLoan => isHausa ? 'Sabunta Bayanan Bashi' : 'Update Loan';
+  String get buttonAddToWallet => isHausa ? 'Saka a Asusun Bashi' : 'Add to Wallet';
+
+  // ----------------------------------------------------
+  // Home Screen
+  // ----------------------------------------------------
+  String get officialBulletinsTitle => isHausa ? 'Sanarwar Hukuma' : 'Official Bulletins';
+  String get programOverviewTitle => isHausa ? 'Bayanin Shirin Bashi' : 'Program Overview';
+  String get keyLoanPillarsTitle => isHausa ? 'Muhimman Rukunnan Bashi' : 'Key Loan Pillars';
+  String get exploreToolsTitle => isHausa ? 'Duba Cancanta da Gwajin Biya' : 'Explore Tools & Guides';
+
+  // Quick Access Cards
+  String get cardEligibilityTitle => isHausa ? 'Cancanta' : 'Eligibility Checker';
+  String get cardEligibilityDesc => isHausa
+      ? 'Abubuwan da ake bukata da wadanda za su iya sa a rasa bashi'
+      : 'Interactive checklist & disqualification audit';
+
+  String get cardCalcTitle => isHausa ? 'Lissafa Biyan Bashi' : 'Repayment Calc';
+  String get cardCalcDesc => isHausa
+      ? 'Biyan kashi 10% daga albashi, shekaru 2 bayan NYSC'
+      : '10% PAYE/IBR & 2-year NYSC countdown';
+
+  String get cardFaqTitle => isHausa ? 'Tambayoyi Masu Muhimmanci' : 'Official FAQ';
+  String get cardFaqDesc => isHausa
+      ? 'Dokokin mayar da kudi, amsoshin tambayoyi da shari\'a'
+      : 'Institutional refund rules, FAQs & recovery';
+
+  String get cardAboutTitle => isHausa ? 'Game da Mu & Tuntuba' : 'About & Support';
+  String get cardAboutDesc => isHausa
+      ? 'Lambar waya, shafin kamfani da kuma na hukuma'
+      : 'Developer contact, awareness guide & channels';
+
+  // Act Overview Card
+  String get primaryLegalProvisionsTitle => isHausa
+      ? 'Sharuddan Doka Masu Muhimmanci:'
+      : 'Primary Legal Provisions:';
+
+  String get provisionRepealedAct => isHausa
+      ? 'Ta soke Dokar Lamuni ta 2023 domin cire shingen yawan kudin shigar iyaye.'
+      : 'Repealed the 2023 Student Loan Act to remove family income barriers.';
+
+  String get provisionNoGuarantor => isHausa
+      ? 'Babu bukatar mai tsaya wa mutum ko jinginar wata kadara ga daliban makarantun gwamnati.'
+      : 'No guarantor or collateral requirement for eligible public students.';
+
+  String get provisionTwoYearGrace => isHausa
+      ? 'Dole ne a bayar da sassaucin shekaru 2 bayan kammala NYSC kafin a fara karbar kudin bashi.'
+      : 'Mandatory 2-year post-NYSC grace period before loan recovery begins.';
+
+  String get provisionUnemploymentForgiveness => isHausa
+      ? 'Hukunce-hukuncen sassauci da tsaida biya ga duk wanda bincike ya tabbatar bai sami aiki ba tukuna.'
+      : 'Forgiveness / extension provisions for beneficiaries facing documented unemployment.';
+
+  // ----------------------------------------------------
+  // Repayment Calculator Screen
+  // ----------------------------------------------------
+  String get calcHeaderTitle => isHausa ? 'Lissafa Bashi' : 'Payment Calculator';
+  String get calcTipBannerText => isHausa
+      ? 'Danna kasa domin saka adadin bashinka na kowacce shekara tare da saka albashi ko kudin shigar da kake sa ran samu bayan kammala karatu domin ganin adadin da za a rinka cirewa duk wata na tsawon lokacin biya.'
+      : 'Tap below to add your loans and select your expected income after graduation to simulate your monthly deduction and repayment timeline.';
+
+  String get walletBadge => isHausa ? 'ASUSUN LAMUNIN NELFUND' : 'NELFUND WALLET';
+  String get totalPortfolioLabel => isHausa ? 'JUMULLAR KUDIN BASHIN DA AKE BINKA' : 'TOTAL LOAN PORTFOLIO';
+  String get statutoryMonthlyDeductionLabel => isHausa
+      ? 'ADADIN ABUNDA ZA A RINKA CIREWA DUK WATA DAGA ALBASHINKA'
+      : 'STATUTORY MONTHLY DEDUCTION';
+
+  String get statutoryRateLabel => isHausa
+      ? 'Kashi 10% na Albashi wanda Doka ta Tanada ba za a Cire Sama da Shi ba'
+      : '10% Statutory Rate';
+
+  String get expectedPayoffTimeLabel => isHausa
+      ? 'TSAWON LOKACIN DA ZA KA GAMA BIYA GABA DAYA'
+      : 'EXPECTED PAYOFF TIME';
+
+  String get zeroInterestTag => isHausa ? '0% Babu Kudin Ruwa ko Kobo' : '0% Zero Interest';
+
+  String get configuredSessionsTitle => isHausa ? 'Zangon Karatun da Aka Saka' : 'Configured Academic Sessions';
+  String get tapToEdit => isHausa ? 'Danna domin gyarawa' : 'Tap to edit';
+  String get noSessionsAdded => isHausa
+      ? 'Ba a saka kudaden wata shekarar karatu ba tukuna. Latsa "Kara Bashin Wata Shekara" a katin da ke sama domin saka bayananka.'
+      : 'No academic session loans added. Tap "Add Loan Year" on the wallet card above to onboard your loans.';
+
+  String get nyscGraduationYearLabel => isHausa ? 'Shekarar Kammala NYSC:' : 'NYSC Graduation Year:';
+  String get twoYearGraceActivePrefix => isHausa
+      ? 'Sassaucin Shekaru 2 Bayan Aiki: Za a fara biya a '
+      : '2-Year Grace Active: Repayment starts ';
+
+  String get repaymentStreamTitle => isHausa ? 'Hanyar Biyan Bashi:' : 'Repayment Stream:';
+  String get expectedMonthlyIncomeLabel => isHausa
+      ? 'Kudin Shigar da Ake Sa Ran Samu a Wata (₦):'
+      : 'Expected Monthly Income (₦):';
+
+  String get expectedSalaryDesc => isHausa
+      ? 'Shigar da albashin da kake sa ran samu idan ka sami aikin yi.'
+      : 'Enter the expected salary that you will earn if you get employed.';
+
+  String get minimumWageChip => isHausa
+      ? '₦70,000.00 (Mafi Karancin Albashi)'
+      : '₦70,000.00 (Minimum Wage)';
+
+  String get postNyscGraceCardTitle => isHausa
+      ? 'Sassaucin Shekaru 2 Bayan NYSC'
+      : '2-Year Post-NYSC Grace Period';
+
+  String get postNyscGraceCardDesc => isHausa
+      ? 'Karkashin Sashe na 5.0 na Dokar Lamunin Dalibai ta 2024, duk mai karbar bashi yana da sassaucin watanni 24 ba tare da kudin ruwa ba bayan kammala hidimar kasa:'
+      : 'Under Section 5.0 of the Students Loans Act 2024, beneficiaries enjoy an automatic 24-month interest-free moratorium after completing national service:';
+
+  String get popTimelineLabel => isHausa
+      ? 'Ranar Kammala Faretin Fita ta NYSC (POP)'
+      : 'NYSC Passing Out Parade (POP)';
+
+  String get graceTimelineLabel => isHausa
+      ? 'Ba za a cire ko kobo ba na biyan bashi a wadannan shekarun'
+      : '24-Month Statutory Grace Period (0 Deductions)';
+
+  String get repaymentTimelineLabel => isHausa
+      ? 'Fara Biyan Bashi na Doka Bayan Shekaru 2'
+      : 'Mandatory Repayment Begins';
+
+  String get unemploymentProtectionTitle => isHausa
+      ? 'Kariyar Rashin Aikin Yi (Sashe na 5.1c)'
+      : 'Unemployment Protection (Sec. 5.1c)';
+
+  String get unemploymentProtectionDesc => isHausa
+      ? 'Idan har yanzu ba ka sami aikin yi ba bayan cikar wa\'adin shekaru 2 na sassauci, doka ta kare ka. Mika takardar rantsuwa ta rashin aikin yi zai sa a dakatar da biyan bashi ba tare da tara ko kudin ruwa ba har sai ka sami aiki.'
+      : 'If you are not yet gainfully employed at the end of your 2-year grace period, you are legally protected. Submitting a periodic statutory declaration or sworn affidavit pauses deductions until you secure employment.';
+
+  String get complianceGuideTitle => isHausa
+      ? 'Tallafin Biyan Bashi & Ka\'idojin Doka'
+      : 'Repayment Support & Compliance Guidelines';
+
+  String get complianceGuideDesc => isHausa
+      ? 'Dokar Lamunin Dalibai ta 2024 an gina ta ne domin kare muradun dalibai. Ga yadda tsarin kariyar yake aiki:'
+      : 'The Students Loans Act 2024 is built with student safeguards first. Here is how statutory compliance and protections work:';
+
+  // Calculator Modal
+  String get editLoanYearTitle => isHausa ? 'Gyara Bashin Shekarar Karatu' : 'Edit Academic Year Loan';
+  String get addLoanYearTitle => isHausa ? 'Kara Bashin Wata Shekara' : 'Add Academic Year Loan';
+  String get selectLevelLabel => isHausa ? 'Zabi Ajin Karatu:' : 'Select Academic Level:';
+  String get institutionalFeeLabel => isHausa ? 'Kudin Makaranta Kai-tsaye (₦):' : 'Institutional / Tuition Fee (₦):';
+  String get enterFeeDesc => isHausa
+      ? 'Shigar da adadin kudin makarantar da kake bukata a wannan shekarar'
+      : 'Enter the institutional fee loan amount of this year';
+
+  String get includeUpkeepLabel => isHausa ? 'Saka Alawus na Tallafin Rayuwa' : 'Include Upkeep Allowance';
+  String get upkeepAutoCalculated => isHausa
+      ? 'Lissafi kai-tsaye: ₦20,000 × 12 = ₦240,000 a shekara'
+      : 'Auto-calculated: ₦20,000 × 12 = ₦240,000 / yr';
+
+  String sessionLoanTotalLabel(int level) => isHausa
+      ? 'Jumullar Bashin Shekara ($level Level):'
+      : 'Session Loan Total ($level Level):';
+
+  // ----------------------------------------------------
+  // Eligibility Screen
+  // ----------------------------------------------------
+  String get eligibilityHeaderTitle => isHausa ? 'Cancanta' : 'Eligibility Checker';
+  String get academicStreamTitle => isHausa ? 'Rukunin Shiga Makaranta' : 'Academic Entry Stream';
+  String get coreCriteriaTitle => isHausa ? '1. Muhimman Sharuddan Doka (Sashe na 2.0)' : '1. Statutory Core Criteria';
+  String get kycChecklistTitle => isHausa ? '2. Shirye-shiryen Takardun Tantancewa (KYC)' : '2. KYC & Identity Verification';
+  String get disqualificationBarsTitle => isHausa ? '3. Shingen Doka Masu Hana Samun Bashi (Sashe na 3.0)' : '3. Statutory Disqualification Bars';
+  String get checkStatusButton => isHausa ? 'Duba Sakamakon Cancanta' : 'Evaluate My Eligibility';
+
+  // ----------------------------------------------------
+  // Timeline Screen
+  // ----------------------------------------------------
+  String get timelineHeaderTitle => isHausa ? 'Matakan Neman Lamuni & Wa\'adin Aiki' : 'Timeline & SLA Tracker';
+  String get timelineIntroDesc => isHausa
+      ? 'Sashe na 4.2 na Ka\'idojin ya gindaya tsauraran wa\'adin aiki a matakai 5 (tsawon kwanakin aiki 47 a jimlace). Gwada matsayin aikace-aikacenka a kasa.'
+      : 'Section 4.2 of the Guidelines mandates strict processing deadlines across 5 stages (~47 working days maximum cycle). Test whether your application is on track below.';
+
+  String get onTrackEvaluatorTitle => isHausa ? 'Na\'urar Gwada Halin da Aikace-aikace Yake Ciki' : 'Interactive On-Track Evaluator';
+  String get currentStageLabel => isHausa ? 'Zabi Matakin da Aikace-aikacenka Yake Ciki' : 'Current Application Stage';
+  String get submissionDateLabel => isHausa ? 'Ranar da Aka Cika Fom' : 'Submission Date';
+
+  String get statusOnTrack => isHausa ? 'Yana Kan Lokaci Cikin Tsari' : 'On Track';
+  String get statusApproachingDeadline => isHausa ? 'Wa\'adi na Gabatowa' : 'Approaching Deadline';
+  String get statusOverdue => isHausa ? 'Ya Wuce Wa\'adi' : 'Overdue';
+
+  String get grievanceDirectoryTitle => isHausa ? 'Shafukan Tuntubar Hukuma da Korafi' : 'Official Grievance & Escalation Directory';
+
+  // ----------------------------------------------------
+  // FAQ Screen
+  // ----------------------------------------------------
+  String get faqHeaderTitle => isHausa ? 'Tambayoyi Masu Muhimmanci' : 'Official FAQ';
+  String get faqSearchPlaceholder => isHausa ? 'Bincika tambayoyi kan doka da biya...' : 'Search guidelines, repayment, or legal terms...';
+  String get faqAllQuestions => isHausa ? 'Dukkan Tambayoyi' : 'All Questions';
+  String get faqNoResultsTitle => isHausa ? 'Ba a sami tambayar da ta dace ba' : 'No matching questions found';
+  String get faqNoResultsDesc => isHausa
+      ? 'Gwada bincika wata kalmar daban ko zabi wani rukunin tambayoyin.'
+      : 'Try searching with different keywords or switch categories.';
+
+  // ----------------------------------------------------
+  // About Screen
+  // ----------------------------------------------------
+  String get aboutHeaderTitle => isHausa ? 'Game da Mu & Tuntuba' : 'About & Support';
+  String get developerBadge => isHausa ? 'GAME DA WANDA YA SAMAR DA WANNAN JAGORA' : 'ABOUT DEVELOPER & BUILDER';
+  String get developerIntro => isHausa
+      ? 'My NELFund wani yunkuri ne na kashin kai mai zaman kansa wanda ya samar da shi:'
+      : 'My NELFund is an independent civic initiative developed and built by:';
+
+  String get developerName => 'Abdullahi Adam Usman';
+  String get developerRole => 'Co-Founder, Anjal Solutions Ltd';
+  String get developerEducation => isHausa
+      ? 'Dalibi mai karatu a aji na 300 a Sashen Nazarin Harkokin Kasashen Duniya.\nJami\'ar Ahmadu Bello (ABU), Zaria.'
+      : '300 Level Student of International Studies.\nAhmadu Bello University (ABU), Zaria.';
+
+  String get developerWebsiteLabel => 'www.anjalsolutionsltd.com';
+  String get developerWebsiteUrl => 'https://www.anjalsolutionsltd.com';
+
+  String get contactDeveloperTitle => isHausa ? 'Tuntuba' : 'Contact Developer';
+  String get contactDeveloperDesc => isHausa
+      ? 'Kana da wata shawara, gyara, ko tambaya kan wannan manhaja? Ko kana so a maka manhaja irinta? Tuntubi mai ginawa kai-tsaye:'
+      : 'Have feedback, suggestions, or technical questions about this guide? Reach out directly to the developer:';
+
+  String get directCallPhone => '08164135836';
+  String get whatsappPhone => '09076872520';
+  String get whatsappOnlyLabel => isHausa ? 'WhatsApp Kawai' : 'WhatsApp Only';
+  String get whatsappButtonLabel => isHausa
+      ? 'Tuntuɓa a WhatsApp (WhatsApp Only)'
+      : 'Chat on WhatsApp (WhatsApp Only)';
+  String get callButtonLabel => isHausa ? 'Kira: 08164135836' : 'Call: 08164135836';
+
+  String get clarificationTitle => isHausa ? 'Fayyace Matsayi & Wanke Kai na Hukuma' : 'Official Clarification & Disclaimer';
+  String get clarificationBody => isHausa
+      ? 'Manhaja Mai Zaman Kanta: Wannan manhaja ba daga hukumar NELFUND take ba kuma ba daga Gwamnatin Tarayyar Najeriya take ba. An gina ta ne a matsayin jagora mai zaman kanta domin wayar da kan dalibai, ilmantarwa, da fahimtar harkokin kudi karkashin Dokar Lamunin Dalibai ta 2024.'
+      : 'Independent Civic Initiative: This application is not from NELFUND (Nigerian Education Loan Fund) or the Federal Government of Nigeria. It was developed as an independent civic guide created solely for student education, awareness, and financial empowerment under the Students Loans Act 2024.';
+
+  String get zeroDataCollectionDesc => isHausa
+      ? 'Manhajar Ba Ta Tattara Bayanai: Wannan manhaja ba ta tattarawa, adanawa, ko tura sunanka, adadin bashinka, lambar BVN, lambar NIN, ko takardun karatunka. Manhajar tana aiki ne a kan wayarka ba tare da bukatar intanet ba domin lissafi da tantancewa kadai.'
+      : 'Zero Personal Data Collection: This application does not collect, store, or transmit your name, loan amount, financial data, Bank Verification Number (BVN), National Identity Number (NIN), or academic credentials. This app is completely data-free, private, and functions entirely offline solely for your statutory calculation and simulation.';
+
+  String get officialChannelsTitle => isHausa ? 'Hanyoyin Hukumar NELFUND' : 'Official NELFUND Channels';
+  String get officialChannelsDesc => isHausa
+      ? 'Domin cika bashi, tantancewar makaranta (SVS), da tambayoyi, yi amfani da shafukan Gwamnatin Tarayya kadai:'
+      : 'For official loan applications, institution verification (SVS), and formal inquiries, use only authorized Federal Government portals:';
+
+  String get officialPortalTitle => isHausa ? 'Shafin Yanar Gizo na Hukuma' : 'Official Portal & Website';
+  String get officialEmailTitle => isHausa ? 'Imel na Hukuma' : 'Official Inquiries Email';
+
+  String get languageCardTitle => isHausa ? 'Zabin Harshe / Language' : 'Language / Harshe';
+  String get languageCardDesc => isHausa
+      ? 'Zabi harshen da kake son manhajar ta rinka amfani da shi nan take:'
+      : 'Select your preferred language for the application:';
+
+  // ----------------------------------------------------
+  // Language Onboarding Modal
+  // ----------------------------------------------------
+  String get modalLanguageBadge => isHausa ? 'SABON TSARI • BILINGUAL' : 'NEW FEATURE • BILINGUAL';
+  String get modalLanguageTitle => isHausa ? 'Zaɓin Harshe • Language Selection' : 'Language Preference • Zaɓin Harshe';
+  String get modalLanguageDesc => isHausa
+      ? 'Barka da zuwa manhajar My NELFund. Domin sauƙaƙa fahimtar dokar bashi da tsarin biya, yanzu an samar da dukkan manhajar cikin cikakken Harshen Hausa tare da Harshen Ingilishi. Zaɓi harshen da kuka fi buƙata:'
+      : 'Welcome to My NELFund. To empower every Nigerian student with transparent statutory loan guidance, you can now experience the app in authentic Hausa or English. Select your preferred language:';
+  String get modalOptionEnglishTitle => 'English';
+  String get modalOptionEnglishDesc => isHausa
+      ? 'Ƙa\'idojin doka na asali da harshen Ingilishi'
+      : 'Official statutory terminology under the 2024 Act';
+  String get modalOptionHausaTitle => 'Harshen Hausa';
+  String get modalOptionHausaDesc => isHausa
+      ? 'Cikakkiyar fassarar ƙa\'idojin doka da lissafi'
+      : 'Authentic Hausa translation & statutory calculation';
+  String get modalConfirmButton => isHausa ? 'Tabbatar da Zaɓi' : 'Confirm & Continue';
+}

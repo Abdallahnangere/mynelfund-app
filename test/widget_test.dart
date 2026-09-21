@@ -97,10 +97,10 @@ void main() {
 
     // Verify About Tab Content
     expect(find.text('About & Support'), findsOneWidget);
-    expect(find.text('09076872520'), findsOneWidget);
-    expect(find.text('Chat Directly on WhatsApp'), findsOneWidget);
+    expect(find.text('08164135836'), findsWidgets);
+    expect(find.text('Chat on WhatsApp (WhatsApp Only)'), findsOneWidget);
     expect(find.text('Abdullahi Adam Usman'), findsWidgets);
-    expect(find.text('Founder, Anjal Ventures'), findsWidgets);
+    expect(find.text('Co-Founder, Anjal Solutions Ltd'), findsWidgets);
     expect(find.text('Official Clarification & Disclaimer'), findsOneWidget);
     expect(find.text('Official NELFUND Channels'), findsOneWidget);
   });

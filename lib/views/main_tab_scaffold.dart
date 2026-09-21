@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import '../core/localization/app_translations.dart';
 import '../core/services/analytics_service.dart';
 import '../core/services/notification_service.dart';
 import '../core/services/review_service.dart';
@@ -11,21 +12,57 @@ import 'eligibility/eligibility_view.dart';
 import 'faq/faq_view.dart';
 import 'home/home_view.dart';
 import 'about/about_view.dart';
+import 'package:provider/provider.dart';
+import '../core/localization/locale_provider.dart';
 
-class MainTabScaffold extends StatefulWidget {
+class MainTabScaffold extends StatelessWidget {
   final int initialIndex;
-  const MainTabScaffold({super.key, this.initialIndex = 0});
+  final bool showLanguageOnboarding;
+  const MainTabScaffold({
+    super.key,
+    this.initialIndex = 0,
+    this.showLanguageOnboarding = false,
+  });
 
   static void switchTab(BuildContext context, int index) {
-    final state = context.findAncestorStateOfType<_MainTabScaffoldState>();
+    final state = context.findAncestorStateOfType<_MainTabScaffoldContentState>();
     state?.setTab(index);
   }
 
   @override
-  State<MainTabScaffold> createState() => _MainTabScaffoldState();
+  Widget build(BuildContext context) {
+    LocaleProvider? localeProv;
+    try {
+      localeProv = Provider.of<LocaleProvider?>(context, listen: false);
+    } catch (_) {}
+
+    final content = _MainTabScaffoldContent(
+      initialIndex: initialIndex,
+      showLanguageOnboarding: showLanguageOnboarding,
+    );
+    if (localeProv == null) {
+      return ChangeNotifierProvider(
+        create: (_) => LocaleProvider(),
+        child: content,
+      );
+    }
+    return content;
+  }
 }
 
-class _MainTabScaffoldState extends State<MainTabScaffold> {
+class _MainTabScaffoldContent extends StatefulWidget {
+  final int initialIndex;
+  final bool showLanguageOnboarding;
+  const _MainTabScaffoldContent({
+    this.initialIndex = 0,
+    this.showLanguageOnboarding = false,
+  });
+
+  @override
+  State<_MainTabScaffoldContent> createState() => _MainTabScaffoldContentState();
+}
+
+class _MainTabScaffoldContentState extends State<_MainTabScaffoldContent> {
   static const List<String> _tabNames = [
     'Home',
     'Eligibility',
@@ -135,18 +172,18 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
                 ),
               ],
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   CupertinoIcons.info_circle_fill,
                   color: Color(0xFF68D391),
                   size: 16,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  'Press back again to exit',
-                  style: TextStyle(
+                  AppTranslations.of(context).backToExitToast,
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: CupertinoColors.white,
@@ -222,31 +259,31 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
               width: 0.6,
             ),
           ),
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.house_alt),
-              activeIcon: Icon(CupertinoIcons.house_alt_fill),
-              label: 'Home',
+              icon: const Icon(CupertinoIcons.house_alt),
+              activeIcon: const Icon(CupertinoIcons.house_alt_fill),
+              label: AppTranslations.of(context).tabHome,
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.checkmark_seal),
-              activeIcon: Icon(CupertinoIcons.checkmark_seal_fill),
-              label: 'Eligibility',
+              icon: const Icon(CupertinoIcons.checkmark_seal),
+              activeIcon: const Icon(CupertinoIcons.checkmark_seal_fill),
+              label: AppTranslations.of(context).tabEligibility,
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.creditcard),
-              activeIcon: Icon(CupertinoIcons.creditcard_fill),
-              label: 'Calculator',
+              icon: const Icon(CupertinoIcons.creditcard),
+              activeIcon: const Icon(CupertinoIcons.creditcard_fill),
+              label: AppTranslations.of(context).tabCalculator,
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.bubble_left_bubble_right),
-              activeIcon: Icon(CupertinoIcons.bubble_left_bubble_right_fill),
-              label: 'FAQ',
+              icon: const Icon(CupertinoIcons.bubble_left_bubble_right),
+              activeIcon: const Icon(CupertinoIcons.bubble_left_bubble_right_fill),
+              label: AppTranslations.of(context).tabFaq,
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.person_crop_circle),
-              activeIcon: Icon(CupertinoIcons.person_crop_circle_fill),
-              label: 'About',
+              icon: const Icon(CupertinoIcons.person_crop_circle),
+              activeIcon: const Icon(CupertinoIcons.person_crop_circle_fill),
+              label: AppTranslations.of(context).tabAbout,
             ),
           ],
         ),
@@ -256,7 +293,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
             builder: (context) {
               switch (index) {
                 case 0:
-                  return const HomeView();
+                  return HomeView(showLanguageOnboarding: widget.showLanguageOnboarding);
                 case 1:
                   return const EligibilityView();
                 case 2:

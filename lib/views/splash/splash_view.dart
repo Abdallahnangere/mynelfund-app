@@ -118,7 +118,7 @@ class _SplashViewState extends State<SplashView>
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 550),
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const MainTabScaffold(),
+            const MainTabScaffold(showLanguageOnboarding: true),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },

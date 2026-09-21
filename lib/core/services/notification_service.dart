@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../firebase_options.dart';
 import '../theme/nelfund_colors.dart';
 import 'analytics_service.dart';
@@ -58,7 +59,7 @@ class NotificationService {
 
   /// Initialize Firebase Cloud Messaging
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    if (_isInitialized || kIsWeb) return;
 
     try {
       _messaging = FirebaseMessaging.instance;

@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_locale.dart';
+import '../../core/localization/app_translations.dart';
+import '../../core/localization/locale_provider.dart';
 import '../../core/services/analytics_service.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
@@ -12,10 +15,23 @@ class FaqView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    LocaleProvider? localeProv;
+    try {
+      localeProv = Provider.of<LocaleProvider?>(context, listen: false);
+    } catch (_) {}
+
+    final content = ChangeNotifierProvider(
       create: (_) => FaqProvider(),
       child: const _FaqContent(),
     );
+
+    if (localeProv == null) {
+      return ChangeNotifierProvider(
+        create: (_) => LocaleProvider(),
+        child: content,
+      );
+    }
+    return content;
   }
 }
 
@@ -43,6 +59,9 @@ class _FaqContentState extends State<_FaqContent> {
 
   @override
   Widget build(BuildContext context) {
+    final localeProv = context.watch<LocaleProvider>();
+    final lang = localeProv.currentLanguage;
+    final tr = AppTranslations.of(context);
     final provider = context.watch<FaqProvider>();
     final items = provider.filteredItems;
 
@@ -51,24 +70,24 @@ class _FaqContentState extends State<_FaqContent> {
         bottom: false,
         child: Column(
           children: [
-            _buildFintechHeader(context, items.length),
+            _buildFintechHeader(context, items.length, tr),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 children: [
-                  _buildSearchBox(context, provider),
+                  _buildSearchBox(context, provider, tr),
                   const SizedBox(height: 10),
-                  _buildCategoryFilterStrip(context, provider),
+                  _buildCategoryFilterStrip(context, provider, lang),
                   const SizedBox(height: 12),
                   if (provider.searchQuery.isEmpty &&
                       provider.selectedCategory == FaqCategory.all) ...[
-                    _buildSpotlightCarousel(context),
+                    _buildSpotlightCarousel(context, tr),
                     const SizedBox(height: 12),
                   ],
                   if (items.isEmpty)
-                    _buildEmptySearchState(context, provider)
+                    _buildEmptySearchState(context, provider, tr)
                   else
-                    ...items.map((item) => _buildFaqTile(context, provider, item)),
+                    ...items.map((item) => _buildFaqTile(context, provider, item, lang)),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -79,7 +98,11 @@ class _FaqContentState extends State<_FaqContent> {
     );
   }
 
-  Widget _buildFintechHeader(BuildContext context, int count) {
+  Widget _buildFintechHeader(BuildContext context, int count, AppTranslations tr) {
+    final countLabel = tr.isHausa
+        ? '$count Tambayoyi'
+        : '$count ${count == 1 ? 'Topic' : 'Topics'}';
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -113,7 +136,7 @@ class _FaqContentState extends State<_FaqContent> {
               children: [
                 Center(
                   child: Text(
-                    'Official FAQ',
+                    tr.faqHeaderTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontWeight: FontWeight.w700,
                       fontSize: 17,
@@ -137,7 +160,7 @@ class _FaqContentState extends State<_FaqContent> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      '$count ${count == 1 ? 'Topic' : 'Topics'}',
+                      countLabel,
                       style: NelfundTypography.captionBold.copyWith(
                         color: NelfundColors.emerald,
                         fontSize: 11.5,
@@ -148,7 +171,6 @@ class _FaqContentState extends State<_FaqContent> {
               ],
             ),
           ),
-          // Emerald ambient lighting separator line
           Container(
             height: 2.5,
             width: double.infinity,
@@ -174,12 +196,12 @@ class _FaqContentState extends State<_FaqContent> {
     );
   }
 
-  Widget _buildSearchBox(BuildContext context, FaqProvider provider) {
+  Widget _buildSearchBox(BuildContext context, FaqProvider provider, AppTranslations tr) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: CupertinoSearchTextField(
         controller: _searchController,
-        placeholder: 'Search questions, GSI, refund, moratorium...',
+        placeholder: tr.faqSearchPlaceholder,
         onChanged: provider.setSearchQuery,
         onSubmitted: (query) {
           AnalyticsService.instance.logFaqSearch(
@@ -195,7 +217,11 @@ class _FaqContentState extends State<_FaqContent> {
     );
   }
 
-  Widget _buildCategoryFilterStrip(BuildContext context, FaqProvider provider) {
+  Widget _buildCategoryFilterStrip(
+    BuildContext context,
+    FaqProvider provider,
+    AppLanguage lang,
+  ) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -225,7 +251,7 @@ class _FaqContentState extends State<_FaqContent> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  cat.shortLabel,
+                  cat.getShortLabel(lang),
                   style: NelfundTypography.captionBold.copyWith(
                     color: isSelected
                         ? CupertinoColors.white
@@ -242,7 +268,9 @@ class _FaqContentState extends State<_FaqContent> {
     );
   }
 
-  Widget _buildSpotlightCarousel(BuildContext context) {
+  Widget _buildSpotlightCarousel(BuildContext context, AppTranslations tr) {
+    final isHa = tr.isHausa;
+
     return AppleFrostedCard(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       padding: const EdgeInsets.all(12),
@@ -268,7 +296,9 @@ class _FaqContentState extends State<_FaqContent> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '30-Day Institutional Refund Rule (Sec. 4.1.2)',
+                  isHa
+                      ? 'Dokar Mayar da Kuɗi Cikin Kwanaki 30 (Sashe na 4.1.2)'
+                      : '30-Day Institutional Refund Rule (Sec. 4.1.2)',
                   style: NelfundTypography.headline.copyWith(
                     fontSize: 14,
                     color: NelfundColors.emerald,
@@ -276,7 +306,9 @@ class _FaqContentState extends State<_FaqContent> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'If you already paid tuition before your loan approval, your tertiary institution is mandated by law to refund your payment within 30 days of receiving NELFUND funds.',
+                  isHa
+                      ? 'Idan ka riga ka biya kuɗin makaranta kafin amincewar bashinka, doka ta tilasta wa makarantarku mayar maka da kuɗinka cikin kwanaki 30 bayan NELFUND ta tura musu kuɗin.'
+                      : 'If you already paid tuition before your loan approval, your tertiary institution is mandated by law to refund your payment within 30 days of receiving NELFUND funds.',
                   style: NelfundTypography.footnote.copyWith(fontSize: 12),
                 ),
               ],
@@ -288,7 +320,11 @@ class _FaqContentState extends State<_FaqContent> {
   }
 
   Widget _buildFaqTile(
-      BuildContext context, FaqProvider provider, FaqItem item) {
+    BuildContext context,
+    FaqProvider provider,
+    FaqItem item,
+    AppLanguage lang,
+  ) {
     final isExpanded = provider.isExpanded(item.id);
 
     return AppleFrostedCard(
@@ -313,7 +349,7 @@ class _FaqContentState extends State<_FaqContent> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        item.category.shortLabel.toUpperCase(),
+                        item.category.getShortLabel(lang).toUpperCase(),
                         style: NelfundTypography.captionBold.copyWith(
                           color: NelfundColors.emerald,
                           fontSize: 10,
@@ -322,7 +358,7 @@ class _FaqContentState extends State<_FaqContent> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      item.question,
+                      item.getQuestion(lang),
                       style: NelfundTypography.headline.copyWith(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -350,7 +386,7 @@ class _FaqContentState extends State<_FaqContent> {
             ),
             const SizedBox(height: 10),
             Text(
-              item.answer,
+              item.getAnswer(lang),
               style: NelfundTypography.body.copyWith(
                 fontSize: 14,
                 color: CupertinoDynamicColor.resolve(
@@ -367,7 +403,7 @@ class _FaqContentState extends State<_FaqContent> {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  item.statutoryReference,
+                  item.getStatutoryReference(lang),
                   style: NelfundTypography.captionBold.copyWith(
                     color: NelfundColors.emerald,
                     fontSize: 11,
@@ -381,7 +417,7 @@ class _FaqContentState extends State<_FaqContent> {
     );
   }
 
-  Widget _buildEmptySearchState(BuildContext context, FaqProvider provider) {
+  Widget _buildEmptySearchState(BuildContext context, FaqProvider provider, AppTranslations tr) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       child: Column(
@@ -390,8 +426,8 @@ class _FaqContentState extends State<_FaqContent> {
           Container(
             width: 64,
             height: 64,
-            decoration: BoxDecoration(
-              color: const Color(0x0F000000),
+            decoration: const BoxDecoration(
+              color: Color(0x0F000000),
               shape: BoxShape.circle,
             ),
             child: const Center(
@@ -404,12 +440,12 @@ class _FaqContentState extends State<_FaqContent> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No Questions Found',
+            tr.faqNoResultsTitle,
             style: NelfundTypography.headline.copyWith(fontSize: 17),
           ),
           const SizedBox(height: 6),
           Text(
-            'Try searching for terms like "refund", "moratorium", "upkeep", or "GSI".',
+            tr.faqNoResultsDesc,
             textAlign: TextAlign.center,
             style: NelfundTypography.footnote.copyWith(
               color: CupertinoDynamicColor.resolve(
@@ -424,8 +460,10 @@ class _FaqContentState extends State<_FaqContent> {
               _searchController.clear();
               provider.resetFilters();
             },
-            child: const Text('Reset Search Filters',
-                style: TextStyle(fontSize: 14)),
+            child: Text(
+              tr.isHausa ? 'Sake Farawa' : 'Reset Search Filters',
+              style: const TextStyle(fontSize: 14),
+            ),
           ),
         ],
       ),

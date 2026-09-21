@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/localization/app_locale.dart';
+import '../../core/localization/app_translations.dart';
+import '../../core/localization/locale_provider.dart';
 import '../../core/services/analytics_service.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
@@ -13,10 +16,23 @@ class EligibilityView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    LocaleProvider? localeProv;
+    try {
+      localeProv = Provider.of<LocaleProvider?>(context, listen: false);
+    } catch (_) {}
+
+    final content = ChangeNotifierProvider(
       create: (_) => EligibilityProvider(),
       child: const _EligibilityContent(),
     );
+
+    if (localeProv == null) {
+      return ChangeNotifierProvider(
+        create: (_) => LocaleProvider(),
+        child: content,
+      );
+    }
+    return content;
   }
 }
 
@@ -45,16 +61,19 @@ class _EligibilityContent extends StatelessWidget {
   }
 
   void _showUrlFallbackDialog(BuildContext context) {
+    final tr = AppTranslations.of(context);
     showCupertinoDialog(
       context: context,
       builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('Official Portal'),
-        content: const Text(
-          'Please visit the official NELFUND application portal in your browser at: https://nelf.gov.ng',
+        title: Text(tr.isHausa ? 'Shafin Hukumar NELFUND' : 'Official Portal'),
+        content: Text(
+          tr.isHausa
+              ? 'Da fatan za a ziyarci shafin cika bashi na hukumar NELFUND a manhajar bincikenka a: https://nelf.gov.ng'
+              : 'Please visit the official NELFUND application portal in your browser at: https://nelf.gov.ng',
         ),
         actions: [
           CupertinoDialogAction(
-            child: const Text('OK'),
+            child: Text(tr.isHausa ? 'Toh' : 'OK'),
             onPressed: () => Navigator.of(ctx).pop(),
           ),
         ],
@@ -62,9 +81,14 @@ class _EligibilityContent extends StatelessWidget {
     );
   }
 
-  void _showEligibilityModal(BuildContext context, EligibilityReport report) {
+  void _showEligibilityModal(
+    BuildContext context,
+    EligibilityReport report,
+    AppLanguage lang,
+  ) {
     final bool isEligible = report.isLikelyEligible;
     final bool hasDisqualifiers = report.hasDisqualifiers;
+    final isHa = lang == AppLanguage.hausa;
 
     AnalyticsService.instance.logEligibilityCheck(
       isEligible: isEligible,
@@ -100,10 +124,10 @@ class _EligibilityContent extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   isEligible
-                      ? 'Statutory Criteria Satisfied'
+                      ? (isHa ? 'Sharuddan Doka Sun Cika' : 'Statutory Criteria Satisfied')
                       : (hasDisqualifiers
-                          ? 'Statutory Disqualification'
-                          : 'Incomplete Requirements'),
+                          ? (isHa ? 'Shingen Doka Ya Hana Cancanta' : 'Statutory Disqualification')
+                          : (isHa ? 'Bayanai Ba Su Kammala Ba' : 'Incomplete Requirements')),
                   style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
@@ -125,7 +149,9 @@ class _EligibilityContent extends StatelessWidget {
 
                 // Section 1 Breakdown
                 Text(
-                  '1. Core Criteria (${report.coreMetCount}/${report.coreTotalCount} Met)',
+                  isHa
+                      ? '1. Muhimman Sharudda (${report.coreMetCount}/${report.coreTotalCount} Sun Cika)'
+                      : '1. Core Criteria (${report.coreMetCount}/${report.coreTotalCount} Met)',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 12.5,
@@ -133,9 +159,11 @@ class _EligibilityContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 if (report.pendingCoreCriteria.isEmpty)
-                  const Text(
-                    '✓ All statutory core criteria confirmed.',
-                    style: TextStyle(
+                  Text(
+                    isHa
+                        ? '✓ Dukkan muhimman sharuddan doka an tabbatar da su.'
+                        : '✓ All statutory core criteria confirmed.',
+                    style: const TextStyle(
                       color: NelfundColors.emerald,
                       fontSize: 12,
                     ),
@@ -173,7 +201,9 @@ class _EligibilityContent extends StatelessWidget {
 
                 // Section 2 Breakdown
                 Text(
-                  '2. KYC Readiness (${report.kycMetCount}/${report.kycTotalCount} Ready)',
+                  isHa
+                      ? '2. Shirye-shiryen KYC (${report.kycMetCount}/${report.kycTotalCount} A Shirye)'
+                      : '2. KYC Readiness (${report.kycMetCount}/${report.kycTotalCount} Ready)',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 12.5,
@@ -181,9 +211,11 @@ class _EligibilityContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 if (report.pendingKycItems.isEmpty)
-                  const Text(
-                    '✓ All mandatory KYC documents verified.',
-                    style: TextStyle(
+                  Text(
+                    isHa
+                        ? '✓ Dukkan takardun KYC na wajibi an tabbatar da su.'
+                        : '✓ All mandatory KYC documents verified.',
+                    style: const TextStyle(
                       color: NelfundColors.emerald,
                       fontSize: 12,
                     ),
@@ -220,18 +252,20 @@ class _EligibilityContent extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 // Section 3 Breakdown
-                const Text(
-                  '3. Disqualification Bars',
-                  style: TextStyle(
+                Text(
+                  isHa ? '3. Shingen Doka Masu Hana Bashi' : '3. Disqualification Bars',
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 12.5,
                   ),
                 ),
                 const SizedBox(height: 4),
                 if (!hasDisqualifiers)
-                  const Text(
-                    '✓ Clean Record: 0 active disqualification bars.',
-                    style: TextStyle(
+                  Text(
+                    isHa
+                        ? '✓ Tarihi Mai Kyau: Babu wani shingen doka da ya shafe ka.'
+                        : '✓ Clean Record: 0 active disqualification bars.',
+                    style: const TextStyle(
                       color: NelfundColors.emerald,
                       fontSize: 12,
                     ),
@@ -277,9 +311,11 @@ class _EligibilityContent extends StatelessWidget {
                   Navigator.of(dialogContext).pop();
                   _launchNelfundPortal(context);
                 },
-                child: const Text(
-                  'Proceed to Portal (nelf.gov.ng)',
-                  style: TextStyle(
+                child: Text(
+                  isHa
+                      ? 'Bude Shafin Hukumar NELFUND (nelf.gov.ng)'
+                      : 'Proceed to Portal (nelf.gov.ng)',
+                  style: const TextStyle(
                     color: NelfundColors.emerald,
                     fontWeight: FontWeight.w700,
                   ),
@@ -288,7 +324,11 @@ class _EligibilityContent extends StatelessWidget {
             CupertinoDialogAction(
               isDestructiveAction: !isEligible,
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(isEligible ? 'Close' : 'Review Checklist'),
+              child: Text(
+                isEligible
+                    ? (isHa ? 'Rufe' : 'Close')
+                    : (isHa ? 'Duba Jerin Abubuwan da Ake Bukata' : 'Review Checklist'),
+              ),
             ),
           ],
         );
@@ -298,37 +338,40 @@ class _EligibilityContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeProv = context.watch<LocaleProvider>();
+    final lang = localeProv.currentLanguage;
+    final tr = AppTranslations.of(context);
     final provider = context.watch<EligibilityProvider>();
-    final report = provider.report;
+    final report = provider.getReport(lang);
 
     return CupertinoPageScaffold(
       child: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            _buildFintechHeader(context),
+            _buildFintechHeader(context, tr),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 children: [
-                  _buildStepGuideCard(context),
+                  _buildStepGuideCard(context, tr),
                   const SizedBox(height: 16),
-                  _buildAcademicStreamSelector(context, provider),
+                  _buildAcademicStreamSelector(context, provider, lang, tr),
                   const SizedBox(height: 16),
-                  _buildSectionHeader('1. Statutory Core Criteria'),
-                  _buildCoreCriteriaSection(context, provider),
+                  _buildSectionHeader(tr.coreCriteriaTitle),
+                  _buildCoreCriteriaSection(context, provider, lang, tr),
                   const SizedBox(height: 16),
-                  _buildSectionHeader('2. KYC & Identity Verification'),
-                  _buildKycReadinessSection(context, provider),
+                  _buildSectionHeader(tr.kycChecklistTitle),
+                  _buildKycReadinessSection(context, provider, lang),
                   const SizedBox(height: 16),
-                  _buildSectionHeader('3. Statutory Disqualification Bars'),
-                  _buildDisqualificationSection(context, provider),
+                  _buildSectionHeader(tr.disqualificationBarsTitle),
+                  _buildDisqualificationSection(context, provider, lang),
                   const SizedBox(height: 20),
-                  _buildEvaluateButton(context, report),
+                  _buildEvaluateButton(context, report, lang, tr),
                   const SizedBox(height: 20),
-                  _buildDiagnosticResultCard(context, report),
+                  _buildDiagnosticResultCard(context, report, lang, tr),
                   const SizedBox(height: 16),
-                  _buildLegalDisclaimer(context),
+                  _buildLegalDisclaimer(context, tr),
                   const SizedBox(height: 28),
                 ],
               ),
@@ -339,7 +382,7 @@ class _EligibilityContent extends StatelessWidget {
     );
   }
 
-  Widget _buildFintechHeader(BuildContext context) {
+  Widget _buildFintechHeader(BuildContext context, AppTranslations tr) {
     return Container(
       decoration: BoxDecoration(
         color: CupertinoDynamicColor.resolve(
@@ -357,7 +400,7 @@ class _EligibilityContent extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             child: Center(
               child: Text(
-                'Eligibility Checker',
+                tr.eligibilityHeaderTitle,
                 style: NelfundTypography.title2.copyWith(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -366,7 +409,6 @@ class _EligibilityContent extends StatelessWidget {
               ),
             ),
           ),
-          // Green lighting ambient separator bar
           Container(
             height: 2.5,
             decoration: BoxDecoration(
@@ -391,7 +433,9 @@ class _EligibilityContent extends StatelessWidget {
     );
   }
 
-  Widget _buildStepGuideCard(BuildContext context) {
+  Widget _buildStepGuideCard(BuildContext context, AppTranslations tr) {
+    final isHa = tr.isHausa;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
@@ -417,7 +461,7 @@ class _EligibilityContent extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Student Eligibility Guide',
+                    isHa ? 'Jagoran Cancantar Dalibi' : 'Student Eligibility Guide',
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -428,7 +472,9 @@ class _EligibilityContent extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Follow through the following steps to check if you are eligible for the NELFund Student Loan:',
+              isHa
+                  ? 'Bi wadannan matakai domin duba ko ka cancanci samun bashin NELFUND:'
+                  : 'Follow through the following steps to check if you are eligible for the NELFund Student Loan:',
               style: NelfundTypography.body.copyWith(
                 fontSize: 13.5,
                 fontWeight: FontWeight.w500,
@@ -443,27 +489,32 @@ class _EligibilityContent extends StatelessWidget {
             _buildGuideStepItem(
               context: context,
               stepNumber: '1',
-              title: 'Select Academic Stream',
-              description:
-                  'Choose whether you are Fresh Entry (100L via JAMB), Direct Entry (200L/DE), or Returning Undergraduate.',
+              title: isHa ? 'Zabi Rukunin Karatu' : 'Select Academic Stream',
+              description: isHa
+                  ? 'Zabi ko kai sabon shiga ne (100L ta JAMB), shigar kai-tsaye (Direct Entry/200L), ko mai ci gaba da karatu.'
+                  : 'Choose whether you are Fresh Entry (100L via JAMB), Direct Entry (200L/DE), or Returning Undergraduate.',
               stepColor: NelfundColors.emerald,
             ),
             const SizedBox(height: 10),
             _buildGuideStepItem(
               context: context,
               stepNumber: '2',
-              title: 'Fill Sections 1 & 2',
-              description:
-                  'Tick every box where you have met the statutory criteria in Section 1 and prepared the required KYC documents in Section 2.',
+              title: isHa ? 'Cika Sashe na 1 da na 2' : 'Fill Sections 1 & 2',
+              description: isHa
+                  ? 'Danna kowacce alama inda ka cika sharuddan doka a Sashe na 1 tare da shirya takardun KYC a Sashe na 2.'
+                  : 'Tick every box where you have met the statutory criteria in Section 1 and prepared the required KYC documents in Section 2.',
               stepColor: NelfundColors.emerald,
             ),
             const SizedBox(height: 10),
             _buildGuideStepItem(
               context: context,
               stepNumber: '3',
-              title: 'Section 3 (Caution — Disqualifications)',
-              description:
-                  'Do NOT fill or check any box in Section 3 unless you actually have the disqualifying condition stated therein (such as prior loan default, exam malpractice, or felony).',
+              title: isHa
+                  ? 'Sashe na 3 (Gargadi — Abubuwan da Ke Hana Bashi)'
+                  : 'Section 3 (Caution — Disqualifications)',
+              description: isHa
+                  ? 'KADA ka danna kowane akwati a Sashe na 3 sai dai idan da gaske kana da daya daga cikin abubuwan da ke hana samun bashi (kamar kin biyan wani bashi a baya, magudin jarrabawa, ko aikata babban laifi).'
+                  : 'Do NOT fill or check any box in Section 3 unless you actually have the disqualifying condition stated therein (such as prior loan default, exam malpractice, or felony).',
               stepColor: CupertinoColors.systemOrange,
               isWarning: true,
             ),
@@ -552,13 +603,17 @@ class _EligibilityContent extends StatelessWidget {
   }
 
   Widget _buildAcademicStreamSelector(
-      BuildContext context, EligibilityProvider provider) {
+    BuildContext context,
+    EligibilityProvider provider,
+    AppLanguage lang,
+    AppTranslations tr,
+  ) {
     return AppleFrostedCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Select Academic Stream',
+            tr.academicStreamTitle,
             style: NelfundTypography.headline.copyWith(fontSize: 15),
           ),
           const SizedBox(height: 10),
@@ -569,15 +624,24 @@ class _EligibilityContent extends StatelessWidget {
               children: {
                 AcademicEntryType.freshEntry: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text('Fresh Entry', style: NelfundTypography.footnote),
+                  child: Text(
+                    AcademicEntryType.freshEntry.getLocalizedName(lang),
+                    style: NelfundTypography.footnote,
+                  ),
                 ),
                 AcademicEntryType.directEntry: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text('Direct Entry', style: NelfundTypography.footnote),
+                  child: Text(
+                    AcademicEntryType.directEntry.getLocalizedName(lang),
+                    style: NelfundTypography.footnote,
+                  ),
                 ),
                 AcademicEntryType.undergraduate: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text('Undergraduate', style: NelfundTypography.footnote),
+                  child: Text(
+                    AcademicEntryType.undergraduate.getLocalizedName(lang),
+                    style: NelfundTypography.footnote,
+                  ),
                 ),
               },
               onValueChanged: (val) {
@@ -601,7 +665,7 @@ class _EligibilityContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              provider.academicType.description,
+              provider.academicType.getLocalizedDescription(lang),
               style: NelfundTypography.footnote.copyWith(
                 color: NelfundColors.emerald,
               ),
@@ -611,8 +675,6 @@ class _EligibilityContent extends StatelessWidget {
       ),
     );
   }
-
-
 
   Widget _buildSectionHeader(String title) {
     return Padding(
@@ -628,37 +690,57 @@ class _EligibilityContent extends StatelessWidget {
   }
 
   Widget _buildCoreCriteriaSection(
-      BuildContext context, EligibilityProvider provider) {
+    BuildContext context,
+    EligibilityProvider provider,
+    AppLanguage lang,
+    AppTranslations tr,
+  ) {
+    final isHa = lang == AppLanguage.hausa;
+
     return AppleFrostedCard(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
           _buildCheckRow(
             context: context,
-            title: 'Nigerian Citizen (NIN & BVN Verified)',
-            subtitle: 'Must be a Nigerian citizen as defined by the Constitution.',
+            title: isHa
+                ? 'Ɗan Ƙasa ne na Najeriya (Tantance NIN da BVN)'
+                : 'Nigerian Citizen (NIN & BVN Verified)',
+            subtitle: isHa
+                ? 'Tabbatar da zama ɗan Najeriya ta hanyar lambobin ɗan ƙasa NIN da kuma na banki BVN (Sashe na 2.1)'
+                : 'Must be a Nigerian citizen as defined by the Constitution.',
             value: provider.isNigerianCitizen,
             onChanged: provider.toggleNigerianCitizen,
             isFirst: true,
           ),
           _buildCheckRow(
             context: context,
-            title: 'Approved Public Tertiary Institution',
-            subtitle: 'Enrolled in an eligible Federal/State public university, polytechnic, or college.',
+            title: isHa
+                ? 'Makarantar Gwamnati da Aka Amince da Ita'
+                : 'Approved Public Tertiary Institution',
+            subtitle: isHa
+                ? 'Kasancewa ɗalibi a jami\'a, kwalejin foliteknik ko kwalejin ilimi ta gwamnatin tarayya ko jiha (Sashe na 2.2)'
+                : 'Enrolled in an eligible Federal/State public university, polytechnic, or college.',
             value: provider.isEnrolledInPublicEti,
             onChanged: provider.toggleEnrolledInPublicEti,
           ),
           _buildCheckRow(
             context: context,
-            title: 'Academic Status Verified',
-            subtitle: provider.academicType.academicRequirementLabel,
+            title: isHa
+                ? 'Tabbatar da Matsayin Karatu'
+                : 'Academic Status Verified',
+            subtitle: provider.academicType.getLocalizedAcademicRequirementLabel(lang),
             value: provider.isAcademicAdmissionVerified,
             onChanged: provider.toggleAcademicAdmissionVerified,
           ),
           _buildCheckRow(
             context: context,
-            title: 'Uploaded to Student Verification System (SVS)',
-            subtitle: 'Your tertiary institution has uploaded your student profile to NELFUND.',
+            title: isHa
+                ? 'Makarantarku ta Loda Bayananku a Tsarin SVS'
+                : 'Uploaded to Student Verification System (SVS)',
+            subtitle: isHa
+                ? 'Makarantarku ta loda cikakkun bayanan ɗalibanta zuwa tsarin NELFUND (SVS) domin tantancewa.'
+                : 'Your tertiary institution has uploaded your student profile to NELFUND.',
             value: provider.isSchoolDataUploaded,
             onChanged: provider.toggleSchoolDataUploaded,
             isLast: true,
@@ -669,51 +751,78 @@ class _EligibilityContent extends StatelessWidget {
   }
 
   Widget _buildKycReadinessSection(
-      BuildContext context, EligibilityProvider provider) {
+    BuildContext context,
+    EligibilityProvider provider,
+    AppLanguage lang,
+  ) {
+    final isHa = lang == AppLanguage.hausa;
+
     return AppleFrostedCard(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
           _buildCheckRow(
             context: context,
-            title: 'JAMB Registration Number',
-            subtitle: 'Validated with the Joint Admissions & Matriculation Board.',
+            title: isHa ? 'Lambar Rajistar JAMB' : 'JAMB Registration Number',
+            subtitle: isHa
+                ? 'Ingantacciyar lambar JAMB da aka tantance tare da hukumar JAMB.'
+                : 'Validated with the Joint Admissions & Matriculation Board.',
             value: provider.hasJambNumber,
             onChanged: provider.toggleJambNumber,
             isFirst: true,
           ),
           _buildCheckRow(
             context: context,
-            title: 'Bank Verification Number (BVN)',
-            subtitle: 'Mandatory for all applicants aged 18 years and above (NIBSS).',
+            title: isHa
+                ? 'Lambar Tabbatar da Asusun Banki (BVN)'
+                : 'Bank Verification Number (BVN)',
+            subtitle: isHa
+                ? 'Dole ne ga dukkan masu neman bashi masu shekaru 18 ko sama da haka (NIBSS).'
+                : 'Mandatory for all applicants aged 18 years and above (NIBSS).',
             value: provider.hasBvn,
             onChanged: provider.toggleBvn,
           ),
           _buildCheckRow(
             context: context,
-            title: 'National Identity Number (NIN)',
-            subtitle: 'Verified through NIMC database.',
+            title: isHa
+                ? 'Lambar Shaidar Ɗan Ƙasa (NIN)'
+                : 'National Identity Number (NIN)',
+            subtitle: isHa
+                ? 'Wadda aka tantance a rumbun adana bayanai na NIMC.'
+                : 'Verified through NIMC database.',
             value: provider.hasNin,
             onChanged: provider.toggleNin,
           ),
           _buildCheckRow(
             context: context,
-            title: 'Personal Contact & Residential Info',
-            subtitle: 'Valid phone number, residential address, age, gender, and active email.',
+            title: isHa
+                ? 'Bayanin Adireshin Zama da Lambar Waya'
+                : 'Personal Contact & Residential Info',
+            subtitle: isHa
+                ? 'Ingantacciyar lambar waya, adireshin gida, shekaru, jinsi da imel mai aiki.'
+                : 'Valid phone number, residential address, age, gender, and active email.',
             value: provider.hasPersonalInfo,
             onChanged: provider.togglePersonalInfo,
           ),
           _buildCheckRow(
             context: context,
-            title: 'Recent Passport Photograph',
-            subtitle: 'Clear digital headshot for identity verification.',
+            title: isHa
+                ? 'Hoton Fasfo na Zamani'
+                : 'Recent Passport Photograph',
+            subtitle: isHa
+                ? 'Hoton fasfo na zamani mai farin baya a shirye yake.'
+                : 'Clear digital headshot for identity verification.',
             value: provider.hasPassportPhoto,
             onChanged: provider.togglePassportPhoto,
           ),
           _buildCheckRow(
             context: context,
-            title: 'Valid Admission Letter or Student ID',
-            subtitle: 'Official proof of studentship from an Eligible Tertiary Institution (ETI).',
+            title: isHa
+                ? 'Takardar Shaidar Karatu ko Katin Ɗalibi'
+                : 'Valid Admission Letter or Student ID',
+            subtitle: isHa
+                ? 'Shaidar zama ɗalibi a babbar makarantar gwamnati da ta cancanta.'
+                : 'Official proof of studentship from an Eligible Tertiary Institution (ETI).',
             value: provider.hasAdmissionOrStudentId,
             onChanged: provider.toggleAdmissionOrStudentId,
             isLast: true,
@@ -724,7 +833,12 @@ class _EligibilityContent extends StatelessWidget {
   }
 
   Widget _buildDisqualificationSection(
-      BuildContext context, EligibilityProvider provider) {
+    BuildContext context,
+    EligibilityProvider provider,
+    AppLanguage lang,
+  ) {
+    final isHa = lang == AppLanguage.hausa;
+
     return AppleFrostedCard(
       borderColor: CupertinoColors.systemRed.withValues(alpha: 0.3),
       padding: EdgeInsets.zero,
@@ -746,7 +860,9 @@ class _EligibilityContent extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Statutory Disqualification Bars',
+                        isHa
+                            ? 'Shingen Doka Masu Hana Bashi'
+                            : 'Statutory Disqualification Bars',
                         style: NelfundTypography.headline.copyWith(
                           color: CupertinoColors.systemRed,
                           fontSize: 15,
@@ -757,7 +873,9 @@ class _EligibilityContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Under Section 3.0 of the Guidelines, having any of these conditions will automatically disqualify an applicant:',
+                  isHa
+                      ? 'Ƙarƙashin Sashe na 3.0 na Ƙa\'idojin, kasancewar kowane ɗaya daga cikin waɗannan zai hana samun bashi kai-tsaye:'
+                      : 'Under Section 3.0 of the Guidelines, having any of these conditions will automatically disqualify an applicant:',
                   style: NelfundTypography.footnote.copyWith(
                     color: CupertinoDynamicColor.resolve(
                       NelfundColors.secondaryLabel,
@@ -770,40 +888,56 @@ class _EligibilityContent extends StatelessWidget {
           ),
           _buildDisqualificationCheckRow(
             context: context,
-            title: 'Prior Education Loan Default',
-            subtitle: 'Defaulted on any prior FG or state education loan.',
+            title: isHa
+                ? 'Ƙin Biyan Wani Bashin Karatu a Baya'
+                : 'Prior Education Loan Default',
+            subtitle: isHa
+                ? 'Wanda ya gaza biyan wani bashin karatu na gwamnatin tarayya ko jiha a baya.'
+                : 'Defaulted on any prior FG or state education loan.',
             value: provider.hasPriorLoanDefault,
             onChanged: provider.togglePriorLoanDefault,
           ),
           _buildDisqualificationCheckRow(
             context: context,
-            title: 'Concurrent Scholarship / Loan Beneficiary',
-            subtitle:
-                'Currently receiving another FG or state education loan or scholarship.',
+            title: isHa
+                ? 'Mai Ƙarɓar Wani Tallafin Karatu / Bashi a Halin Yanzu'
+                : 'Concurrent Scholarship / Loan Beneficiary',
+            subtitle: isHa
+                ? 'Duk wanda a yanzu yake cin gajiyar wani tallafin karatu ko lamuni na gwamnati.'
+                : 'Currently receiving another FG or state education loan or scholarship.',
             value: provider.hasActiveScholarship,
             onChanged: provider.toggleActiveScholarship,
           ),
           _buildDisqualificationCheckRow(
             context: context,
-            title: 'Institutional Misconduct or Malpractice',
-            subtitle:
-                'Found culpable of plagiarism, cultism, violence, exam malpractice dismissal, or forged papers.',
+            title: isHa
+                ? 'Laifin Maguɗin Jarrabawa ko Halayyar Makaranta'
+                : 'Institutional Misconduct or Malpractice',
+            subtitle: isHa
+                ? 'Wanda makaranta ta kama da satar fasaha, ƙungiyar asiri, tashin hankali, ko ƙorar maguɗin jarrabawa.'
+                : 'Found culpable of plagiarism, cultism, violence, exam malpractice dismissal, or forged papers.',
             value: provider.hasAcademicMisconduct,
             onChanged: provider.toggleAcademicMisconduct,
           ),
           _buildDisqualificationCheckRow(
             context: context,
-            title: 'Criminal Conviction',
-            subtitle:
-                'Convicted of fraud, forgery, drug offences, felony, or dishonesty.',
+            title: isHa
+                ? 'Hukuncin Kotu Kan Aikata Laifi'
+                : 'Criminal Conviction',
+            subtitle: isHa
+                ? 'Wanda kotu ta taɓa yanke wa hukunci kan damfara, jabu, miyagun ƙwayoyi, ko rashin gaskiya.'
+                : 'Convicted of fraud, forgery, drug offences, felony, or dishonesty.',
             value: provider.hasCriminalConviction,
             onChanged: provider.toggleCriminalConviction,
           ),
           _buildDisqualificationCheckRow(
             context: context,
-            title: 'Holder of First Degree',
-            subtitle:
-                'Already possesses a bachelor’s degree or higher equivalent.',
+            title: isHa
+                ? 'Mai Shaidar Digiri na Farko'
+                : 'Holder of First Degree',
+            subtitle: isHa
+                ? 'Wanda ya riga ya mallaki digiri na farko (B.Sc/B.A) ko makamancin haka.'
+                : 'Already possesses a bachelor’s degree or higher equivalent.',
             value: provider.holdsFirstDegree,
             onChanged: provider.toggleHoldsFirstDegree,
             isLast: true,
@@ -949,26 +1083,31 @@ class _EligibilityContent extends StatelessWidget {
     );
   }
 
-  Widget _buildEvaluateButton(BuildContext context, EligibilityReport report) {
+  Widget _buildEvaluateButton(
+    BuildContext context,
+    EligibilityReport report,
+    AppLanguage lang,
+    AppTranslations tr,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: CupertinoButton(
         padding: const EdgeInsets.symmetric(vertical: 14),
         color: NelfundColors.emerald,
         borderRadius: BorderRadius.circular(14),
-        onPressed: () => _showEligibilityModal(context, report),
-        child: const Row(
+        onPressed: () => _showEligibilityModal(context, report, lang),
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               CupertinoIcons.checkmark_shield_fill,
               size: 20,
               color: CupertinoColors.white,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
-              'Evaluate My Eligibility',
-              style: TextStyle(
+              tr.checkStatusButton,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: CupertinoColors.white,
@@ -981,9 +1120,14 @@ class _EligibilityContent extends StatelessWidget {
   }
 
   Widget _buildDiagnosticResultCard(
-      BuildContext context, EligibilityReport report) {
+    BuildContext context,
+    EligibilityReport report,
+    AppLanguage lang,
+    AppTranslations tr,
+  ) {
     final bool isEligible = report.isLikelyEligible;
     final bool hasDisqualifiers = report.hasDisqualifiers;
+    final isHa = lang == AppLanguage.hausa;
 
     final Color badgeColor = isEligible
         ? NelfundColors.emerald
@@ -1017,7 +1161,6 @@ class _EligibilityContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Status Header
           Row(
             children: [
               Icon(badgeIcon, color: badgeColor, size: 26),
@@ -1048,21 +1191,23 @@ class _EligibilityContent extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // ==========================================
-          // SECTION 1 BREAKDOWN: CORE CRITERIA
-          // ==========================================
+          // SECTION 1 BREAKDOWN
           _buildEvaluationSectionBox(
             context: context,
-            title: 'Section 1: Core Criteria',
-            statusTag: '${report.coreMetCount}/${report.coreTotalCount} Met',
+            title: isHa ? 'Sashe na 1: Muhimman Sharudda' : 'Section 1: Core Criteria',
+            statusTag: isHa
+                ? '${report.coreMetCount}/${report.coreTotalCount} Sun Cika'
+                : '${report.coreMetCount}/${report.coreTotalCount} Met',
             isSuccess: report.coreMetCount == report.coreTotalCount,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (report.coreMetCount == report.coreTotalCount)
-                  const Text(
-                    '✓ All 4 core statutory criteria satisfied (Citizenship, Public Institution, Admission, and SVS data uploaded).',
-                    style: TextStyle(
+                  Text(
+                    isHa
+                        ? '✓ Dukkan muhimman sharuddan doka 4 sun cika (Zama Ɗan Ƙasa, Makarantar Gwamnati, Matsayin Karatu, da Loda Bayanan SVS).'
+                        : '✓ All 4 core statutory criteria satisfied (Citizenship, Public Institution, Admission, and SVS data uploaded).',
+                    style: const TextStyle(
                       color: NelfundColors.emerald,
                       fontSize: 12.5,
                       fontWeight: FontWeight.w500,
@@ -1070,7 +1215,7 @@ class _EligibilityContent extends StatelessWidget {
                   )
                 else ...[
                   Text(
-                    'Pending Core Requirements:',
+                    isHa ? 'Sharuddan da ba a cika ba tukuna:' : 'Pending Core Requirements:',
                     style: NelfundTypography.captionBold.copyWith(
                       color: CupertinoColors.systemOrange,
                     ),
@@ -1108,21 +1253,23 @@ class _EligibilityContent extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // ==========================================
-          // SECTION 2 BREAKDOWN: KYC READINESS
-          // ==========================================
+          // SECTION 2 BREAKDOWN
           _buildEvaluationSectionBox(
             context: context,
-            title: 'Section 2: KYC Readiness',
-            statusTag: '${report.kycMetCount}/${report.kycTotalCount} Ready',
+            title: isHa ? 'Sashe na 2: Shirye-shiryen KYC' : 'Section 2: KYC Readiness',
+            statusTag: isHa
+                ? '${report.kycMetCount}/${report.kycTotalCount} A Shirye'
+                : '${report.kycMetCount}/${report.kycTotalCount} Ready',
             isSuccess: report.kycMetCount == report.kycTotalCount,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (report.kycMetCount == report.kycTotalCount)
-                  const Text(
-                    '✓ All 6 mandatory KYC documents prepared and ready for upload.',
-                    style: TextStyle(
+                  Text(
+                    isHa
+                        ? '✓ Dukkan takardun KYC 6 na wajibi an shirya su domin lodawa.'
+                        : '✓ All 6 mandatory KYC documents prepared and ready for upload.',
+                    style: const TextStyle(
                       color: NelfundColors.emerald,
                       fontSize: 12.5,
                       fontWeight: FontWeight.w500,
@@ -1130,7 +1277,7 @@ class _EligibilityContent extends StatelessWidget {
                   )
                 else ...[
                   Text(
-                    'Documents Pending Preparation:',
+                    isHa ? 'Takardun da ba a kammala ba:' : 'Documents Pending Preparation:',
                     style: NelfundTypography.captionBold.copyWith(
                       color: CupertinoColors.systemOrange,
                     ),
@@ -1168,24 +1315,24 @@ class _EligibilityContent extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // ==========================================
-          // SECTION 3 BREAKDOWN: DISQUALIFICATION BARS
-          // ==========================================
+          // SECTION 3 BREAKDOWN
           _buildEvaluationSectionBox(
             context: context,
-            title: 'Section 3: Disqualification Record',
+            title: isHa ? 'Sashe na 3: Shingen Doka Masu Hana Bashi' : 'Section 3: Disqualification Record',
             statusTag: hasDisqualifiers
-                ? '${report.disqualifierCount} Active Bar(s)'
-                : 'Clean Record',
+                ? (isHa ? '${report.disqualifierCount} Shinge Ya Hana' : '${report.disqualifierCount} Active Bar(s)')
+                : (isHa ? 'Tarihi Mai Kyau' : 'Clean Record'),
             isSuccess: !hasDisqualifiers,
             isCriticalError: hasDisqualifiers,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (!hasDisqualifiers)
-                  const Text(
-                    '✓ Cleared: 0 disqualification factors flagged under Section 3.0 of the 2024 Act.',
-                    style: TextStyle(
+                  Text(
+                    isHa
+                        ? '✓ An Wanke: Babu wani dalili na hana bashi ƙarƙashin Sashe na 3.0 na Dokar 2024.'
+                        : '✓ Cleared: 0 disqualification factors flagged under Section 3.0 of the 2024 Act.',
+                    style: const TextStyle(
                       color: NelfundColors.emerald,
                       fontSize: 12.5,
                       fontWeight: FontWeight.w500,
@@ -1193,7 +1340,7 @@ class _EligibilityContent extends StatelessWidget {
                   )
                 else ...[
                   Text(
-                    'Triggered Disqualification Factor(s):',
+                    isHa ? 'Abubuwan da suka hana cancanta:' : 'Triggered Disqualification Factor(s):',
                     style: NelfundTypography.captionBold.copyWith(
                       color: CupertinoColors.systemRed,
                     ),
@@ -1231,9 +1378,6 @@ class _EligibilityContent extends StatelessWidget {
             ),
           ),
 
-          // ==========================================
-          // WHAT HAPPENED & RESOLUTION BREAKDOWN
-          // ==========================================
           if (!isEligible) ...[
             const SizedBox(height: 14),
             Container(
@@ -1269,7 +1413,7 @@ class _EligibilityContent extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Full Breakdown: What Happened?',
+                        isHa ? 'Cikakken Bayani: Me Ya Faru?' : 'Full Breakdown: What Happened?',
                         style: NelfundTypography.headline.copyWith(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -1283,8 +1427,12 @@ class _EligibilityContent extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     hasDisqualifiers
-                        ? 'Under Section 3.0 and Section 4.1.3 of the Students Loans Act 2024, the presence of any active disqualification bar prevents disbursement from the Fund. If any of the conditions flagged above was selected in error, uncheck the item in Section 3 to re-evaluate.'
-                        : 'Your eligibility cannot be cleared yet because one or more core statutory requirements in Section 1 remain unfulfilled. Please ensure your admission is valid, that your institution is a public tertiary institution, and that your school management has uploaded student data to the NELFUND Student Verification System (SVS).',
+                        ? (isHa
+                            ? 'Ƙarƙashin Sashe na 3.0 da Sashe na 4.1.3 na Dokar Lamunin Ɗalibai ta 2024, kasancewar kowane shinge na hana bashi yana dakatar da bayar da kuɗi daga asusun. Idan an danna wani abu bisa kuskure a Sashe na 3, cire alamar domin sake dubawa.'
+                            : 'Under Section 3.0 and Section 4.1.3 of the Students Loans Act 2024, the presence of any active disqualification bar prevents disbursement from the Fund. If any of the conditions flagged above was selected in error, uncheck the item in Section 3 to re-evaluate.')
+                        : (isHa
+                            ? 'Ba a kai ga tabbatar da cancantarka ba saboda ba a kammala cika ɗaya ko fiye na muhimman sharuddan Sashe na 1 ba. Da fatan za a tabbatar da cewa shigar makarantarku ingantacciya ce, makarantarku ta gwamnati ce, kuma hukumar makarantarku ta loda bayananku a Tsarin Tabbatar da Ɗalibai na NELFUND (SVS).'
+                            : 'Your eligibility cannot be cleared yet because one or more core statutory requirements in Section 1 remain unfulfilled. Please ensure your admission is valid, that your institution is a public tertiary institution, and that your school management has uploaded student data to the NELFUND Student Verification System (SVS).'),
                     style: NelfundTypography.footnote.copyWith(
                       fontSize: 12,
                       height: 1.35,
@@ -1323,8 +1471,8 @@ class _EligibilityContent extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     isEligible
-                        ? 'Open NELFUND Portal (nelf.gov.ng)'
-                        : 'Visit Official Portal for Guidelines',
+                        ? (isHa ? 'Bude Shafin Hukumar NELFUND (nelf.gov.ng)' : 'Open NELFUND Portal (nelf.gov.ng)')
+                        : (isHa ? 'Ziyarci Shafin Hukuma domin Jagorori' : 'Visit Official Portal for Guidelines'),
                     style: const TextStyle(
                       fontSize: 14.5,
                       fontWeight: FontWeight.w600,
@@ -1411,11 +1559,13 @@ class _EligibilityContent extends StatelessWidget {
     );
   }
 
-  Widget _buildLegalDisclaimer(BuildContext context) {
+  Widget _buildLegalDisclaimer(BuildContext context, AppTranslations tr) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Text(
-        'Note: This eligibility checker evaluates your criteria against the published 2024 Guidelines for informational purposes. Final determination and clearance rests solely with NELFUND and your tertiary institution’s SVS confirmation.',
+        tr.isHausa
+            ? 'Lura: Wannan na\'urar tantance cancanta tana auna bayananka ne da ƙa\'idojin 2024 domin ilmantarwa kaɗai. Hukuncin ƙarshe da amincewa yana hannun NELFUND ne da kuma tabbatarwar tsarin SVS na makarantarka.'
+            : 'Note: This eligibility checker evaluates your criteria against the published 2024 Guidelines for informational purposes. Final determination and clearance rests solely with NELFUND and your tertiary institution’s SVS confirmation.',
         style: NelfundTypography.caption.copyWith(
           color: CupertinoDynamicColor.resolve(
             NelfundColors.tertiaryLabel,

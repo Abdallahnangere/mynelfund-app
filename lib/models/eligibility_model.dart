@@ -1,3 +1,5 @@
+import '../core/localization/app_locale.dart';
+
 /// Academic Entry Streams recognized under Section 2.2 of NELFUND Guidelines.
 enum AcademicEntryType {
   freshEntry,
@@ -6,7 +8,19 @@ enum AcademicEntryType {
 }
 
 extension AcademicEntryTypeExtension on AcademicEntryType {
-  String get title {
+  String get title => getTitle(AppLanguage.english);
+
+  String getTitle(AppLanguage lang) {
+    if (lang == AppLanguage.hausa) {
+      switch (this) {
+        case AcademicEntryType.freshEntry:
+          return 'Sabon Shiga';
+        case AcademicEntryType.directEntry:
+          return 'Shiga Mataki na Biyu';
+        case AcademicEntryType.undergraduate:
+          return 'Dalibi na Yanzu';
+      }
+    }
     switch (this) {
       case AcademicEntryType.freshEntry:
         return 'Fresh Entry';
@@ -17,7 +31,19 @@ extension AcademicEntryTypeExtension on AcademicEntryType {
     }
   }
 
-  String get description {
+  String get description => getDescription(AppLanguage.english);
+
+  String getDescription(AppLanguage lang) {
+    if (lang == AppLanguage.hausa) {
+      switch (this) {
+        case AcademicEntryType.freshEntry:
+          return 'Sabon dalibi mai neman shiga aji na daya (100 Level) da ya sami ingantacciyar takardar shiga ta JAMB.';
+        case AcademicEntryType.directEntry:
+          return 'Dalibi da ya sami gurbin shiga aji na biyu (200 Level Direct Entry) ta hanyar JAMB.';
+        case AcademicEntryType.undergraduate:
+          return 'Dalibi mai ci gaba da karatu a halin yanzu da yake da ingantacciyar lambar shiga makaranta (Matric Number).';
+      }
+    }
     switch (this) {
       case AcademicEntryType.freshEntry:
         return 'Prospective 100-level student with valid admission via JAMB.';
@@ -28,7 +54,18 @@ extension AcademicEntryTypeExtension on AcademicEntryType {
     }
   }
 
-  String get academicRequirementLabel {
+  String get academicRequirementLabel => getAcademicRequirementLabel(AppLanguage.english);
+
+  String getAcademicRequirementLabel(AppLanguage lang) {
+    if (lang == AppLanguage.hausa) {
+      switch (this) {
+        case AcademicEntryType.freshEntry:
+        case AcademicEntryType.directEntry:
+          return 'Ingantacciyar takardar shiga ta JAMB zuwa babbar makarantar gwamnati';
+        case AcademicEntryType.undergraduate:
+          return 'Ingantacciyar lambar shiga makaranta (Matric Number) da tabbacin dalibta na dindindin';
+      }
+    }
     switch (this) {
       case AcademicEntryType.freshEntry:
       case AcademicEntryType.directEntry:
@@ -37,6 +74,10 @@ extension AcademicEntryTypeExtension on AcademicEntryType {
         return 'Official Matriculation Number & verified full-time studentship at an ETI';
     }
   }
+
+  String getLocalizedName(AppLanguage lang) => getTitle(lang);
+  String getLocalizedDescription(AppLanguage lang) => getDescription(lang);
+  String getLocalizedAcademicRequirementLabel(AppLanguage lang) => getAcademicRequirementLabel(lang);
 }
 
 /// Structured diagnostic report generated from the eligibility evaluation across all 3 sections.

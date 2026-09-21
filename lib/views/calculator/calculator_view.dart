@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_translations.dart';
+import '../../core/localization/locale_provider.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
 import '../../models/repayment_model.dart';
@@ -40,10 +42,23 @@ class CalculatorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    LocaleProvider? localeProv;
+    try {
+      localeProv = Provider.of<LocaleProvider?>(context, listen: false);
+    } catch (_) {}
+
+    final content = ChangeNotifierProvider(
       create: (_) => RepaymentProvider(),
       child: const _CalculatorContent(),
     );
+
+    if (localeProv == null) {
+      return ChangeNotifierProvider(
+        create: (_) => LocaleProvider(),
+        child: content,
+      );
+    }
+    return content;
   }
 }
 
@@ -118,6 +133,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
   }
 
   Widget _buildFintechHeader(BuildContext context) {
+    final tr = AppTranslations.of(context);
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -148,7 +165,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Center(
               child: Text(
-                'Payment Calculator',
+                tr.calcHeaderTitle,
                 style: NelfundTypography.headline.copyWith(
                   fontWeight: FontWeight.w700,
                   fontSize: 17,
@@ -188,6 +205,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
   }
 
   Widget _buildTipBanner(BuildContext context) {
+    final tr = AppTranslations.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
@@ -215,7 +234,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Tap below to add your loans and select your expected income after graduation to simulate your monthly deduction and repayment timeline.',
+                tr.calcTipBannerText,
                 style: NelfundTypography.footnote.copyWith(
                   fontSize: 13,
                   height: 1.35,
@@ -281,18 +300,18 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       width: 0.8,
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      const Icon(
                         CupertinoIcons.creditcard_fill,
                         size: 13,
                         color: NelfundColors.emerald,
                       ),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                       Text(
-                        'NELFUND WALLET',
-                        style: TextStyle(
+                        AppTranslations.of(context).walletBadge,
+                        style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.0,
@@ -311,18 +330,18 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   borderRadius: BorderRadius.circular(18),
                   minimumSize: Size.zero,
                   onPressed: () => _showAddOrEditLoanDialog(context, provider),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      const Icon(
                         CupertinoIcons.plus_circle_fill,
                         size: 14,
                         color: CupertinoColors.white,
                       ),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                       Text(
-                        'Add Loan Year',
-                        style: TextStyle(
+                        AppTranslations.of(context).buttonAddLoanYear,
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: CupertinoColors.white,
@@ -335,7 +354,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             ),
             const SizedBox(height: 10),
             Text(
-              'TOTAL LOAN PORTFOLIO',
+              AppTranslations.of(context).totalPortfolioLabel,
               style: TextStyle(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w600,
@@ -372,7 +391,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'STATUTORY MONTHLY DEDUCTION',
+                        AppTranslations.of(context).statutoryMonthlyDeductionLabel,
                         style: TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w700,
@@ -394,7 +413,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       ),
                       const SizedBox(height: 1),
                       Text(
-                        '10% Statutory Rate',
+                        AppTranslations.of(context).statutoryRateLabel,
                         style: TextStyle(
                           fontSize: 10.5,
                           color: CupertinoDynamicColor.resolve(
@@ -417,7 +436,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'EXPECTED PAYOFF TIME',
+                        AppTranslations.of(context).expectedPayoffTimeLabel,
                         style: TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w700,
@@ -430,7 +449,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        proj.formattedPayoffTimeline,
+                        proj.getFormattedPayoffTimeline(
+                          AppTranslations.of(context).language,
+                        ),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -444,7 +465,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       ),
                       const SizedBox(height: 1),
                       Text(
-                        '0% Zero Interest',
+                        AppTranslations.of(context).zeroInterestTag,
                         style: TextStyle(
                           fontSize: 10.5,
                           color: CupertinoDynamicColor.resolve(
@@ -468,6 +489,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     BuildContext context,
     RepaymentProvider provider,
   ) {
+    final tr = AppTranslations.of(context);
+
     if (provider.sessionLoans.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -484,7 +507,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'No academic session loans added. Tap "Add Loan Year" on the wallet card above to onboard your loans.',
+                  tr.noSessionsAdded,
                   style: NelfundTypography.footnote.copyWith(
                     color: CupertinoDynamicColor.resolve(
                       NelfundColors.secondaryLabel,
@@ -508,7 +531,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Configured Academic Sessions (${provider.sessionLoans.length})',
+                '${tr.configuredSessionsTitle} (${provider.sessionLoans.length})',
                 style: NelfundTypography.captionBold.copyWith(
                   color: CupertinoDynamicColor.resolve(
                     NelfundColors.secondaryLabel,
@@ -518,7 +541,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 ),
               ),
               Text(
-                'Tap to edit',
+                tr.tapToEdit,
                 style: NelfundTypography.caption.copyWith(
                   color: CupertinoDynamicColor.resolve(
                     NelfundColors.tertiaryLabel,
@@ -557,7 +580,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          session.levelLabel,
+                          session.getLevelLabel(tr.language),
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
@@ -579,7 +602,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Tuition: ${session.formattedTuition}${session.includeUpkeep ? ' + Upkeep: ${session.formattedUpkeep}' : ' (No Upkeep)'}',
+                              '${tr.isHausa ? 'Kudin Makaranta' : 'Tuition'}: ${session.formattedTuition}${session.includeUpkeep ? (tr.isHausa ? ' + Alawus: ${session.formattedUpkeep}' : ' + Upkeep: ${session.formattedUpkeep}') : (tr.isHausa ? ' (Babu Alawus)' : ' (No Upkeep)')}',
                               style: NelfundTypography.caption.copyWith(
                                 color: CupertinoDynamicColor.resolve(
                                   NelfundColors.secondaryLabel,
@@ -617,6 +640,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     RepaymentProvider provider, {
     AcademicSessionLoan? existingLoan,
   }) {
+    final tr = AppTranslations.of(context);
     int selectedLevel = existingLoan?.level ?? 100;
     if (existingLoan == null) {
       final existingLevels = provider.sessionLoans.map((s) => s.level).toSet();
@@ -682,8 +706,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       children: [
                         Text(
                           existingLoan != null
-                              ? 'Edit Academic Year Loan'
-                              : 'Add Academic Year Loan',
+                              ? tr.editLoanYearTitle
+                              : tr.addLoanYearTitle,
                           style: NelfundTypography.headline.copyWith(
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
@@ -703,7 +727,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Select Academic Level:',
+                      tr.selectLevelLabel,
                       style: NelfundTypography.captionBold,
                     ),
                     const SizedBox(height: 6),
@@ -730,12 +754,12 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Institutional / Tuition Fee (₦):',
+                      tr.institutionalFeeLabel,
                       style: NelfundTypography.captionBold,
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      'Enter the institutional fee loan amount of this year',
+                      tr.enterFeeDesc,
                       style: NelfundTypography.caption.copyWith(
                         color: CupertinoColors.systemGrey,
                         fontSize: 12,
@@ -801,16 +825,16 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Include Upkeep Allowance',
-                                  style: TextStyle(
+                                Text(
+                                  tr.includeUpkeepLabel,
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'Auto-calculated: ₦20,000 × 12 = ₦240,000 / yr',
+                                  tr.upkeepAutoCalculated,
                                   style: NelfundTypography.caption.copyWith(
                                     color: NelfundColors.emerald,
                                     fontWeight: FontWeight.w600,
@@ -842,7 +866,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Session Loan Total ($selectedLevel Level):',
+                            tr.sessionLoanTotalLabel(selectedLevel),
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -878,7 +902,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                           Navigator.of(builderCtx).pop();
                         },
                         child: Text(
-                          existingLoan != null ? 'Update Loan' : 'Add to Wallet',
+                          existingLoan != null ? tr.buttonUpdateLoan : tr.buttonAddToWallet,
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
@@ -902,6 +926,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     RepaymentProvider provider,
     RepaymentProjection proj,
   ) {
+    final tr = AppTranslations.of(context);
+    final isHa = tr.isHausa;
     final startStr = DateFormat('MMMM yyyy').format(proj.repaymentStartDate);
 
     return Padding(
@@ -921,7 +947,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Employment & Income Configurator',
+                    isHa
+                        ? 'Tsara Aiki da Kudin Shiga'
+                        : 'Employment & Income Configurator',
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
                       fontWeight: FontWeight.w700,
@@ -932,7 +960,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Input your NYSC graduation year and projected monthly income to configure your statutory grace period and deduction.',
+              isHa
+                  ? 'Shigar da shekarar da ka kammala NYSC da kudin shigar da kake sa ran samu domin lissafin wa\'adin sassauci da adadin da za a rinka ragewa.'
+                  : 'Input your NYSC graduation year and projected monthly income to configure your statutory grace period and deduction.',
               style: NelfundTypography.footnote.copyWith(
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.secondaryLabel,
@@ -946,7 +976,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'NYSC Graduation Year:',
+                  tr.nyscGraduationYearLabel,
                   style: NelfundTypography.headline.copyWith(fontSize: 14),
                 ),
                 Row(
@@ -1014,7 +1044,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '2-Year Grace Active: Repayment starts $startStr',
+                      '${tr.twoYearGraceActivePrefix}$startStr',
                       style: NelfundTypography.captionBold.copyWith(
                         color: NelfundColors.emerald,
                         fontSize: 12,
@@ -1026,7 +1056,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Repayment Stream:',
+              tr.repaymentStreamTitle,
               style: NelfundTypography.headline.copyWith(fontSize: 14),
             ),
             const SizedBox(height: 8),
@@ -1038,14 +1068,14 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   RepaymentMode.employedPaye: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     child: Text(
-                      'Employed (PAYE)',
+                      RepaymentMode.employedPaye.getTitle(tr.language),
                       style: NelfundTypography.footnote,
                     ),
                   ),
                   RepaymentMode.selfEmployedIbr: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     child: Text(
-                      'Self-Employed (Direct)',
+                      RepaymentMode.selfEmployedIbr.getTitle(tr.language),
                       style: NelfundTypography.footnote,
                     ),
                   ),
@@ -1059,7 +1089,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             ),
             const SizedBox(height: 8),
             Text(
-              provider.mode.description,
+              provider.mode.getDescription(tr.language),
               style: NelfundTypography.caption.copyWith(
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.secondaryLabel,
@@ -1069,12 +1099,12 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Expected Monthly Income (₦):',
+              tr.expectedMonthlyIncomeLabel,
               style: NelfundTypography.headline.copyWith(fontSize: 14),
             ),
             const SizedBox(height: 3),
             Text(
-              'Enter the expected salary that you will earn if you get employed.',
+              tr.expectedSalaryDesc,
               style: NelfundTypography.caption.copyWith(
                 color: CupertinoColors.systemGrey,
                 fontSize: 12,
@@ -1126,7 +1156,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
               child: _buildIncomeChip(
                 provider,
                 70000,
-                '₦70,000.00 (Minimum Wage)',
+                tr.minimumWageChip,
               ),
             ),
           ],
@@ -1178,6 +1208,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     RepaymentProvider provider,
     RepaymentProjection proj,
   ) {
+    final tr = AppTranslations.of(context);
+    final isHa = tr.isHausa;
     final popStr = DateFormat('MMMM yyyy').format(proj.nyscCompletionDate);
     final startStr = DateFormat('MMMM yyyy').format(proj.repaymentStartDate);
 
@@ -1198,7 +1230,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '2-Year Post-NYSC Grace Period',
+                    tr.postNyscGraceCardTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
                       fontWeight: FontWeight.w700,
@@ -1209,7 +1241,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Under Section 5.0 of the Students Loans Act 2024, beneficiaries enjoy an automatic 24-month interest-free moratorium after completing national service:',
+              tr.postNyscGraceCardDesc,
               style: NelfundTypography.footnote.copyWith(
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.secondaryLabel,
@@ -1235,18 +1267,18 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 children: [
                   _buildTimelineStep(
                     dotColor: CupertinoColors.systemBlue,
-                    label: 'NYSC Passing Out Parade (POP)',
+                    label: tr.popTimelineLabel,
                     date: popStr,
                     isFirst: true,
                   ),
                   _buildTimelineStep(
                     dotColor: CupertinoColors.systemOrange,
-                    label: '24-Month Statutory Grace Period (0 Deductions)',
-                    date: '2 Full Years Protected',
+                    label: tr.graceTimelineLabel,
+                    date: isHa ? 'Cikakkun Shekaru 2 da Kariya' : '2 Full Years Protected',
                   ),
                   _buildTimelineStep(
                     dotColor: NelfundColors.emerald,
-                    label: 'Mandatory Repayment Begins',
+                    label: tr.repaymentTimelineLabel,
                     date: startStr,
                     isLast: true,
                   ),
@@ -1275,7 +1307,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Unemployment Protection (Sec. 5.1c)',
+                        tr.unemploymentProtectionTitle,
                         style: NelfundTypography.captionBold.copyWith(
                           fontSize: 12.5,
                         ),
@@ -1284,7 +1316,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'If you are not yet gainfully employed at the end of your 2-year grace period, you are legally protected. Submitting a periodic statutory declaration or sworn affidavit pauses deductions until you secure employment.',
+                    tr.unemploymentProtectionDesc,
                     style: NelfundTypography.footnote.copyWith(
                       color: CupertinoDynamicColor.resolve(
                         NelfundColors.secondaryLabel,
@@ -1348,6 +1380,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
   }
 
   Widget _buildFriendlyComplianceCard(BuildContext context) {
+    final tr = AppTranslations.of(context);
+    final isHa = tr.isHausa;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppleFrostedCard(
@@ -1366,7 +1401,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Repayment Support & Compliance Guidelines',
+                    tr.complianceGuideTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
                       fontWeight: FontWeight.w700,
@@ -1377,7 +1412,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             ),
             const SizedBox(height: 6),
             Text(
-              'The Students Loans Act 2024 is built with student safeguards first. Here is how statutory compliance and protections work:',
+              tr.complianceGuideDesc,
               style: NelfundTypography.footnote.copyWith(
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.secondaryLabel,
@@ -1390,30 +1425,42 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             _buildSupportPoint(
               icon: CupertinoIcons.person_crop_circle_badge_checkmark,
               iconColor: NelfundColors.emerald,
-              title: 'Student Safety Nets & Hardship Deferrals',
-              detail:
-                  'Beneficiaries facing genuine unemployment or economic hardship can easily apply for formal repayment suspension. No interest or penalty ever accumulates during approved pauses.',
+              title: isHa
+                  ? 'Kariyar Dalibai & Dakatar da Biya Saboda Lalura'
+                  : 'Student Safety Nets & Hardship Deferrals',
+              detail: isHa
+                  ? 'Duk wanda ya tsinci kansa a rashin aikin yi ko matsin tattalin arziki zai iya neman a dakatar da biyan bashi a hukumance. Babu wani kudin ruwa ko tara da zai karu a lokacin da aka amince da dakatarwar.'
+                  : 'Beneficiaries facing genuine unemployment or economic hardship can easily apply for formal repayment suspension. No interest or penalty ever accumulates during approved pauses.',
             ),
             _buildSupportPoint(
               icon: CupertinoIcons.chat_bubble_2_fill,
               iconColor: CupertinoColors.systemBlue,
-              title: 'Stay Connected with NELFUND',
-              detail:
-                  'Maintaining your good standing is simple: keep your residential address, phone number, and employer status current on the official student portal.',
+              title: isHa
+                  ? 'Ci gaba da Kasancewa tare da NELFUND'
+                  : 'Stay Connected with NELFUND',
+              detail: isHa
+                  ? 'Kula da martabarka abu ne mai sauki: ka tabbatar da cewa adireshinka na gida, lambar waya, da halin aikinka na zamani ne a shafin dalibai na hukuma.'
+                  : 'Maintaining your good standing is simple: keep your residential address, phone number, and employer status current on the official student portal.',
             ),
             _buildSupportPoint(
               icon: CupertinoIcons.bell_fill,
               iconColor: CupertinoColors.systemOrange,
-              title: '30-Day Pre-Escalation Grace Windows',
-              detail:
-                  'Before any formal administrative escalation, NELFUND issues written reminder notices with 30-day resolution windows to allow beneficiaries to clarify status or set up payment plans.',
+              title: isHa
+                  ? 'Wa\'adin Jan Kunne na Kwanaki 30'
+                  : '30-Day Pre-Escalation Grace Windows',
+              detail: isHa
+                  ? 'Kafin daukar kowane mataki na gudanarwa, NELFUND tana tura takardun tunatarwa masu wa\'adin kwanaki 30 domin bayar da damar fayyace matsayi ko tsara biya.'
+                  : 'Before any formal administrative escalation, NELFUND issues written reminder notices with 30-day resolution windows to allow beneficiaries to clarify status or set up payment plans.',
             ),
             _buildSupportPoint(
               icon: CupertinoIcons.arrow_2_circlepath_circle_fill,
               iconColor: NelfundColors.emerald,
-              title: 'Global Standing Instruction (GSI) Clarification',
-              detail:
-                  'GSI is a standard interbank mechanism across Nigerian banking. For student loans, it is only invoked as a last-resort safeguard for extended unnotified non-remittance. Transparent communication protects your account automatically.',
+              title: isHa
+                  ? 'Fayyace Umarnin Banki na GSI'
+                  : 'Global Standing Instruction (GSI) Clarification',
+              detail: isHa
+                  ? 'Tsarin GSI umarni ne na babban banki a fadin Najeriya. Dangane da bashin dalibai, ana amfani da shi ne a matsayin mataki na karshe ga wanda ya ki biya da gangan ba tare da sanarwa ba. Sadarwa ta gaskiya tana ba ka kariya kai-tsaye.'
+                  : 'GSI is a standard interbank mechanism across Nigerian banking. For student loans, it is only invoked as a last-resort safeguard for extended unnotified non-remittance. Transparent communication protects your account automatically.',
               isLast: true,
             ),
           ],
@@ -1472,10 +1519,14 @@ class _CalculatorContentState extends State<_CalculatorContent> {
   }
 
   Widget _buildStatutoryNotice(BuildContext context) {
+    final tr = AppTranslations.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Text(
-        'Legal Notice: All simulations are modeled strictly at 0% zero interest under the Students Loans (Access to Higher Education) Act 2024. Voluntary prepayments or accelerated installments incur zero penalty fees.',
+        tr.isHausa
+            ? 'Sanarwar Doka: Dukkan lissafin an yi shi ne bisa tsarin 0% ba kudin ruwa ko kobo karkashin Dokar Lamunin Dalibai ta 2024. Biyan bashi kafin lokaci ko karawa ba shi da wani caji ko tara.'
+            : 'Legal Notice: All simulations are modeled strictly at 0% zero interest under the Students Loans (Access to Higher Education) Act 2024. Voluntary prepayments or accelerated installments incur zero penalty fees.',
         style: NelfundTypography.caption.copyWith(
           color: CupertinoDynamicColor.resolve(
             NelfundColors.tertiaryLabel,

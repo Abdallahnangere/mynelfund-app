@@ -27,7 +27,7 @@ class AnalyticsService {
 
   /// Initialize Google Analytics
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    if (_isInitialized || kIsWeb) return;
 
     try {
       _analytics = FirebaseAnalytics.instance;

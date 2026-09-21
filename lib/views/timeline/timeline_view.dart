@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_locale.dart';
+import '../../core/localization/app_translations.dart';
+import '../../core/localization/locale_provider.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
 import '../../models/timeline_model.dart';
@@ -12,10 +15,23 @@ class TimelineView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    LocaleProvider? localeProv;
+    try {
+      localeProv = Provider.of<LocaleProvider?>(context, listen: false);
+    } catch (_) {}
+
+    final content = ChangeNotifierProvider(
       create: (_) => TimelineProvider(),
       child: const _TimelineContent(),
     );
+
+    if (localeProv == null) {
+      return ChangeNotifierProvider(
+        create: (_) => LocaleProvider(),
+        child: content,
+      );
+    }
+    return content;
   }
 }
 
@@ -24,16 +40,19 @@ class _TimelineContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeProv = context.watch<LocaleProvider>();
+    final lang = localeProv.currentLanguage;
+    final tr = AppTranslations.of(context);
     final provider = context.watch<TimelineProvider>();
-    final eval = provider.evaluation;
+    final eval = provider.getEvaluation(lang);
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Timeline & SLA Tracker'),
+        middle: Text(tr.timelineHeaderTitle),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: provider.reset,
-          child: const Text('Reset'),
+          child: Text(tr.isHausa ? 'Sake Farawa' : 'Reset'),
         ),
         backgroundColor: CupertinoDynamicColor.resolve(
           const CupertinoDynamicColor.withBrightness(
@@ -47,18 +66,22 @@ class _TimelineContent extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 14),
           children: [
-            _buildIntroHeader(context),
+            _buildIntroHeader(context, tr),
             const SizedBox(height: 12),
-            _buildSectionHeader('Interactive On-Track Evaluator'),
-            _buildEvaluatorInputCard(context, provider),
+            _buildSectionHeader(tr.onTrackEvaluatorTitle),
+            _buildEvaluatorInputCard(context, provider, lang, tr),
             const SizedBox(height: 12),
-            _buildHealthResultCard(context, eval),
+            _buildHealthResultCard(context, eval, lang, tr),
             const SizedBox(height: 20),
-            _buildSectionHeader('Official Statutory Turnaround Journey (Section 4.2)'),
-            ...SlaStageInfo.allStages.map((info) => _buildJourneyStageCard(context, info)),
+            _buildSectionHeader(
+              tr.isHausa
+                  ? 'Matakan Neman Lamuni na Doka (Sashe na 4.2)'
+                  : 'Official Statutory Turnaround Journey (Section 4.2)',
+            ),
+            ...SlaStageInfo.allStages.map((info) => _buildJourneyStageCard(context, info, lang, tr)),
             const SizedBox(height: 16),
-            _buildSectionHeader('Official Grievance & Escalation Directory'),
-            _buildGrievanceCard(context),
+            _buildSectionHeader(tr.grievanceDirectoryTitle),
+            _buildGrievanceCard(context, tr),
             const SizedBox(height: 24),
           ],
         ),
@@ -66,24 +89,28 @@ class _TimelineContent extends StatelessWidget {
     );
   }
 
-  Widget _buildIntroHeader(BuildContext context) {
+  Widget _buildIntroHeader(BuildContext context, AppTranslations tr) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Official Service Level Agreements (SLAs)',
+            tr.isHausa
+                ? 'Wa\'adin Aiki na Hukuma (SLAs)'
+                : 'Official Service Level Agreements (SLAs)',
             style: NelfundTypography.title2.copyWith(
               color: NelfundColors.emeraldTint,
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            'Section 4.2 of the Guidelines mandates strict processing deadlines across 5 stages (~47 working days maximum cycle). Test whether your application is on track below.',
+            tr.timelineIntroDesc,
             style: NelfundTypography.body.copyWith(
               color: CupertinoDynamicColor.resolve(
-                  NelfundColors.secondaryLabel, context),
+                NelfundColors.secondaryLabel,
+                context,
+              ),
               fontSize: 14,
             ),
           ),
@@ -106,9 +133,14 @@ class _TimelineContent extends StatelessWidget {
   }
 
   Widget _buildEvaluatorInputCard(
-      BuildContext context, TimelineProvider provider) {
+    BuildContext context,
+    TimelineProvider provider,
+    AppLanguage lang,
+    AppTranslations tr,
+  ) {
     final dateFormat = DateFormat('MMM d, yyyy');
     final formattedDate = dateFormat.format(provider.submissionDate);
+    final isHa = tr.isHausa;
 
     return AppleFrostedCard(
       child: Column(
@@ -118,16 +150,15 @@ class _TimelineContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Submission Date:',
+                tr.submissionDateLabel,
                 style: NelfundTypography.headline.copyWith(fontSize: 14),
               ),
               CupertinoButton(
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
-                onPressed: () => _showDatePickerModal(context, provider),
+                onPressed: () => _showDatePickerModal(context, provider, tr),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: NelfundColors.emerald.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
@@ -154,22 +185,22 @@ class _TimelineContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildDatePresetChip(
-                '3 Days Ago',
+                isHa ? 'Kwanaki 3 da Suka Wuce' : '3 Days Ago',
                 () => provider.setSubmissionDate(
                     DateTime.now().subtract(const Duration(days: 3))),
               ),
               _buildDatePresetChip(
-                '10 Days Ago',
+                isHa ? 'Kwanaki 10' : '10 Days Ago',
                 () => provider.setSubmissionDate(
                     DateTime.now().subtract(const Duration(days: 10))),
               ),
               _buildDatePresetChip(
-                '25 Days Ago',
+                isHa ? 'Kwanaki 25' : '25 Days Ago',
                 () => provider.setSubmissionDate(
                     DateTime.now().subtract(const Duration(days: 25))),
               ),
               _buildDatePresetChip(
-                '40 Days Ago',
+                isHa ? 'Kwanaki 40' : '40 Days Ago',
                 () => provider.setSubmissionDate(
                     DateTime.now().subtract(const Duration(days: 40))),
               ),
@@ -177,7 +208,7 @@ class _TimelineContent extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'Current Application Stage:',
+            tr.currentStageLabel,
             style: NelfundTypography.headline.copyWith(fontSize: 14),
           ),
           const SizedBox(height: 8),
@@ -204,7 +235,9 @@ class _TimelineContent extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Stage ${stageInfo.stageNumber}: ${stageInfo.durationLabel}',
+                        isHa
+                            ? 'Mataki ${stageInfo.stageNumber}: ${stageInfo.getDurationLabel(lang)}'
+                            : 'Stage ${stageInfo.stageNumber}: ${stageInfo.durationLabel}',
                         style: NelfundTypography.captionBold.copyWith(
                           fontSize: 11,
                           color: isSelected
@@ -224,7 +257,7 @@ class _TimelineContent extends StatelessWidget {
     );
   }
 
-  void _showDatePickerModal(BuildContext context, TimelineProvider provider) {
+  void _showDatePickerModal(BuildContext context, TimelineProvider provider, AppTranslations tr) {
     showCupertinoModalPopup(
       context: context,
       builder: (_) => Container(
@@ -239,7 +272,7 @@ class _TimelineContent extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 CupertinoButton(
-                  child: const Text('Done'),
+                  child: Text(tr.isHausa ? 'Toh' : 'Done'),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -280,7 +313,12 @@ class _TimelineContent extends StatelessWidget {
   }
 
   Widget _buildHealthResultCard(
-      BuildContext context, SlaEvaluationResult eval) {
+    BuildContext context,
+    SlaEvaluationResult eval,
+    AppLanguage lang,
+    AppTranslations tr,
+  ) {
+    final isHa = tr.isHausa;
     final Color statusColor;
     final IconData statusIcon;
     final Color bgColor;
@@ -358,7 +396,7 @@ class _TimelineContent extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Working Days Elapsed',
+                        isHa ? 'Kwanakin Aiki da Suka Wuce' : 'Working Days Elapsed',
                         style: NelfundTypography.captionBold.copyWith(
                           color: CupertinoColors.secondaryLabel,
                           fontSize: 11,
@@ -366,7 +404,7 @@ class _TimelineContent extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${eval.elapsedWorkingDays} Days',
+                        '${eval.elapsedWorkingDays} ${isHa ? 'Kwanaki' : 'Days'}',
                         style: NelfundTypography.headline.copyWith(fontSize: 14),
                       ),
                     ],
@@ -383,7 +421,7 @@ class _TimelineContent extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Statutory Limit',
+                        isHa ? 'Wa\'adin Doka' : 'Statutory Limit',
                         style: NelfundTypography.captionBold.copyWith(
                           color: CupertinoColors.secondaryLabel,
                           fontSize: 11,
@@ -391,7 +429,7 @@ class _TimelineContent extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        eval.stageInfo.durationLabel,
+                        eval.stageInfo.getDurationLabel(lang),
                         style: NelfundTypography.headline.copyWith(fontSize: 14),
                       ),
                     ],
@@ -412,7 +450,7 @@ class _TimelineContent extends StatelessWidget {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  'Recommended Action: ${eval.actionableAdvice}',
+                  '${isHa ? 'Shawarar Mataki: ' : 'Recommended Action: '}${eval.actionableAdvice}',
                   style: NelfundTypography.footnote.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
@@ -426,7 +464,12 @@ class _TimelineContent extends StatelessWidget {
     );
   }
 
-  Widget _buildJourneyStageCard(BuildContext context, SlaStageInfo info) {
+  Widget _buildJourneyStageCard(
+    BuildContext context,
+    SlaStageInfo info,
+    AppLanguage lang,
+    AppTranslations tr,
+  ) {
     return AppleFrostedCard(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       child: Column(
@@ -458,12 +501,12 @@ class _TimelineContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      info.title,
+                      info.getTitle(lang),
                       style: NelfundTypography.headline.copyWith(fontSize: 15),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      info.actor,
+                      info.getActor(lang),
                       style: NelfundTypography.captionBold.copyWith(
                         color: CupertinoColors.secondaryLabel,
                         fontSize: 11,
@@ -473,14 +516,13 @@ class _TimelineContent extends StatelessWidget {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: NelfundColors.emerald.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  info.durationLabel,
+                  info.getDurationLabel(lang),
                   style: NelfundTypography.captionBold.copyWith(
                     color: NelfundColors.emerald,
                     fontSize: 11,
@@ -491,7 +533,7 @@ class _TimelineContent extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            info.description,
+            info.getDescription(lang),
             style: NelfundTypography.footnote.copyWith(fontSize: 12),
           ),
           const SizedBox(height: 6),
@@ -502,7 +544,7 @@ class _TimelineContent extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  'Milestone: ${info.milestone}',
+                  '${tr.isHausa ? 'Tabbataccen Sakamako' : 'Milestone'}: ${info.getMilestone(lang)}',
                   style: NelfundTypography.captionBold.copyWith(
                     color: NelfundColors.emerald,
                     fontSize: 11,
@@ -516,7 +558,9 @@ class _TimelineContent extends StatelessWidget {
     );
   }
 
-  Widget _buildGrievanceCard(BuildContext context) {
+  Widget _buildGrievanceCard(BuildContext context, AppTranslations tr) {
+    final isHa = tr.isHausa;
+
     return AppleFrostedCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -528,7 +572,9 @@ class _TimelineContent extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Official Support & Complaints Channels',
+                  isHa
+                      ? 'Hanyoyin Tuntuba da Shigar da Ƙorafi na Hukuma'
+                      : 'Official Support & Complaints Channels',
                   style: NelfundTypography.headline.copyWith(fontSize: 15),
                 ),
               ),
@@ -536,7 +582,9 @@ class _TimelineContent extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Under Section 6.0 of the Act, if your application exceeds statutory turnaround times without written explanation, lodge an official inquiry with your Application ID:',
+            isHa
+                ? 'Ƙarƙashin Sashe na 6.0 na Dokar, idan aikace-aikacenka ya wuce wa\'adin da doka ta ƙayyade ba tare da wani bayani a rubuce ba, shigar da bincike a hukumance tare da lambar aikace-aikacenka:'
+                : 'Under Section 6.0 of the Act, if your application exceeds statutory turnaround times without written explanation, lodge an official inquiry with your Application ID:',
             style: NelfundTypography.footnote.copyWith(
               color: CupertinoDynamicColor.resolve(
                   NelfundColors.secondaryLabel, context),
@@ -545,18 +593,20 @@ class _TimelineContent extends StatelessWidget {
           const SizedBox(height: 12),
           _buildDirectoryItem(
             icon: CupertinoIcons.globe,
-            title: 'Official Portal',
+            title: isHa ? 'Shafin Yanar Gizo na Hukuma' : 'Official Portal',
             value: 'nelf.gov.ng',
           ),
           _buildDirectoryItem(
             icon: CupertinoIcons.mail_solid,
-            title: 'Grievance Email',
+            title: isHa ? 'Imel na Ƙorafi' : 'Grievance Email',
             value: 'support@nelf.gov.ng',
           ),
           _buildDirectoryItem(
             icon: CupertinoIcons.building_2_fill,
-            title: 'Campus Support',
-            value: 'Dean of Student Affairs / NELFUND Desk Officer',
+            title: isHa ? 'Tallafin Makaranta' : 'Campus Support',
+            value: isHa
+                ? 'Ofishin Dean na Harkokin Ɗalibai / Jami\'in NELFUND na Makaranta'
+                : 'Dean of Student Affairs / NELFUND Desk Officer',
           ),
         ],
       ),
