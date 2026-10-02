@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -72,16 +73,19 @@ class _CalculatorContent extends StatefulWidget {
 
 class _CalculatorContentState extends State<_CalculatorContent> {
   late TextEditingController _incomeController;
+  late TextEditingController _voluntaryController;
 
   @override
   void initState() {
     super.initState();
     _incomeController = TextEditingController();
+    _voluntaryController = TextEditingController();
   }
 
   @override
   void dispose() {
     _incomeController.dispose();
+    _voluntaryController.dispose();
     super.dispose();
   }
 
@@ -93,12 +97,26 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     }
   }
 
+  void _syncVoluntaryText(double totalPayment, double statutory) {
+    if (totalPayment <= statutory || totalPayment <= 0) {
+      if (_voluntaryController.text.isNotEmpty && _voluntaryController.text != '0') {
+        _voluntaryController.text = '';
+      }
+      return;
+    }
+    final formatted = NumberFormat('#,###').format(totalPayment.toInt());
+    if (_voluntaryController.text.replaceAll(',', '') != totalPayment.toInt().toString()) {
+      _voluntaryController.text = formatted;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<RepaymentProvider>();
     final proj = provider.projection;
 
     _syncIncomeText(provider.monthlyIncome);
+    _syncVoluntaryText(proj.totalMonthlyPayment, proj.statutoryMonthlyDeduction);
 
     return CupertinoPageScaffold(
       child: SafeArea(
@@ -153,6 +171,10 @@ class _CalculatorContentState extends State<_CalculatorContent> {
           color: NelfundColors.emerald,
           size: 20,
         ),
+      ),
+      trailing: _AnimatedHelpButton(
+        isHausa: tr.isHausa,
+        onTap: () => _showCalculatorGuideModal(context, tr),
       ),
     );
   }
@@ -344,7 +366,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppTranslations.of(context).statutoryMonthlyDeductionLabel,
+                        proj.isVoluntaryAccelerated
+                            ? (AppTranslations.of(context).isHausa ? 'BIYAN WATA (DA SON RAI)' : 'TOTAL MONTHLY PAYMENT')
+                            : AppTranslations.of(context).statutoryMonthlyDeductionLabel,
                         style: TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w700,
@@ -357,7 +381,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${proj.formattedStatutoryDeduction} / mo',
+                        proj.isVoluntaryAccelerated
+                            ? '${proj.formattedTotalMonthlyPayment} / mo'
+                            : '${proj.formattedStatutoryDeduction} / mo',
                         style: const TextStyle(
                           fontSize: 15.5,
                           fontWeight: FontWeight.w700,
@@ -366,7 +392,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       ),
                       const SizedBox(height: 1),
                       Text(
-                        AppTranslations.of(context).statutoryRateLabel,
+                        proj.isVoluntaryAccelerated
+                            ? '${proj.formattedStatutoryDeduction} stat. + ${proj.formattedExtraPayment} vol.'
+                            : AppTranslations.of(context).statutoryRateLabel,
                         style: TextStyle(
                           fontSize: 10.5,
                           color: CupertinoDynamicColor.resolve(
@@ -418,13 +446,20 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       ),
                       const SizedBox(height: 1),
                       Text(
-                        AppTranslations.of(context).zeroInterestTag,
+                        proj.isVoluntaryAccelerated && proj.monthsSaved > 0
+                            ? (AppTranslations.of(context).isHausa
+                                ? '${proj.monthsSaved} mos da wuri! ⚡'
+                                : '${proj.monthsSaved} mos earlier! ⚡')
+                            : AppTranslations.of(context).zeroInterestTag,
                         style: TextStyle(
                           fontSize: 10.5,
-                          color: CupertinoDynamicColor.resolve(
-                            NelfundColors.tertiaryLabel,
-                            context,
-                          ),
+                          fontWeight: proj.isVoluntaryAccelerated ? FontWeight.w700 : FontWeight.normal,
+                          color: proj.isVoluntaryAccelerated
+                              ? NelfundColors.emerald
+                              : CupertinoDynamicColor.resolve(
+                                  NelfundColors.tertiaryLabel,
+                                  context,
+                                ),
                         ),
                       ),
                     ],
@@ -555,7 +590,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '${tr.isHausa ? 'Kudin Makaranta' : 'Tuition'}: ${session.formattedTuition}${session.includeUpkeep ? (tr.isHausa ? ' + Alawus: ${session.formattedUpkeep}' : ' + Upkeep: ${session.formattedUpkeep}') : (tr.isHausa ? ' (Babu Alawus)' : ' (No Upkeep)')}',
+                              '${tr.isHausa ? 'Kudin Makaranta' : 'Tuition'}: ${session.formattedTuition}${session.includeUpkeep && session.upkeepAmount > 0 ? (tr.isHausa ? ' + Alawus (${session.upkeepMonthsCount} watanni): ${session.formattedUpkeep}' : ' + Upkeep (${session.upkeepMonthsCount} mos): ${session.formattedUpkeep}') : (tr.isHausa ? ' (Babu Alawus)' : ' (No Upkeep)')}',
                               style: NelfundTypography.caption.copyWith(
                                 color: CupertinoDynamicColor.resolve(
                                   NelfundColors.secondaryLabel,
@@ -606,7 +641,17 @@ class _CalculatorContentState extends State<_CalculatorContent> {
     }
 
     double tuition = existingLoan?.tuitionFee ?? 120000.0;
-    bool includeUpkeep = existingLoan?.includeUpkeep ?? true;
+    bool includeUpkeep = existingLoan?.includeUpkeep ?? false;
+    final Set<int> upkeepMonths = existingLoan != null
+        ? (existingLoan.upkeepMonths.isNotEmpty
+            ? existingLoan.upkeepMonths.toSet()
+            : (existingLoan.upkeepAmount > 0
+                ? List.generate(
+                    (existingLoan.upkeepAmount / 20000.0).round().clamp(0, 12),
+                    (i) => i + 1,
+                  ).toSet()
+                : <int>{}))
+        : <int>{};
     final tuitionCtrl = TextEditingController(
       text: NumberFormat('#,###').format(tuition.toInt()),
     );
@@ -616,7 +661,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
       builder: (dialogCtx) {
         return StatefulBuilder(
           builder: (builderCtx, setDialogState) {
-            final double currentUpkeep = includeUpkeep ? 240000.0 : 0.0;
+            final double currentUpkeep =
+                includeUpkeep ? (upkeepMonths.length * 20000.0) : 0.0;
             final double currentTotal = tuition + currentUpkeep;
             final totalFormatted = NumberFormat.currency(
               symbol: '₦',
@@ -626,6 +672,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             return Container(
               margin: EdgeInsets.only(
                 bottom: MediaQuery.of(builderCtx).viewInsets.bottom,
+              ),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(builderCtx).height * 0.88,
               ),
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               decoration: BoxDecoration(
@@ -639,10 +688,12 @@ class _CalculatorContentState extends State<_CalculatorContent> {
               ),
               child: SafeArea(
                 top: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     Center(
                       child: Container(
                         width: 38,
@@ -808,6 +859,204 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                         ],
                       ),
                     ),
+                    if (includeUpkeep) ...[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: CupertinoDynamicColor.resolve(
+                            const CupertinoDynamicColor.withBrightness(
+                              color: Color(0x0C008751),
+                              darkColor: Color(0x1F008751),
+                            ),
+                            builderCtx,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: NelfundColors.emerald.withValues(alpha: 0.28),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      CupertinoIcons.calendar,
+                                      size: 15,
+                                      color: NelfundColors.emerald,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      tr.selectUpkeepMonthsTitle,
+                                      style: NelfundTypography.captionBold.copyWith(
+                                        color: NelfundColors.emerald,
+                                        fontSize: 12.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  '${upkeepMonths.length}/12',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: NelfundColors.emerald,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              tr.selectUpkeepMonthsDesc,
+                              style: NelfundTypography.caption.copyWith(
+                                color: CupertinoDynamicColor.resolve(
+                                  NelfundColors.secondaryLabel,
+                                  builderCtx,
+                                ),
+                                fontSize: 11,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Quick Action Presets Row
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              child: Row(
+                                children: [
+                                  _buildQuickMonthButton(
+                                    builderCtx,
+                                    label: tr.quickSelectAll12,
+                                    isSelected: upkeepMonths.length == 12,
+                                    onTap: () {
+                                      HapticFeedback.selectionClick();
+                                      setDialogState(() {
+                                        upkeepMonths.addAll(
+                                          List.generate(12, (i) => i + 1),
+                                        );
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(width: 6),
+                                  _buildQuickMonthButton(
+                                    builderCtx,
+                                    label: tr.quickSelectSem1,
+                                    isSelected: upkeepMonths.containsAll([1, 2, 3, 4, 5, 6]) &&
+                                        upkeepMonths.length == 6,
+                                    onTap: () {
+                                      HapticFeedback.selectionClick();
+                                      setDialogState(() {
+                                        upkeepMonths.clear();
+                                        upkeepMonths.addAll([1, 2, 3, 4, 5, 6]);
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(width: 6),
+                                  _buildQuickMonthButton(
+                                    builderCtx,
+                                    label: tr.quickSelectSem2,
+                                    isSelected: upkeepMonths.containsAll([7, 8, 9, 10, 11, 12]) &&
+                                        upkeepMonths.length == 6,
+                                    onTap: () {
+                                      HapticFeedback.selectionClick();
+                                      setDialogState(() {
+                                        upkeepMonths.clear();
+                                        upkeepMonths.addAll([7, 8, 9, 10, 11, 12]);
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(width: 6),
+                                  _buildQuickMonthButton(
+                                    builderCtx,
+                                    label: tr.quickClear,
+                                    isSelected: upkeepMonths.isEmpty,
+                                    isClear: true,
+                                    onTap: () {
+                                      HapticFeedback.selectionClick();
+                                      setDialogState(() {
+                                        upkeepMonths.clear();
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+
+                            // 12-Month Calendar Grid (4 columns x 3 rows)
+                            _build12MonthCalendarGrid(
+                              context: builderCtx,
+                              isHausa: tr.isHausa,
+                              selectedMonths: upkeepMonths,
+                              onToggleMonth: (m) {
+                                HapticFeedback.selectionClick();
+                                setDialogState(() {
+                                  if (upkeepMonths.contains(m)) {
+                                    upkeepMonths.remove(m);
+                                  } else {
+                                    upkeepMonths.add(m);
+                                  }
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Live calculation summary pill
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 7,
+                              ),
+                              decoration: BoxDecoration(
+                                color: upkeepMonths.isNotEmpty
+                                    ? NelfundColors.emerald.withValues(alpha: 0.12)
+                                    : CupertinoColors.systemOrange.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    upkeepMonths.isNotEmpty
+                                        ? CupertinoIcons.checkmark_seal_fill
+                                        : CupertinoIcons.exclamationmark_circle_fill,
+                                    size: 14,
+                                    color: upkeepMonths.isNotEmpty
+                                        ? NelfundColors.emerald
+                                        : CupertinoColors.systemOrange,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      upkeepMonths.isNotEmpty
+                                          ? tr.upkeepSelectedSummary(
+                                              upkeepMonths.length,
+                                              NumberFormat.currency(
+                                                symbol: '₦',
+                                                decimalDigits: 2,
+                                              ).format(currentUpkeep),
+                                            )
+                                          : tr.noMonthsSelected,
+                                      style: TextStyle(
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: upkeepMonths.isNotEmpty
+                                            ? NelfundColors.emerald
+                                            : CupertinoColors.systemOrange,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -848,8 +1097,11 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                             AcademicSessionLoan(
                               level: selectedLevel,
                               tuitionFee: tuition,
-                              includeUpkeep: includeUpkeep,
-                              upkeepAmount: 240000.0,
+                              includeUpkeep: includeUpkeep && upkeepMonths.isNotEmpty,
+                              upkeepMonths: includeUpkeep
+                                  ? (upkeepMonths.toList()..sort())
+                                  : const [],
+                              upkeepAmount: currentUpkeep,
                             ),
                           );
                           Navigator.of(builderCtx).pop();
@@ -867,7 +1119,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   ],
                 ),
               ),
-            );
+            ),
+          );
           },
         );
       },
@@ -1112,6 +1365,8 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 tr.minimumWageChip,
               ),
             ),
+            const SizedBox(height: 18),
+            _buildVoluntaryRepaymentSection(context, provider, proj),
           ],
         ),
       ),
@@ -1484,6 +1739,832 @@ class _CalculatorContentState extends State<_CalculatorContent> {
           color: CupertinoDynamicColor.resolve(
             NelfundColors.tertiaryLabel,
             context,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVoluntaryRepaymentSection(
+    BuildContext context,
+    RepaymentProvider provider,
+    RepaymentProjection proj,
+  ) {
+    final tr = AppTranslations.of(context);
+    final isHa = tr.isHausa;
+    final statutory = proj.statutoryMonthlyDeduction;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: CupertinoDynamicColor.resolve(
+          const CupertinoDynamicColor.withBrightness(
+            color: Color(0x0C008751),
+            darkColor: Color(0x1F008751),
+          ),
+          context,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: NelfundColors.emerald.withValues(alpha: 0.3),
+          width: 0.8,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                CupertinoIcons.bolt_fill,
+                color: NelfundColors.emerald,
+                size: 16,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  tr.voluntaryRepaymentTitle,
+                  style: NelfundTypography.headline.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            tr.voluntaryRepaymentDesc,
+            style: NelfundTypography.caption.copyWith(
+              color: CupertinoDynamicColor.resolve(
+                NelfundColors.secondaryLabel,
+                context,
+              ),
+              fontSize: 11.5,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Statutory Floor Reminder
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: CupertinoDynamicColor.resolve(
+                CupertinoColors.systemBackground,
+                context,
+              ),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: CupertinoColors.systemGrey4,
+                width: 0.6,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  tr.statutoryBaselineLabel,
+                  style: NelfundTypography.caption.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11.5,
+                  ),
+                ),
+                Text(
+                  '${proj.formattedStatutoryDeduction} / mo',
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: NelfundColors.emerald,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Voluntary Options / Preset Chips
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: [
+                _buildVoluntaryPresetChip(
+                  context: context,
+                  label: isHa ? 'Doka (10%)' : 'Statutory (10%)',
+                  isSelected: provider.extraPrepayment == 0.0,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    provider.setExtraPrepayment(0.0);
+                    _voluntaryController.clear();
+                  },
+                ),
+                const SizedBox(width: 6),
+                _buildVoluntaryPresetChip(
+                  context: context,
+                  label: '15%',
+                  isSelected: provider.extraPrepayment > 0 &&
+                      (provider.monthlyIncome * 0.15 - proj.totalMonthlyPayment).abs() < 1.0,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    provider.setVoluntaryRatePercent(15.0);
+                    _voluntaryController.text = NumberFormat('#,###').format(
+                      (provider.monthlyIncome * 0.15).toInt(),
+                    );
+                  },
+                ),
+                const SizedBox(width: 6),
+                _buildVoluntaryPresetChip(
+                  context: context,
+                  label: '20%',
+                  isSelected: provider.extraPrepayment > 0 &&
+                      (provider.monthlyIncome * 0.20 - proj.totalMonthlyPayment).abs() < 1.0,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    provider.setVoluntaryRatePercent(20.0);
+                    _voluntaryController.text = NumberFormat('#,###').format(
+                      (provider.monthlyIncome * 0.20).toInt(),
+                    );
+                  },
+                ),
+                const SizedBox(width: 6),
+                _buildVoluntaryPresetChip(
+                  context: context,
+                  label: '+₦10,000 ${isHa ? 'Kari' : 'Extra'}',
+                  isSelected: (provider.extraPrepayment - 10000.0).abs() < 1.0,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    provider.setExtraPrepayment(10000.0);
+                    _voluntaryController.text = NumberFormat('#,###').format(
+                      (statutory + 10000.0).toInt(),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Custom Monthly Remittance Input Field
+          Text(
+            tr.voluntaryCustomAmountLabel,
+            style: NelfundTypography.captionBold.copyWith(fontSize: 12),
+          ),
+          const SizedBox(height: 5),
+          CupertinoTextField(
+            controller: _voluntaryController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              ThousandsSeparatorInputFormatter(),
+            ],
+            prefix: const Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text(
+                '₦ ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: NelfundColors.emerald,
+                ),
+              ),
+            ),
+            placeholder: tr.voluntaryCustomPlaceholder,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            decoration: BoxDecoration(
+              color: CupertinoDynamicColor.resolve(
+                CupertinoColors.systemBackground,
+                context,
+              ),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: proj.isVoluntaryAccelerated
+                    ? NelfundColors.emerald
+                    : CupertinoColors.systemGrey4,
+                width: proj.isVoluntaryAccelerated ? 1.0 : 0.6,
+              ),
+            ),
+            onChanged: (val) {
+              final clean = val.replaceAll(',', '');
+              final voluntaryAmount = double.tryParse(clean) ?? 0.0;
+              provider.setVoluntaryTotalMonthlyPayment(voluntaryAmount);
+            },
+          ),
+
+          // Accelerated Payoff Early Debt-Free Banner
+          if (proj.isVoluntaryAccelerated && proj.monthsSaved > 0) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: NelfundColors.emerald.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: NelfundColors.emerald.withValues(alpha: 0.4),
+                  width: 0.8,
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    CupertinoIcons.rocket_fill,
+                    size: 16,
+                    color: NelfundColors.emerald,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      tr.debtFreeEarlierBadge(proj.formattedTimeSaved),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: NelfundColors.emerald,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVoluntaryPresetChip({
+    required BuildContext context,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5.5),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? NelfundColors.emerald
+              : CupertinoDynamicColor.resolve(
+                  CupertinoColors.systemBackground,
+                  context,
+                ),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected ? NelfundColors.emerald : CupertinoColors.systemGrey4,
+            width: 0.8,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11.5,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+            color: isSelected
+                ? CupertinoColors.white
+                : CupertinoDynamicColor.resolve(
+                    NelfundColors.label,
+                    context,
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _build12MonthCalendarGrid({
+    required BuildContext context,
+    required bool isHausa,
+    required Set<int> selectedMonths,
+    required ValueChanged<int> onToggleMonth,
+  }) {
+    const monthLabelsEn = [
+      'JAN', 'FEB', 'MAR', 'APR',
+      'MAY', 'JUN', 'JUL', 'AUG',
+      'SEP', 'OCT', 'NOV', 'DEC'
+    ];
+    const monthLabelsHa = [
+      'Jan', 'Fab', 'Mar', 'Afi',
+      'May', 'Yun', 'Yul', 'Agu',
+      'Sat', 'Okt', 'Nuw', 'Dis'
+    ];
+    final labels = isHausa ? monthLabelsHa : monthLabelsEn;
+
+    return Column(
+      children: [
+        for (int row = 0; row < 3; row++) ...[
+          if (row > 0) const SizedBox(height: 6),
+          Row(
+            children: [
+              for (int col = 0; col < 4; col++) ...[
+                if (col > 0) const SizedBox(width: 6),
+                Expanded(
+                  child: _buildMonthCalendarTile(
+                    context: context,
+                    monthNumber: row * 4 + col + 1,
+                    monthLabel: labels[row * 4 + col],
+                    isSelected: selectedMonths.contains(row * 4 + col + 1),
+                    onTap: () => onToggleMonth(row * 4 + col + 1),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildMonthCalendarTile({
+    required BuildContext context,
+    required int monthNumber,
+    required String monthLabel,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        height: 38,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? NelfundColors.emerald
+              : CupertinoDynamicColor.resolve(
+                  CupertinoColors.systemBackground,
+                  context,
+                ),
+          borderRadius: BorderRadius.circular(9),
+          border: Border.all(
+            color: isSelected
+                ? NelfundColors.emerald
+                : CupertinoColors.systemGrey4,
+            width: isSelected ? 1.4 : 0.6,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: NelfundColors.emerald.withValues(alpha: 0.28),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isSelected) ...[
+                const Icon(
+                  CupertinoIcons.checkmark_alt,
+                  size: 11,
+                  color: CupertinoColors.white,
+                ),
+                const SizedBox(width: 2),
+              ],
+              Text(
+                monthLabel,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  color: isSelected
+                      ? CupertinoColors.white
+                      : CupertinoDynamicColor.resolve(
+                          NelfundColors.label,
+                          context,
+                        ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickMonthButton(
+    BuildContext context, {
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+    bool isClear = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: isSelected && !isClear
+              ? NelfundColors.emerald.withValues(alpha: 0.16)
+              : CupertinoDynamicColor.resolve(
+                  CupertinoColors.systemBackground,
+                  context,
+                ),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected && !isClear
+                ? NelfundColors.emerald
+                : CupertinoColors.systemGrey4,
+            width: 0.8,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: isSelected && !isClear ? FontWeight.w700 : FontWeight.w500,
+            color: isSelected && !isClear
+                ? NelfundColors.emerald
+                : (isClear ? CupertinoColors.systemRed : null),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showCalculatorGuideModal(BuildContext context, AppTranslations tr) {
+    final isHa = tr.isHausa;
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: isHa ? 'Jagoran Na\'urar Lissafi' : 'Calculator Guide',
+      barrierColor: CupertinoColors.black.withValues(alpha: 0.45),
+      transitionDuration: const Duration(milliseconds: 280),
+      pageBuilder: (ctx, anim1, anim2) => const SizedBox.shrink(),
+      transitionBuilder: (ctx, anim1, anim2, child) {
+        final curvedValue = Curves.easeOutBack.transform(anim1.value);
+        return Transform.scale(
+          scale: 0.90 + (0.10 * curvedValue),
+          child: Opacity(
+            opacity: anim1.value.clamp(0.0, 1.0),
+            child: Stack(
+              children: [
+                // 1. Full-window BackdropFilter blur
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                    child: Container(
+                      color: CupertinoColors.black.withValues(alpha: 0.20),
+                    ),
+                  ),
+                ),
+
+                // 2. Centered Frosted Liquid Glass Modal Dialog
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: 420,
+                        maxHeight: MediaQuery.sizeOf(ctx).height * 0.82,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: CupertinoDynamicColor.resolve(
+                            const CupertinoDynamicColor.withBrightness(
+                              color: Color(0xF2FFFFFF),
+                              darkColor: Color(0xF018241C),
+                            ),
+                            context,
+                          ),
+                          borderRadius: BorderRadius.circular(26),
+                          border: Border.all(
+                            color: NelfundColors.emerald.withValues(alpha: 0.40),
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: NelfundColors.emerald.withValues(alpha: 0.14),
+                              blurRadius: 28,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Modal Header Bar with Close Icon
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 18, 16, 12),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(7),
+                                    decoration: BoxDecoration(
+                                      color: NelfundColors.emerald.withValues(alpha: 0.15),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      CupertinoIcons.creditcard_fill,
+                                      color: NelfundColors.emerald,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          tr.calcGuideTitle,
+                                          style: NelfundTypography.headline.copyWith(
+                                            fontSize: 16.5,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        Text(
+                                          isHa ? 'Tsarin Lamuni & Biyan Bashi' : 'Loan & Repayment Architecture',
+                                          style: NelfundTypography.caption.copyWith(
+                                            color: CupertinoDynamicColor.resolve(
+                                              NelfundColors.secondaryLabel,
+                                              context,
+                                            ),
+                                            fontSize: 11.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  CupertinoButton(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    onPressed: () => Navigator.of(ctx).pop(),
+                                    child: const Icon(
+                                      CupertinoIcons.xmark_circle_fill,
+                                      color: CupertinoColors.systemGrey3,
+                                      size: 26,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Container(
+                              height: 0.8,
+                              color: NelfundColors.emerald.withValues(alpha: 0.18),
+                            ),
+
+                            // Scrollable Step Guide Content
+                            Flexible(
+                              child: SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      tr.calcGuideIntro,
+                                      style: NelfundTypography.body.copyWith(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w500,
+                                        color: CupertinoDynamicColor.resolve(
+                                          NelfundColors.label,
+                                          context,
+                                        ),
+                                        height: 1.35,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    _buildGuideStepItem(
+                                      context: context,
+                                      stepNumber: '1',
+                                      title: tr.calcGuideStep1Title,
+                                      description: tr.calcGuideStep1Desc,
+                                      stepColor: NelfundColors.emerald,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    _buildGuideStepItem(
+                                      context: context,
+                                      stepNumber: '2',
+                                      title: tr.calcGuideStep2Title,
+                                      description: tr.calcGuideStep2Desc,
+                                      stepColor: CupertinoColors.systemBlue,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    _buildGuideStepItem(
+                                      context: context,
+                                      stepNumber: '3',
+                                      title: tr.calcGuideStep3Title,
+                                      description: tr.calcGuideStep3Desc,
+                                      stepColor: NelfundColors.emerald,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            // Modal Footer Action
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 8, 20, 18),
+                              child: CupertinoButton(
+                                padding: const EdgeInsets.symmetric(vertical: 13),
+                                color: NelfundColors.emerald,
+                                borderRadius: BorderRadius.circular(14),
+                                onPressed: () => Navigator.of(ctx).pop(),
+                                child: Text(
+                                  tr.calcGuideDismiss,
+                                  style: const TextStyle(
+                                    color: CupertinoColors.white,
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildGuideStepItem({
+    required BuildContext context,
+    required String stepNumber,
+    required String title,
+    required String description,
+    required Color stepColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: CupertinoDynamicColor.resolve(
+          CupertinoColors.systemBackground,
+          context,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: stepColor.withValues(alpha: 0.25),
+          width: 0.8,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(
+              color: stepColor.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              stepNumber,
+              style: TextStyle(
+                color: stepColor,
+                fontWeight: FontWeight.w800,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: NelfundTypography.headline.copyWith(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  description,
+                  style: NelfundTypography.footnote.copyWith(
+                    color: CupertinoDynamicColor.resolve(
+                      NelfundColors.secondaryLabel,
+                      context,
+                    ),
+                    fontSize: 12,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AnimatedHelpButton extends StatefulWidget {
+  final bool isHausa;
+  final VoidCallback onTap;
+
+  const _AnimatedHelpButton({
+    required this.isHausa,
+    required this.onTap,
+  });
+
+  @override
+  State<_AnimatedHelpButton> createState() => _AnimatedHelpButtonState();
+}
+
+class _AnimatedHelpButtonState extends State<_AnimatedHelpButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulseController;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _scaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 1.08)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 25,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.08, end: 0.95)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 25,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.95, end: 1.05)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 25,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.05, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeIn)),
+        weight: 25,
+      ),
+    ]).animate(_pulseController);
+
+    _pulseController.forward();
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: () {
+          _pulseController.forward(from: 0.0);
+          widget.onTap();
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: NelfundColors.emerald.withValues(alpha: 0.14),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: NelfundColors.emerald.withValues(alpha: 0.38),
+              width: 0.8,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: NelfundColors.emerald.withValues(alpha: 0.15),
+                blurRadius: 8,
+                spreadRadius: 0.5,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                CupertinoIcons.question_circle_fill,
+                color: NelfundColors.emerald,
+                size: 14,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                widget.isHausa ? 'Jagora' : 'Help Guide',
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: NelfundColors.emerald,
+                ),
+              ),
+            ],
           ),
         ),
       ),

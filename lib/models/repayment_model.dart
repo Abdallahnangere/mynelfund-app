@@ -50,14 +50,19 @@ class AcademicSessionLoan {
   final int level; // 100, 200, 300, 400, 500, 600
   final double tuitionFee;
   final bool includeUpkeep;
-  final double upkeepAmount; // Statutory: ₦20,000 * 12 = ₦240,000
+  final List<int> upkeepMonths; // 1 to 12 (Jan - Dec)
+  final double upkeepAmount;
 
   const AcademicSessionLoan({
     required this.level,
     required this.tuitionFee,
     this.includeUpkeep = true,
-    this.upkeepAmount = 240000.0,
-  });
+    this.upkeepMonths = const [],
+    double? upkeepAmount,
+  }) : upkeepAmount = upkeepAmount ??
+            (includeUpkeep ? (upkeepMonths.length * 20000.0) : 0.0);
+
+  int get upkeepMonthsCount => upkeepMonths.length;
 
   double get totalAmount => tuitionFee + (includeUpkeep ? upkeepAmount : 0.0);
 
@@ -75,16 +80,29 @@ class AcademicSessionLoan {
   String get formattedTotal =>
       NumberFormat.currency(symbol: '₦', decimalDigits: 2).format(totalAmount);
 
+  String getUpkeepSummary(AppLanguage lang) {
+    if (!includeUpkeep || upkeepMonths.isEmpty || upkeepAmount <= 0) {
+      return lang == AppLanguage.hausa ? 'Babu Alawus' : 'No Upkeep';
+    }
+    final count = upkeepMonths.length;
+    final monthStr = lang == AppLanguage.hausa
+        ? (count == 1 ? 'Wata 1' : 'Watanni $count')
+        : (count == 1 ? '1 mo' : '$count mos');
+    return '$formattedUpkeep ($monthStr)';
+  }
+
   AcademicSessionLoan copyWith({
     int? level,
     double? tuitionFee,
     bool? includeUpkeep,
+    List<int>? upkeepMonths,
     double? upkeepAmount,
   }) {
     return AcademicSessionLoan(
       level: level ?? this.level,
       tuitionFee: tuitionFee ?? this.tuitionFee,
       includeUpkeep: includeUpkeep ?? this.includeUpkeep,
+      upkeepMonths: upkeepMonths ?? this.upkeepMonths,
       upkeepAmount: upkeepAmount ?? this.upkeepAmount,
     );
   }
@@ -146,6 +164,8 @@ class RepaymentProjection {
     return '$years ${years == 1 ? 'Yr' : 'Yrs'}, $remMonths ${remMonths == 1 ? 'Mo' : 'Mos'}';
   }
 
+  bool get isVoluntaryAccelerated => extraMonthlyPayment > 0;
+
   String get formattedBaselineDuration => formatDuration(baselineMonths);
   String get formattedAcceleratedDuration =>
       formatDuration(acceleratedMonths);
@@ -160,6 +180,6 @@ class RepaymentProjection {
     if (statutoryMonthlyDeduction <= 0) {
       return lang == AppLanguage.hausa ? 'Shigar da Kudin Shiga' : 'Enter Monthly Income';
     }
-    return formatDuration(baselineMonths, lang);
+    return formatDuration(isVoluntaryAccelerated ? acceleratedMonths : baselineMonths, lang);
   }
 }

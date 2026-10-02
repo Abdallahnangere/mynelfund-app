@@ -90,7 +90,28 @@ class RepaymentProvider extends ChangeNotifier {
   }
 
   void setExtraPrepayment(double value) {
-    _extraPrepayment = value;
+    _extraPrepayment = value.clamp(0.0, double.infinity);
+    notifyListeners();
+  }
+
+  void setVoluntaryTotalMonthlyPayment(double totalAmount) {
+    const rate = NelfundData.repaymentRatePercent; // 10.0%
+    final statutory = _monthlyIncome * (rate / 100.0);
+    if (totalAmount > statutory) {
+      _extraPrepayment = totalAmount - statutory;
+    } else {
+      _extraPrepayment = 0.0;
+    }
+    notifyListeners();
+  }
+
+  void setVoluntaryRatePercent(double targetPercent) {
+    if (targetPercent > NelfundData.repaymentRatePercent) {
+      final extraPercent = targetPercent - NelfundData.repaymentRatePercent;
+      _extraPrepayment = _monthlyIncome * (extraPercent / 100.0);
+    } else {
+      _extraPrepayment = 0.0;
+    }
     notifyListeners();
   }
 

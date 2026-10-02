@@ -200,8 +200,53 @@ class AppTranslations {
 
   String get includeUpkeepLabel => isHausa ? 'Saka Alawus na Tallafin Rayuwa' : 'Include Upkeep Allowance';
   String get upkeepAutoCalculated => isHausa
-      ? 'Lissafi kai-tsaye: ₦20,000 × 12 = ₦240,000 a shekara'
-      : 'Auto-calculated: ₦20,000 × 12 = ₦240,000 / yr';
+      ? '₦20,000 a kowane wata da aka karɓa'
+      : '₦20,000 per collected month';
+
+  String get selectUpkeepMonthsTitle => isHausa ? 'Zaɓi Watannin Alawus' : 'Select Disbursed Upkeep Months';
+  String get selectUpkeepMonthsDesc => isHausa
+      ? 'Danna watannin da ka karɓi tallafin rayuwa (₦20,000 a wata):'
+      : 'Select the specific months you received upkeep allowance (₦20,000/month):';
+  String get quickSelectAll12 => isHausa ? 'Duka 12' : 'All 12';
+  String get quickSelectSem1 => isHausa ? 'Zangon 1 (W1-6)' : 'Sem 1 (M1-6)';
+  String get quickSelectSem2 => isHausa ? 'Zangon 2 (W7-12)' : 'Sem 2 (M7-12)';
+  String get quickClear => isHausa ? 'Share' : 'Clear';
+  String get noMonthsSelected => isHausa ? 'Ba a zaɓi wata ba (₦0.00)' : 'No months selected (₦0.00)';
+
+  String upkeepSelectedSummary(int count, String total) => isHausa
+      ? 'Watanni $count da aka zaɓa × ₦20,000 = $total'
+      : '$count Months Selected × ₦20,000 = $total';
+
+  // Voluntary Repayment Translations
+  String get voluntaryRepaymentTitle => isHausa ? 'Tsarin Biyan Bashi na Son Rai' : 'Voluntary Repayment Configurator';
+  String get voluntaryRepaymentDesc => isHausa
+      ? 'Dokar NELFUND ta kayyade mafi karancin kason 10%. Zaka iya zabar biyan karin kudi domin biya cikin gajeren lokaci.'
+      : 'NELFUND mandates 10% statutory deduction. You can voluntarily pay more to clear your loan faster and become debt-free earlier.';
+  String get statutoryBaselineLabel => isHausa ? 'Kason Doka (10%):' : 'Statutory Minimum (10%):';
+  String get voluntaryCustomAmountLabel => isHausa ? 'Adadin da Kake Son Biya a Wata (₦):' : 'Custom Monthly Remittance (₦):';
+  String get voluntaryCustomPlaceholder => isHausa ? 'misali: 20,000' : 'e.g. 20,000';
+  String debtFreeEarlierBadge(String timeSaved) => isHausa
+      ? '⚡ Za ka gama biya kafin wa\'adi da $timeSaved!'
+      : '⚡ Debt-free $timeSaved earlier!';
+
+  // Calculator Guide Modal
+  String get calcGuideTitle => isHausa ? 'Jagorar Na\'urar Lissafi' : 'Loan & Repayment Guide';
+  String get calcGuideIntro => isHausa
+      ? 'Koyi yadda ake tsara bashin makaranta da alawus, wa\'adin NYSC, da biyan bashi na doka da na son rai:'
+      : 'Learn how to configure your academic session loans, upkeep allowance, NYSC grace period, and repayments:';
+  String get calcGuideStep1Title => isHausa ? '1. Saka Bashin Shekarun Karatu & Alawus' : '1. Add Academic Loans & Upkeep';
+  String get calcGuideStep1Desc => isHausa
+      ? 'Saka kudin makarantarka na kowace shekara. Idan ka karbi alawus na tallafin rayuwa (₦20,000/wata), zabi ainihin watannin da aka biya ka a kalanda.'
+      : 'Enter your institutional tuition fee. If you received upkeep allowance (₦20,000/month), tap the exact months you collected in the calendar.';
+  String get calcGuideStep2Title => isHausa ? '2. Wa\'adin Sassauci na NYSC (Shekaru 2)' : '2. NYSC 2-Year Grace Period';
+  String get calcGuideStep2Desc => isHausa
+      ? 'Dokar Lamunin Dalibai ta 2024 ta ba ka cikakkun shekaru 2 bayan kammala NYSC ba tare da rage ko sisin kobo ba daga kudin shigarka.'
+      : 'The Students Loans Act 2024 grants 2 full years post-NYSC moratorium with zero deductions to help you stabilize.';
+  String get calcGuideStep3Title => isHausa ? '3. Kason Doka 10% & Biyan Son Rai' : '3. 10% Statutory & Voluntary Repayment';
+  String get calcGuideStep3Desc => isHausa
+      ? 'Kason doka shine 10% na albashi ko ribar kasuwanci. Zaka iya zabar biyan karin kudi na son rai domin gama biyan bashin da wuri.'
+      : '10% of monthly income is deducted at source. You can voluntarily configure a higher remittance to clear debt faster.';
+  String get calcGuideDismiss => isHausa ? 'Na Fahimta, Na Gode' : 'Got It, Continue';
 
   String sessionLoanTotalLabel(int level) => isHausa
       ? 'Jumullar Bashin Shekara ($level Level):'
