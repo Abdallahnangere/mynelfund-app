@@ -30,36 +30,58 @@ void main() async {
   );
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-  // Paint the first frame immediately so the app opens in milliseconds
-  // without waiting for network connections or third-party SDKs
+  if (!kIsWeb) {
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      debugPrint('[Main] Firebase initialization note: $e');
+    }
+  }
+
+  final faqProvider = FaqProvider();
+  final notificationProvider = NotificationProvider();
+
+  // Paint the first frame immediately with instant offline cache and live streams
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
-        ChangeNotifierProvider(create: (_) => FaqProvider()),
-        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider.value(value: faqProvider),
+        ChangeNotifierProvider.value(value: notificationProvider),
       ],
       child: const MyNelfundApp(),
     ),
   );
 
-  // Asynchronously initialize Firebase, Analytics, and Notifications
-  // in the background without blocking the UI rendering thread
-  unawaited(_initializeBackgroundServices());
+  // Asynchronously initialize Analytics and Notifications
+  unawaited(_initializeBackgroundServices(
+    faqProvider: faqProvider,
+    notificationProvider: notificationProvider,
+  ));
 }
 
-Future<void> _initializeBackgroundServices() async {
+Future<void> _initializeBackgroundServices({
+  required FaqProvider faqProvider,
+  required NotificationProvider notificationProvider,
+}) async {
   if (kIsWeb) {
     debugPrint('[Main] Web environment: running in offline presentation mode.');
     return;
   }
 
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    ).timeout(const Duration(seconds: 4));
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+    // Instantly sync remote Firestore data
+    faqProvider.syncRemote();
+    notificationProvider.syncRemote();
   } catch (e) {
-    debugPrint('[Main] Firebase initialization note: $e');
+    debugPrint('[Main] Remote sync background note: $e');
   }
 
   try {

@@ -8,6 +8,7 @@ import '../models/faq_model.dart';
 
 class FaqProvider extends ChangeNotifier {
   static const String _cacheKey = 'cached_faqs_v1';
+  static FaqProvider? current;
 
   FaqCategory _selectedCategory = FaqCategory.all;
   String _searchQuery = '';
@@ -16,8 +17,10 @@ class FaqProvider extends ChangeNotifier {
   List<FaqItem> _items = List.from(FaqItem.defaultList);
   bool _isLoading = false;
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _firestoreSubscription;
+  Timer? _retryTimer;
 
   FaqProvider() {
+    current = this;
     _initialize();
   }
 
@@ -30,7 +33,7 @@ class FaqProvider extends ChangeNotifier {
     // 1. Immediately load local cache for 0ms offline startup
     await _loadFromLocalCache();
 
-    // 2. Attach live Firestore listener if Firebase is available
+    // 2. Attach live Firestore listener
     _attachFirestoreListener();
   }
 
@@ -63,9 +66,21 @@ class FaqProvider extends ChangeNotifier {
   }
 
   void _attachFirestoreListener() {
-    try {
-      if (Firebase.apps.isEmpty) return;
+    if (Firebase.apps.isEmpty) {
+      _retryTimer?.cancel();
+      _retryTimer = Timer.periodic(const Duration(milliseconds: 600), (t) {
+        if (Firebase.apps.isNotEmpty) {
+          t.cancel();
+          _attachFirestoreListener();
+        }
+        if (t.tick > 25) {
+          t.cancel();
+        }
+      });
+      return;
+    }
 
+    try {
       _firestoreSubscription?.cancel();
       _firestoreSubscription = FirebaseFirestore.instance
           .collection('faqs')
@@ -84,12 +99,18 @@ class FaqProvider extends ChangeNotifier {
           }
         },
         onError: (error) {
-          debugPrint('[FaqProvider] Firestore stream note (using cache/defaults): $error');
+          debugPrint('[FaqProvider] Firestore stream error (using cache/defaults): $error');
         },
       );
     } catch (e) {
-      debugPrint('[FaqProvider] Firebase not initialized or offline: $e');
+      debugPrint('[FaqProvider] Firebase error: $e');
     }
+  }
+
+  /// Manually trigger remote reconnection / refresh
+  void syncRemote() {
+    _attachFirestoreListener();
+    refresh();
   }
 
   Future<void> refresh() async {
@@ -97,13 +118,16 @@ class FaqProvider extends ChangeNotifier {
     notifyListeners();
     try {
       if (Firebase.apps.isNotEmpty) {
-        final snapshot = await FirebaseFirestore.instance.collection('faqs').get();
+        final snapshot = await FirebaseFirestore.instance
+            .collection('faqs')
+            .get(const GetOptions(source: Source.serverAndCache));
         if (snapshot.docs.isNotEmpty) {
           final remoteItems = snapshot.docs.map((doc) {
             return FaqItem.fromMap(doc.data(), doc.id);
           }).toList();
           _items = remoteItems;
           await _saveToLocalCache(remoteItems);
+          debugPrint('[FaqProvider] Refreshed ${remoteItems.length} FAQs from Cloud Firestore.');
         }
       }
     } catch (e) {
@@ -174,7 +198,11 @@ class FaqProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _retryTimer?.cancel();
     _firestoreSubscription?.cancel();
+    if (current == this) {
+      current = null;
+    }
     super.dispose();
   }
 }

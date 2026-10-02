@@ -4,6 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../firebase_options.dart';
+import '../../models/notification_model.dart';
+import '../../providers/notification_provider.dart';
 import '../theme/nelfund_colors.dart';
 import 'analytics_service.dart';
 
@@ -29,6 +31,21 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       message.data['message'] ??
       message.data['content'] ??
       '';
+
+  if (title.isNotEmpty || body.isNotEmpty) {
+    final item = NotificationItem(
+      id: message.data['id'] ?? message.messageId ?? 'notif_${DateTime.now().millisecondsSinceEpoch}',
+      title: title.isEmpty ? 'My NELFund Bulletin' : title,
+      body: body,
+      badge: message.data['badge'] ?? 'Advisory',
+      badgeColorHex: message.data['badgeColorHex'] ?? '#0D5C3A',
+      timestamp: message.data['timestamp'] ?? 'Today',
+      createdAt: DateTime.now(),
+      isRead: false,
+      actionUrl: message.data['actionUrl'],
+    );
+    await NotificationProvider.saveNotificationDirectlyToDisk(item);
+  }
 
   debugPrint(
     '[NotificationService] Background message received: ${message.messageId} (title: "$title", body: "$body", data: ${message.data})',
@@ -162,6 +179,25 @@ class NotificationService {
         message.data['header'] ??
         message.data['subject'] ??
         'Notification';
+    final body = message.notification?.body ??
+        message.data['body'] ??
+        message.data['message'] ??
+        message.data['content'] ??
+        '';
+
+    final item = NotificationItem(
+      id: message.data['id'] ?? message.messageId ?? 'notif_${DateTime.now().millisecondsSinceEpoch}',
+      title: title.isEmpty ? 'My NELFund Bulletin' : title,
+      body: body,
+      badge: message.data['badge'] ?? 'Advisory',
+      badgeColorHex: message.data['badgeColorHex'] ?? '#0D5C3A',
+      timestamp: message.data['timestamp'] ?? 'Today',
+      createdAt: DateTime.now(),
+      isRead: false,
+      actionUrl: message.data['actionUrl'],
+    );
+    NotificationProvider.saveNotificationDirectlyToDisk(item);
+
     debugPrint(
       '[NotificationService] Notification opened ($title), isTerminatedLaunch: $isTerminatedLaunch, data: ${message.data}',
     );
@@ -194,6 +230,19 @@ class NotificationService {
           '';
 
       if (title.isEmpty && body.isEmpty) return;
+
+      final item = NotificationItem(
+        id: message.data['id'] ?? message.messageId ?? 'notif_${DateTime.now().millisecondsSinceEpoch}',
+        title: title,
+        body: body,
+        badge: message.data['badge'] ?? 'Advisory',
+        badgeColorHex: message.data['badgeColorHex'] ?? '#0D5C3A',
+        timestamp: message.data['timestamp'] ?? 'Today',
+        createdAt: DateTime.now(),
+        isRead: false,
+        actionUrl: message.data['actionUrl'],
+      );
+      NotificationProvider.saveNotificationDirectlyToDisk(item);
 
       AnalyticsService.instance.logNotificationInteraction(
         title: title,

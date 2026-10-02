@@ -10,12 +10,16 @@ class NotificationProvider extends ChangeNotifier {
   static const String _cacheKey = 'cached_notifications_v1';
   static const String _readIdsKey = 'read_notification_ids_v1';
 
+  static NotificationProvider? current;
+
   List<NotificationItem> _notifications = [];
   Set<String> _readIds = {};
   bool _isLoading = false;
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _firestoreSubscription;
+  Timer? _retryTimer;
 
   NotificationProvider() {
+    current = this;
     _initialize();
   }
 
@@ -25,7 +29,7 @@ class NotificationProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> _initialize() async {
-    // 1. Immediately load local cache and read IDs
+    // 1. Immediately load local cache and read IDs for 0ms startup
     await _loadFromLocalCache();
 
     // 2. Attach live Firestore listener
@@ -44,6 +48,7 @@ class NotificationProvider extends ChangeNotifier {
           final item = NotificationItem.fromMap(e as Map<String, dynamic>);
           return item.copyWith(isRead: _readIds.contains(item.id));
         }).toList();
+        _notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         notifyListeners();
       }
     } catch (e) {
@@ -63,13 +68,24 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   void _attachFirestoreListener() {
-    try {
-      if (Firebase.apps.isEmpty) return;
+    if (Firebase.apps.isEmpty) {
+      _retryTimer?.cancel();
+      _retryTimer = Timer.periodic(const Duration(milliseconds: 600), (t) {
+        if (Firebase.apps.isNotEmpty) {
+          t.cancel();
+          _attachFirestoreListener();
+        }
+        if (t.tick > 25) {
+          t.cancel();
+        }
+      });
+      return;
+    }
 
+    try {
       _firestoreSubscription?.cancel();
       _firestoreSubscription = FirebaseFirestore.instance
           .collection('notifications')
-          .orderBy('createdAt', descending: true)
           .snapshots()
           .listen(
         (snapshot) {
@@ -78,18 +94,27 @@ class NotificationProvider extends ChangeNotifier {
             return item.copyWith(isRead: _readIds.contains(item.id));
           }).toList();
 
+          // Sort in-memory by newest first (safest across Firestore variations)
+          items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
           _notifications = items;
           _saveToLocalCache();
           notifyListeners();
-          debugPrint('[NotificationProvider] Synced ${items.length} notifications from Firestore.');
+          debugPrint('[NotificationProvider] Live Firestore synced ${items.length} bulletins.');
         },
         onError: (error) {
-          debugPrint('[NotificationProvider] Firestore stream note (offline/cache): $error');
+          debugPrint('[NotificationProvider] Firestore stream error: $error');
         },
       );
     } catch (e) {
-      debugPrint('[NotificationProvider] Firebase note: $e');
+      debugPrint('[NotificationProvider] Error attaching listener: $e');
     }
+  }
+
+  /// Manually force-reconnect or refresh remote sync
+  void syncRemote() {
+    _attachFirestoreListener();
+    refresh();
   }
 
   Future<void> refresh() async {
@@ -99,14 +124,14 @@ class NotificationProvider extends ChangeNotifier {
       if (Firebase.apps.isNotEmpty) {
         final snapshot = await FirebaseFirestore.instance
             .collection('notifications')
-            .orderBy('createdAt', descending: true)
-            .get();
+            .get(const GetOptions(source: Source.serverAndCache));
 
         final items = snapshot.docs.map((doc) {
           final item = NotificationItem.fromMap(doc.data(), doc.id);
           return item.copyWith(isRead: _readIds.contains(item.id));
         }).toList();
 
+        items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         _notifications = items;
         await _saveToLocalCache();
       }
@@ -118,6 +143,7 @@ class NotificationProvider extends ChangeNotifier {
     }
   }
 
+  /// Add incoming notification directly from push payloads
   void addNotificationLocally(NotificationItem item) {
     final existingIndex = _notifications.indexWhere((n) => n.id == item.id);
     if (existingIndex >= 0) {
@@ -125,8 +151,40 @@ class NotificationProvider extends ChangeNotifier {
     } else {
       _notifications.insert(0, item);
     }
+    _notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     _saveToLocalCache();
     notifyListeners();
+  }
+
+  /// Static helper for background isolates or direct writes
+  static Future<void> saveNotificationDirectlyToDisk(NotificationItem item) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final readIds = (prefs.getStringList(_readIdsKey) ?? <String>[]).toSet();
+      final raw = prefs.getString(_cacheKey);
+      List<NotificationItem> list = [];
+      if (raw != null && raw.isNotEmpty) {
+        final List<dynamic> decoded = jsonDecode(raw) as List<dynamic>;
+        list = decoded.map((e) => NotificationItem.fromMap(e as Map<String, dynamic>)).toList();
+      }
+
+      final existingIndex = list.indexWhere((n) => n.id == item.id);
+      if (existingIndex >= 0) {
+        list[existingIndex] = item;
+      } else {
+        list.insert(0, item);
+      }
+      list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      final updatedRaw = jsonEncode(list.map((n) => n.toMap()).toList());
+      await prefs.setString(_cacheKey, updatedRaw);
+
+      if (current != null) {
+        current!.addNotificationLocally(item.copyWith(isRead: readIds.contains(item.id)));
+      }
+    } catch (e) {
+      debugPrint('[NotificationProvider] Static cache write note: $e');
+    }
   }
 
   void markAsRead(String id) {
@@ -157,7 +215,11 @@ class NotificationProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _retryTimer?.cancel();
     _firestoreSubscription?.cancel();
+    if (current == this) {
+      current = null;
+    }
     super.dispose();
   }
 }

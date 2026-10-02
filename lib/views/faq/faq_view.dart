@@ -58,6 +58,11 @@ class _FaqContentState extends State<_FaqContent> {
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<FaqProvider>(context, listen: false).syncRemote();
+      }
+    });
   }
 
   @override
