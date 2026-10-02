@@ -118,16 +118,23 @@ class FaqProvider extends ChangeNotifier {
     notifyListeners();
     try {
       if (Firebase.apps.isNotEmpty) {
-        final snapshot = await FirebaseFirestore.instance
-            .collection('faqs')
-            .get(const GetOptions(source: Source.serverAndCache));
+        QuerySnapshot<Map<String, dynamic>> snapshot;
+        try {
+          snapshot = await FirebaseFirestore.instance
+              .collection('faqs')
+              .get(const GetOptions(source: Source.server));
+        } catch (_) {
+          snapshot = await FirebaseFirestore.instance
+              .collection('faqs')
+              .get(const GetOptions(source: Source.serverAndCache));
+        }
         if (snapshot.docs.isNotEmpty) {
           final remoteItems = snapshot.docs.map((doc) {
             return FaqItem.fromMap(doc.data(), doc.id);
           }).toList();
           _items = remoteItems;
           await _saveToLocalCache(remoteItems);
-          debugPrint('[FaqProvider] Refreshed ${remoteItems.length} FAQs from Cloud Firestore.');
+          debugPrint('[FaqProvider] Refreshed ${remoteItems.length} FAQs directly from Cloud Firestore.');
         }
       }
     } catch (e) {

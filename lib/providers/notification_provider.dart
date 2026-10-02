@@ -122,9 +122,16 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
     try {
       if (Firebase.apps.isNotEmpty) {
-        final snapshot = await FirebaseFirestore.instance
-            .collection('notifications')
-            .get(const GetOptions(source: Source.serverAndCache));
+        QuerySnapshot<Map<String, dynamic>> snapshot;
+        try {
+          snapshot = await FirebaseFirestore.instance
+              .collection('notifications')
+              .get(const GetOptions(source: Source.server));
+        } catch (_) {
+          snapshot = await FirebaseFirestore.instance
+              .collection('notifications')
+              .get(const GetOptions(source: Source.serverAndCache));
+        }
 
         final items = snapshot.docs.map((doc) {
           final item = NotificationItem.fromMap(doc.data(), doc.id);

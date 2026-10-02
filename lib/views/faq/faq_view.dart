@@ -84,7 +84,7 @@ class _FaqContentState extends State<_FaqContent> {
         bottom: false,
         child: Column(
           children: [
-            _buildFintechHeader(context, items.length, tr),
+            _buildFintechHeader(context, provider, items.length, tr),
             Expanded(
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -126,7 +126,7 @@ class _FaqContentState extends State<_FaqContent> {
     );
   }
 
-  Widget _buildFintechHeader(BuildContext context, int count, AppTranslations tr) {
+  Widget _buildFintechHeader(BuildContext context, FaqProvider provider, int count, AppTranslations tr) {
     final countLabel = tr.isHausa
         ? '$count Tambayoyi'
         : '$count ${count == 1 ? 'Topic' : 'Topics'}';
@@ -147,23 +147,60 @@ class _FaqContentState extends State<_FaqContent> {
           size: 19,
         ),
       ),
-      trailing: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: NelfundColors.emerald.withValues(alpha: 0.14),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: NelfundColors.emerald.withValues(alpha: 0.3),
-            width: 0.8,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: NelfundColors.emerald.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: NelfundColors.emerald.withValues(alpha: 0.3),
+                width: 0.8,
+              ),
+            ),
+            child: Text(
+              countLabel,
+              style: NelfundTypography.captionBold.copyWith(
+                color: NelfundColors.emerald,
+                fontSize: 11.5,
+              ),
+            ),
           ),
-        ),
-        child: Text(
-          countLabel,
-          style: NelfundTypography.captionBold.copyWith(
-            color: NelfundColors.emerald,
-            fontSize: 11.5,
+          const SizedBox(width: 8),
+          CupertinoButton(
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            onPressed: provider.isLoading
+                ? null
+                : () async {
+                    HapticFeedback.mediumImpact();
+                    await provider.refresh();
+                  },
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: NelfundColors.emerald.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: NelfundColors.emerald.withValues(alpha: 0.25),
+                  width: 0.8,
+                ),
+              ),
+              child: Center(
+                child: provider.isLoading
+                    ? const CupertinoActivityIndicator(radius: 7)
+                    : const Icon(
+                        CupertinoIcons.arrow_clockwise,
+                        size: 15,
+                        color: NelfundColors.emerald,
+                      ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

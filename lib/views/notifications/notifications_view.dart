@@ -104,8 +104,11 @@ class _NotificationsViewState extends State<NotificationsView> {
                   ),
                 ),
               ),
-              trailing: unreadCount > 0
-                  ? CupertinoButton(
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (unreadCount > 0) ...[
+                    CupertinoButton(
                       padding: EdgeInsets.zero,
                       onPressed: () {
                         HapticFeedback.mediumImpact();
@@ -140,8 +143,42 @@ class _NotificationsViewState extends State<NotificationsView> {
                           ],
                         ),
                       ),
-                    )
-                  : null,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    onPressed: notifProv.isLoading
+                        ? null
+                        : () async {
+                            HapticFeedback.mediumImpact();
+                            await notifProv.refresh();
+                          },
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: NelfundColors.emerald.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: NelfundColors.emerald.withValues(alpha: 0.25),
+                          width: 0.8,
+                        ),
+                      ),
+                      child: Center(
+                        child: notifProv.isLoading
+                            ? const CupertinoActivityIndicator(radius: 7)
+                            : const Icon(
+                                CupertinoIcons.arrow_clockwise,
+                                size: 15,
+                                color: NelfundColors.emerald,
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               bottom: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: CupertinoSearchTextField(

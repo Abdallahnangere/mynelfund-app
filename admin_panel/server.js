@@ -26,157 +26,204 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Default statutory FAQs dataset
+// Default statutory FAQs dataset (Matches exact 19 in-app policies in faq_model.dart)
 const STATUTORY_FAQS = [
+  // --- Applying & Eligibility ---
   {
     id: 'app_1',
     category: 'applying',
-    question: 'How do I apply for the student loan?',
-    questionHa: 'Ta yaya zan nemi bashin dalibai?',
-    answer: 'Applications are submitted strictly through the official portal at nelf.gov.ng. Verify your NIN, BVN, and matriculation number via the Student Verification System (SVS).',
-    answerHa: 'Ana cika takardar neman bashi ne kawai ta hanyar shafin yanar gizo na nelf.gov.ng. Tabbatar da NIN, BVN, da lambar shiga makaranta ta Tsarin Tabbatar da Dalibai (SVS).',
-    statutoryReference: 'Students Loans (Access to Higher Education) (Repeal and Re-enactment) Act 2024, Section 3',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 3'
+    question: 'Who is eligible to apply for the NELFUND Student Loan?',
+    questionHa: 'Su wane ne suka cancanci neman bashin karatun dalibai na NELFUND?',
+    answer: 'Under Section 2.0 of the Guidelines, you must be a verified Nigerian citizen (with valid NIN and BVN) who has gained admission or is currently enrolled full-time in an approved Federal or State public tertiary institution (University, Polytechnic, or College of Education). There are no income restrictions or family income ceilings.',
+    answerHa: 'Karkashin Sashe na 2.0 na Ka\'idojin, dole ne ka kasance dan Najeriya (mai ingantacciyar lambar NIN da BVN) wanda ya sami shiga ko yake karatu a halin yanzu a jami\'a, kwalejin foliteknik, ko kwalejin ilimi ta gwamnatin tarayya ko jiha. Babu wani sharadi kan iyakar kudin shigar iyaye ko dangi.',
+    statutoryReference: 'Section 2.0 & Section 2.1',
+    statutoryReferenceHa: 'Sashe na 2.0 & Sashe na 2.1'
   },
   {
     id: 'app_2',
     category: 'applying',
-    question: 'What are the core eligibility requirements?',
-    questionHa: 'Wadanne muhimman sharudda ne ake bukata don cancanta?',
-    answer: 'Applicants must be admitted into a federal or state-owned university, polytechnic, college of education, or vocational center. Admission must be cleared through JAMB CAPS.',
-    answerHa: 'Dole ne mai nema ya sami gurbin karatu a jami\'ar gwamnatin tarayya ko jiha, kwalejin foliteknik, ko kwalejin ilimi. Dole ne a amince da shiga ta hanyar JAMB CAPS.',
-    statutoryReference: 'Students Loans Act 2024, Section 2.1',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 2.1'
+    question: 'Can private university students apply for NELFUND loans?',
+    questionHa: 'Shin daliban jami\'o\'i masu zaman kansu za su iya neman bashin?',
+    answer: 'No. Under Section 2.2 of the Students Loans Act 2024, only students attending approved Federal and State public tertiary institutions (ETIs) are eligible for funding. Private university students are currently excluded.',
+    answerHa: 'A\'a. Karkashin Sashe na 2.2 na Dokar Lamunin Dalibai ta 2024, daliban da suke halartar manyan makarantun gwamnatin tarayya da na jihohi ne kadai suka cancanci samun lamuni a halin yanzu.',
+    statutoryReference: 'Section 2.2 (Institutional Criteria)',
+    statutoryReferenceHa: 'Sashe na 2.2 (Ka\'idojin Makarantu)'
   },
   {
     id: 'app_3',
     category: 'applying',
-    question: 'What constitutes statutory disqualification?',
-    questionHa: 'Wadanne abubuwa ne ke hana mutum samun bashi a doka?',
-    answer: 'Conviction for fraud or dishonesty, past default on loan facilities, suspension/expulsion from school, or submission of forged documentation.',
-    answerHa: 'Yanke hukunci saboda zamba, rashin biyan wani bashi a baya, kora ko dakatarwa daga makaranta, ko mika takardun bogi.',
-    statutoryReference: 'Students Loans Act 2024, Section 5.1 & Criminal Code',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 5.1'
+    question: 'What is the Student Verification System (SVS) upload requirement?',
+    questionHa: 'Menene ma\'anar lodin bayanai a Tsarin Tabbatar da Dalibai (SVS)?',
+    answer: 'Before an applicant can complete their loan application, their tertiary institution must upload their academic profile, matriculation/JAMB details, and fee structure directly into the NELFUND Student Verification System (SVS). If your school has not completed this upload, your profile cannot be cleared for evaluation.',
+    answerHa: 'Kafin mai neman bashi ya iya kammala aikace-aikacensa, dole ne makarantarsa ta loda bayanan karatunsa, lambar shiga makaranta ko ta JAMB, da tsarin kudaden makaranta kai-tsaye a tsarin SVS na NELFUND. Idan makarantarku ba ta loda bayanan ba, ba za a iya tantance ku ba.',
+    statutoryReference: 'Section 4.1 (Institutional Verification)',
+    statutoryReferenceHa: 'Sashe na 4.1 (Tantancewar Makaranta)'
   },
+  {
+    id: 'app_4',
+    category: 'applying',
+    question: 'Are there any application or processing fees to apply?',
+    questionHa: 'Shin akwai wani kudi na cika fom ko na aiki da ake biya?',
+    answer: 'Absolutely not. Applying on the official portal (nelf.gov.ng) is 100% free of charge. NELFUND does not charge application fees, processing fees, or commission. Beware of fraudulent agents claiming to expedite applications for a fee.',
+    answerHa: 'Sam babu ko kobo. Neman bashi a shafin gwamnati (nelf.gov.ng) kyauta ne 100%. NELFUND ba ta karbar kudin cika fom, kudin aiki, ko wani kason kudi. A kiyaye mutane ko wakilai masu neman kudi da sunan za su taimaka.',
+    statutoryReference: 'Students Loans Act 2024',
+    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024'
+  },
+  {
+    id: 'app_5',
+    category: 'applying',
+    question: 'Can someone who already holds a first degree apply?',
+    questionHa: 'Shin wanda ya riga ya kammala digiri na farko zai iya sake neman bashi?',
+    answer: 'No. Under Section 4.1.3 of the Guidelines (Attestation Form), applicants must attest under oath that they do not already possess a first degree or equivalent qualification from any Nigerian or foreign tertiary institution.',
+    answerHa: 'A\'a. Karkashin Sashe na 4.1.3 na Ka\'idoji (Takardar Rantsuwa), dole ne mai nema ya rantse cewa ba shi da digiri na farko ko makamancinsa daga kowace jami\'a a Najeriya ko kasashen waje.',
+    statutoryReference: 'Section 4.1.3 (Attestation Form)',
+    statutoryReferenceHa: 'Sashe na 4.1.3 (Takardar Rantsuwa)'
+  },
+
+  // --- Disbursement & Fees ---
   {
     id: 'disb_1',
     category: 'disbursement',
-    question: 'How are institutional fees disbursed?',
-    questionHa: 'Ta yaya ake biyan kudin makaranta?',
-    answer: 'Institutional fees (tuition and mandatory charges) are paid 100% directly into the verified account of the tertiary institution after clearance.',
-    answerHa: 'Kudaden makaranta ana tura su kai-tsaye 100% zuwa asusun banki na makarantar gaba da sakandare bayan an kammala tantancewa.',
-    statutoryReference: 'Students Loans Act 2024, Section 4.2',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 4.2'
+    question: 'How are the institutional fees (tuition) paid?',
+    questionHa: 'Ta yaya ake biyan kudaden makaranta (Tuition)?',
+    answer: 'Institutional fees are never paid in cash or deposited into the student’s personal bank account. 100% of approved tuition and charges are paid electronically and directly into the designated official bank account of your tertiary institution.',
+    answerHa: 'Ba a taba biyan kudin makaranta a hannu ko a asusun dalibi na kashin kai. Ana tura 100% na kudin makarantar kai-tsaye ta hanyar na\'ura zuwa asusun bankin hukuma na makarantarku.',
+    statutoryReference: 'Section 4.3 (Disbursement Process)',
+    statutoryReferenceHa: 'Sashe na 4.3 (Hanyar Biyan Kudi)'
   },
   {
     id: 'disb_2',
     category: 'disbursement',
-    question: 'How is student upkeep paid to beneficiaries?',
-    questionHa: 'Ta yaya ake biyan alawus na tallafin rayuwa ga dalibai?',
-    answer: 'Upkeep is disbursed at the rate of N20,000 per collected month directly into the student verified personal bank account linked to their BVN.',
-    answerHa: 'Ana tura kudin tallafin rayuwa N20,000 a kowane wata kai-tsaye zuwa asusun banki na dalibi da ke da alaka da lambar BVN dinsa.',
-    statutoryReference: 'NELFUND Operational Guidelines 2024, Section 4.3',
-    statutoryReferenceHa: 'Ka\'idojin Gudanarwa na NELFUND 2024, Sashe na 4.3'
+    question: 'How and when is the ₦20,000 monthly upkeep stipend paid?',
+    questionHa: 'Ta yaya kuma yaushe ake biyan alawus na tallafin rayuwa na ₦20,000 na kowanne wata?',
+    answer: 'The optional upkeep stipend of ₦20,000 per month is credited directly into the verified commercial bank account of the student on a monthly basis throughout the approved academic session.',
+    answerHa: 'Ana tura tallafin alawus na ₦20,000 a kowanne wata kai-tsaye zuwa asusun bankin dalibi na kashin kai wanda aka tantance a duk tsawon zangon karatun da aka amince da shi.',
+    statutoryReference: 'Section 4.3 (Upkeep Stipend)',
+    statutoryReferenceHa: 'Sashe na 4.3 (Alawus na Wata)'
   },
   {
     id: 'disb_3',
     category: 'disbursement',
-    question: 'What happens if my institution changes fees after approval?',
-    questionHa: 'Me zai faru idan makarantata ta canza kudin makaranta bayan an amince?',
-    answer: 'Reconciliation must be executed by the institution desk officer through the SVS portal prior to fund release.',
-    answerHa: 'Dole ne jami\'in makarantar ya gyara bayanan ta shafin SVS kafin a fitar da kudaden.',
-    statutoryReference: 'Financial Regulations S. 12',
-    statutoryReferenceHa: 'Ka\'idojin Kudi Sashe na 12'
+    question: 'What happens if I already paid my school fees before the loan was approved?',
+    questionHa: 'Menene zai faru idan na riga na biya kudin makaranta da kaina kafin bashi ya fito?',
+    answer: 'Under Section 4.1.2 of the Guidelines (Student Refund Policy), if a student pays their institutional charges before NELFUND disburses the approved loan, the tertiary institution is legally mandated to refund the student within 30 calendar days upon receipt of funds from NELFUND.',
+    answerHa: 'Karkashin Sashe na 4.1.2 na Ka\'idojin (Tsarin Mayar wa Dalibi Kudinsa), idan dalibi ya biya kudin makarantarsa kafin NELFUND ta tura kudin, doka ta tilasta wa makarantar mayar wa dalibin kudinsa cikin kwanaki 30 da samun kudin daga NELFUND.',
+    statutoryReference: 'Section 4.1.2 (Student Refund Policy)',
+    statutoryReferenceHa: 'Sashe na 4.1.2 (Mayar wa Dalibi Kudi)'
   },
   {
     id: 'disb_4',
     category: 'disbursement',
-    question: 'What is the refund policy for institutional overpayments?',
-    questionHa: 'Menene ka\'idar mayar da kudi idan an biya makaranta sama da kima?',
-    answer: 'Under Section 4.1.2 of the Operational Guidelines, tertiary institutions must refund any unearned or overpaid fees back to NELFUND within 30 calendar days.',
-    answerHa: 'Karkashin Sashe na 4.1.2 na Ka\'idoji, dole ne makarantu su mayar da kudin da aka biya sama da kima ga NELFUND a cikin kwanaki 30.',
-    statutoryReference: 'NELFUND Operational Guidelines, Section 4.1.2',
-    statutoryReferenceHa: 'Ka\'idojin Gudanarwa na NELFUND, Sashe na 4.1.2'
+    question: 'What are the official turnaround times for evaluation and disbursement?',
+    questionHa: 'Menene tsawon wa\'adin tantancewa da fitar da kudi na hukuma?',
+    answer: 'The official Service Level Agreements (SLAs) are: (1) Institution verification: up to 20 working days; (2) NELFUND evaluation: 15 calendar days; (3) Approval: up to 10 working days; (4) Fund disbursement: up to 10 working days.',
+    answerHa: 'Wa\'adin aiki na hukuma (SLAs) shi ne: (1) Tantancewar makaranta: har zuwa kwanakin aiki 20; (2) Tantancewar NELFUND: kwanaki 15 a kalanda; (3) Amincewa: kwanakin aiki 10; (4) Fitar da kudi: kwanakin aiki 10.',
+    statutoryReference: 'Section 4.2 & Section 4.3',
+    statutoryReferenceHa: 'Sashe na 4.2 & Sashe na 4.3'
   },
+
+  // --- Repayment & Moratorium ---
   {
     id: 'rep_1',
     category: 'repayment',
-    question: 'When does mandatory repayment begin?',
-    questionHa: 'A wane lokaci ne doka ta tanadi fara biyan bashi?',
-    answer: 'Repayment commences exactly 2 years following the completion of the National Youth Service Corps (NYSC) program or mandatory exemption.',
-    answerHa: 'Biyan bashi yana farawa ne daidai shekaru 2 bayan kammala aikin yi wa kasa (NYSC) ko kuma samun takardar yaye.',
-    statutoryReference: 'Students Loans Act 2024, Section 6.1',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 6.1'
+    question: 'When does mandatory loan repayment begin?',
+    questionHa: 'Yaushe ne dole a fara biyan kudin bashi?',
+    answer: 'Under Section 5.1 of the 2024 Act, loan repayment does not begin until exactly two (2) years after the beneficiary completes their National Youth Service Corps (NYSC) service year (or obtains a formal letter of exemption). Zero deductions occur while you are studying or during your service year.',
+    answerHa: 'Karkashin Sashe na 5.1 na Dokar 2024, ba za a fara biyan bashi ba sai bayan cikar shekaru biyu (2) cif da kammala hidimar kasa ta NYSC (ko samun takardar yaye ta doka). Ba a rage ko kobo a lokacin da kake karatu ko a lokacin NYSC.',
+    statutoryReference: 'Section 5.1 (Commencement of Repayment)',
+    statutoryReferenceHa: 'Sashe na 5.1 (Lokacin Fara Biyan Bashi)'
   },
   {
     id: 'rep_2',
     category: 'repayment',
-    question: 'What percentage is deducted from salary?',
-    questionHa: 'Kashi nawa ne za a rika cirewa daga albashi?',
-    answer: 'For formally employed beneficiaries, 10% is deducted monthly from gross salary at source by the employer under PAYE remittance.',
-    answerHa: 'Ga masu aikin gwamnati ko kamfani, ana cire kashi 10% a kowane wata daga albashinsu ta hannun ma\'aikata.',
-    statutoryReference: 'Students Loans Act 2024, Section 6.2a',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 6.2a'
+    question: 'Is there any interest charged on the NELFUND loan?',
+    questionHa: 'Shin akwai wani kudin ruwa a kan bashin NELFUND?',
+    answer: 'No. The loan is strictly 0% interest-free under the Students Loans Act 2024. Beneficiaries only repay the exact principal amount disbursed on their behalf. There are no compounding charges, processing fees, or hidden penalties.',
+    answerHa: 'A\'a. Bashin bashi ne mara kudin ruwa ko kobo (0% interest) karkashin Dokar 2024. Ainihin kudin da aka biya ma makaranta ko aka ba ka shi kadai za ka biya. Babu kudin karuwa, caji boyayye, ko tara.',
+    statutoryReference: 'Students Loans Act 2024 (Section 5.0)',
+    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024 (Sashe na 5.0)'
   },
   {
     id: 'rep_3',
     category: 'repayment',
-    question: 'How do self-employed or entrepreneurs repay?',
-    questionHa: 'Ta yaya masu sana\'ar hannu ko kasuwanci ke biyan bashi?',
-    answer: 'Self-employed beneficiaries remit 10% of their monthly business profit or voluntary equal installments through the designated NELFUND portal.',
-    answerHa: 'Masu zaman kansu suna biyan kashi 10% ne daga ribar kasuwancinsu ta wata ko kuma biyan wani adadi ta dandalin NELFUND.',
-    statutoryReference: 'Students Loans Act 2024, Section 6.2b',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 6.2b'
+    question: 'How is the monthly deduction calculated for employed beneficiaries?',
+    questionHa: 'Ta yaya ake lissafin rage kudin wata ga masu aikin albashi?',
+    answer: 'Repayment is executed through Pay-As-You-Earn (PAYE). Your employer is legally mandated to deduct 10% of your gross monthly salary at source and remit it directly to the NELFUND recovery account.',
+    answerHa: 'Ana aiwatar da biyan bashi ta hanyar tsarin PAYE. Doka ta tilasta wa ma\'aikatarka cire kashi 10% na babban albashinka na wata kai-tsaye a tushe tare da tura shi asusun NELFUND.',
+    statutoryReference: 'Section 5.1(a) (Employer Obligations)',
+    statutoryReferenceHa: 'Sashe na 5.1(a) (Nauyin Ma\'aikata)'
   },
   {
     id: 'rep_4',
     category: 'repayment',
-    question: 'Is there any interest charged on the loan?',
-    questionHa: 'Akwai kudin ruwa a kan wannan lamuni?',
-    answer: 'Zero percent (0%). Under Section 15 of the 2024 Act, the loan is strictly interest-free. Beneficiaries repay only the exact principal disbursed.',
-    answerHa: 'Kashi sifili (0%). Karkashin Sashe na 15 na Dokar 2024, bashin ba shi da kudin ruwa ko kadan. Ainihin kudin da aka ba ka shi kadai za ka mayar.',
-    statutoryReference: 'Students Loans Act 2024, Section 15',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 15'
+    question: 'How does repayment work for self-employed beneficiaries?',
+    questionHa: 'Ta yaya biyan bashi yake aiki ga masu sana\'ar dogaro da kai?',
+    answer: 'Under Section 5.2, self-employed beneficiaries must remit 10% of their monthly business profit to NELFUND. Within 60 days of starting enterprise, you must register your business details, bank accounts, and monthly profit statements with NELFUND.',
+    answerHa: 'Karkashin Sashe na 5.2, masu sana\'ar dogaro da kai za su rinka tura kashi 10% na ribar kasuwancinsu a wata zuwa NELFUND. Cikin kwanaki 60 da fara sana\'a, dole ne ka yi rajistar bayanan sana\'arka da asusun banki da NELFUND.',
+    statutoryReference: 'Section 5.2 (Self-Employed Beneficiaries)',
+    statutoryReferenceHa: 'Sashe na 5.2 (Masu Dogaro da Kai)'
   },
   {
     id: 'rep_5',
     category: 'repayment',
-    question: 'What if I am still unemployed after the 2-year grace period?',
-    questionHa: 'Idan har yanzu ban sami aiki ba bayan cikar shekaru 2 na sassauci?',
-    answer: 'You are protected under Section 5.1(c). Submitting a statutory declaration or sworn affidavit of unemployment suspends deduction without interest or penalties.',
-    answerHa: 'Doka ta kare ka a Sashe na 5.1(c). Mika takardar rantsuwa ta rashin aikin yi zai sa a dakatar da biyan bashi ba tare da tara ko ruwa ba har ka sami aiki.',
-    statutoryReference: 'Students Loans Act 2024, Section 5.1c',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 5.1c'
+    question: 'What happens if I am still unemployed 2 years after NYSC?',
+    questionHa: 'Menene zai faru idan har yanzu ban sami aikin yi ba bayan shekaru 2 da NYSC?',
+    answer: 'Under Section 5.1(c), if you remain unemployed after the 2-year post-NYSC grace period, you must submit a sworn affidavit of unemployment and periodic statutory declarations to NELFUND. Repayment is suspended without interest or penalties until you secure employment.',
+    answerHa: 'Karkashin Sashe na 5.1(c), idan ba ka sami aiki ba bayan wa\'adin shekaru 2 na sassauci, za ka gabatar da takardar rantsuwa ta rashin aikin yi ga NELFUND. Za a dakatar da biyan bashi ba tare da tara ko kudin ruwa ba har sai ka sami aiki.',
+    statutoryReference: 'Section 5.1(c) (Unemployment Declaration)',
+    statutoryReferenceHa: 'Sashe na 5.1(c) (Sanarwar Rashin Aikin Yi)'
   },
   {
-    id: 'rec_1',
+    id: 'rep_6',
+    category: 'repayment',
+    question: 'What are my reporting duties when I get a job or change employers?',
+    questionHa: 'Wane nauyi ya rataya a wuyana idan na sami aiki ko na canza ma\'aikata?',
+    answer: 'Under Section 5.1(b), within 30 days of securing employment, you must submit your employer’s name, address, monthly salary, and loan ID to NELFUND. If you switch jobs, you must report the change to NELFUND within 30 days.',
+    answerHa: 'Karkashin Sashe na 5.1(b), cikin kwanaki 30 da samun aiki, dole ne ka aike wa NELFUND sunan ma\'aikatarka, adireshinta, albashinka, da lambar bashinka. Idan ka canza aiki ma, dole ne ka sanar cikin kwanaki 30.',
+    statutoryReference: 'Section 5.1(b) (Beneficiary Obligations)',
+    statutoryReferenceHa: 'Sashe na 5.1(b) (Nauyin Mai Bashi)'
+  },
+
+  // --- Default & Legal Recovery ---
+  {
+    id: 'def_1',
     category: 'defaultRecovery',
-    question: 'What is the Global Standing Instruction (GSI)?',
-    questionHa: 'Menene Umarnin Karbar Bashi na Bankuna (GSI)?',
-    answer: 'GSI is a CBN-mandated electronic recovery mandate that debits linked bank accounts across all Nigerian commercial banks in the event of persistent default.',
-    answerHa: 'GSI tsari ne na Babban Bankin Najeriya (CBN) da ke cire kudi ta hanyar lantarki daga kowane asusun bankin da mutum yake da shi idan ya ki biyan bashi da gangan.',
-    statutoryReference: 'CBN Global Standing Instruction (GSI) Guidelines 2020',
-    statutoryReferenceHa: 'Ka\'idojin GSI na Babban Bankin Najeriya (CBN) 2020'
+    question: 'What is the Global Standing Instruction (GSI) mandate?',
+    questionHa: 'Menene ma\'anar umarnin banki na GSI (Global Standing Instruction)?',
+    answer: 'The Global Standing Instruction (GSI) is a Central Bank of Nigeria (CBN) financial recovery instrument. Under Section 5.3, willful defaulters will have their outstanding loan amount automatically swept and debited from any and all commercial bank accounts linked to their BVN and NIN nationwide.',
+    answerHa: 'Umarnin GSI wata ka\'ida ce ta Babban Bankin Najeriya (CBN). Karkashin Sashe na 5.3, duk wanda ya ki biyan bashi da gangan, za a rinka kwasar kudin bashinsa kai-tsaye daga duk wani asusun bankin kasuwanci da yake da shi da yake hade da BVN ko NIN dinsa a fadin kasar nan.',
+    statutoryReference: 'Section 5.3(d) (GSI Auto-Debit)',
+    statutoryReferenceHa: 'Sashe na 5.3(d) (Kwasar Kudi ta GSI)'
   },
   {
-    id: 'rec_2',
+    id: 'def_2',
     category: 'defaultRecovery',
-    question: 'Can employers be penalized for failing to remit deductions?',
-    questionHa: 'Za a iya hukunta ma\'aikata idan ba su tura kudin da aka cire ba?',
-    answer: 'Yes. Employers who fail to remit the 10% monthly deduction within 30 days commit a statutory offense punishable by fines and liability for arrears.',
-    answerHa: 'Kwarai kuwa. Duk ma\'aikacin da ya ki tura kashi 10% a cikin kwanaki 30 ya aikata laifi da za a iya ci tararsa a doka.',
-    statutoryReference: 'Students Loans Act 2024, Section 8.3',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 8.3'
+    question: 'Will defaulting affect my ability to get bank loans or credit cards?',
+    questionHa: 'Shin kin biyan bashi zai iya hana ni samun lamunin banki a gaba?',
+    answer: 'Yes. Under Section 5.3(b), defaulters are formally reported to the Central Bank’s Credit Risk Management System (CRMS) and private Credit Bureaus. This blacklists you from securing bank loans, car financing, mortgages, or credit cards across all Nigerian financial institutions.',
+    answerHa: 'Kwarai kuwa. Karkashin Sashe na 5.3(b), za a kai sunan duk wanda ya ki biya zuwa Tsarin CRMS na Babban Bankin Najeriya da hukumomin binciken bashi. Wannan zai sa a toshe ka daga samun lamunin banki, katin bashi, ko jingina a duk bankunan Najeriya.',
+    statutoryReference: 'Section 5.3(b) (CRMS Blacklisting)',
+    statutoryReferenceHa: 'Sashe na 5.3(b) (Toshewa a Tsarin CRMS)'
   },
   {
-    id: 'rec_3',
+    id: 'def_3',
     category: 'defaultRecovery',
-    question: 'What are the penalties for providing false loan information?',
-    questionHa: 'Wane hukunci ne ke jiran wanda ya bada bayanan karya?',
-    answer: 'Submission of false claims, fraudulent admission documents, or forged affidavits carries up to 3 years imprisonment or heavy statutory fines.',
-    answerHa: 'Bada bayanan karya, takardun bogi ko rantsuwar karya zai iya kai mutum gidan yari na tsawon shekaru 3 ko tarar kudi mai yawa.',
-    statutoryReference: 'Students Loans Act 2024, Section 14 & Penal Code',
-    statutoryReferenceHa: 'Dokar Lamunin Dalibai ta 2024, Sashe na 14'
+    question: 'Can NELFUND publish the names of defaulters publicly?',
+    questionHa: 'Shin NELFUND za ta iya buga sunayen wadanda suka ki biya a jaridu?',
+    answer: 'Yes. Section 5.3(c) explicitly empowers NELFUND to publish the names, photographs, institution attended, and outstanding debt balances of chronic loan defaulters in national daily newspapers and public gazettes.',
+    answerHa: 'E. Sashe na 5.3(c) ya ba NELFUND cikakken ikon buga sunaye, hotuna, makarantun da suka halarta, da adadin bashin da ake bin duk wadanda suka ki biya a jaridun kasar nan da mujallun gwamnati.',
+    statutoryReference: 'Section 5.3(c) (Publication of Defaulters)',
+    statutoryReferenceHa: 'Sashe na 5.3(c) (Buga Sunayen Masu Bashi)'
+  },
+  {
+    id: 'def_4',
+    category: 'defaultRecovery',
+    question: 'Can legal prosecution or court action be taken against defaulters?',
+    questionHa: 'Shin za a iya kai mutum kotu idan ya ki biyan bashi?',
+    answer: 'Yes. Where warning notices, credit blacklisting, and GSI sweeps fail to recover the debt, NELFUND will institute legal action in the Federal High Court to recover the outstanding balance plus statutory legal recovery costs.',
+    answerHa: 'E. Idan duk matakan jan kunne, toshewa a banki, da kwasar kudi ta GSI suka gaza, NELFUND za ta shigar da karar mai bashi a Babbar Kotun Tarayya domin karbar kudaden tare da kudaden shari\'a.',
+    statutoryReference: 'Section 5.3(e) (Legal Prosecution)',
+    statutoryReferenceHa: 'Sashe na 5.3(e) (Shari\'a a Kotu)'
   }
 ];
 
@@ -290,13 +337,31 @@ app.delete('/api/faqs/:id', async (req, res) => {
   }
 });
 
-// Seed Statutory FAQs
+// Seed Statutory 19 In-App FAQs
 app.post('/api/faqs/seed', async (req, res) => {
   if (!db) {
     return res.status(503).json({ error: 'Firestore is not connected' });
   }
 
   try {
+    const validIds = new Set(STATUTORY_FAQS.map((f) => f.id));
+    const existingSnap = await db.collection('faqs').get();
+
+    // Purge obsolete/legacy documents not in the active 19 set
+    const deleteBatch = db.batch();
+    let deletedCount = 0;
+    existingSnap.forEach((doc) => {
+      if (!validIds.has(doc.id)) {
+        deleteBatch.delete(doc.ref);
+        deletedCount++;
+      }
+    });
+    if (deletedCount > 0) {
+      await deleteBatch.commit();
+      console.log(`[API] Purged ${deletedCount} legacy FAQ documents.`);
+    }
+
+    // Upsert all 19 official items
     const batch = db.batch();
     for (const item of STATUTORY_FAQS) {
       const docRef = db.collection('faqs').doc(item.id);
@@ -306,11 +371,13 @@ app.post('/api/faqs/seed', async (req, res) => {
       });
     }
     await batch.commit();
-    console.log(`[API] Seeded ${STATUTORY_FAQS.length} statutory FAQs into Firestore.`);
+    console.log(`[API] Seeded all ${STATUTORY_FAQS.length} official in-app FAQs into Firestore.`);
+
     res.json({
       success: true,
-      message: `Seeded ${STATUTORY_FAQS.length} statutory FAQs successfully`,
+      message: `Seeded ${STATUTORY_FAQS.length} statutory in-app FAQs successfully (purged ${deletedCount} legacy)`,
       count: STATUTORY_FAQS.length,
+      purged: deletedCount,
     });
   } catch (error) {
     console.error('[API] Error seeding FAQs:', error);

@@ -16,6 +16,8 @@ const pageSubheading = document.getElementById('page-subheading');
 const faqsTbody = document.getElementById('faqs-tbody');
 const faqSearchInput = document.getElementById('faq-search');
 const faqCategorySelect = document.getElementById('faq-filter-category');
+const btnRefreshFaqs = document.getElementById('btn-refresh-faqs');
+const btnRefreshNotifs = document.getElementById('btn-refresh-notifs');
 const btnSeedFaqs = document.getElementById('btn-seed-faqs');
 const btnCreateFaq = document.getElementById('btn-create-faq');
 const faqModal = document.getElementById('faq-modal');
@@ -295,12 +297,36 @@ function setupEventHandlers() {
   modalClose.addEventListener('click', closeModal);
   modalCancel.addEventListener('click', closeModal);
 
-  // Seed Statutory FAQs
+  // Refresh FAQs Live DB
+  if (btnRefreshFaqs) {
+    btnRefreshFaqs.addEventListener('click', async () => {
+      btnRefreshFaqs.disabled = true;
+      btnRefreshFaqs.textContent = 'Refreshing...';
+      await loadFaqs();
+      showToast(`Synchronized ${allFaqs.length} FAQs from Cloud Firestore`);
+      btnRefreshFaqs.disabled = false;
+      btnRefreshFaqs.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Refresh Live DB`;
+    });
+  }
+
+  // Refresh Notifications Live DB
+  if (btnRefreshNotifs) {
+    btnRefreshNotifs.addEventListener('click', async () => {
+      btnRefreshNotifs.disabled = true;
+      btnRefreshNotifs.textContent = 'Refreshing...';
+      await loadNotifications();
+      showToast(`Synchronized ${allNotifications.length} bulletins from Cloud Firestore`);
+      btnRefreshNotifs.disabled = false;
+      btnRefreshNotifs.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Refresh`;
+    });
+  }
+
+  // Seed Statutory 19 In-App FAQs
   btnSeedFaqs.addEventListener('click', async () => {
-    if (!confirm('Seed all 15 official statutory FAQs into Cloud Firestore? This will populate the legal and repayment rules.')) return;
+    if (!confirm('Sync all 19 official in-app statutory policies into Cloud Firestore? This will populate the full dataset and purge any legacy entries.')) return;
 
     btnSeedFaqs.disabled = true;
-    btnSeedFaqs.textContent = 'Seeding...';
+    btnSeedFaqs.textContent = 'Syncing...';
     try {
       const res = await fetch(`${API_BASE}/api/faqs/seed`, { method: 'POST' });
       const data = await res.json();
@@ -314,7 +340,7 @@ function setupEventHandlers() {
       showToast(err.message, true);
     } finally {
       btnSeedFaqs.disabled = false;
-      btnSeedFaqs.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Seed Statutory 15 FAQs`;
+      btnSeedFaqs.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Sync All 19 In-App FAQs`;
     }
   });
 
