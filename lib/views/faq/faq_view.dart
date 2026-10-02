@@ -22,10 +22,17 @@ class FaqView extends StatelessWidget {
       localeProv = Provider.of<LocaleProvider?>(context, listen: false);
     } catch (_) {}
 
-    final content = ChangeNotifierProvider(
-      create: (_) => FaqProvider(),
-      child: const _FaqContent(),
-    );
+    FaqProvider? existingFaqProv;
+    try {
+      existingFaqProv = Provider.of<FaqProvider?>(context, listen: false);
+    } catch (_) {}
+
+    final Widget content = existingFaqProv != null
+        ? const _FaqContent()
+        : ChangeNotifierProvider(
+            create: (_) => FaqProvider(),
+            child: const _FaqContent(),
+          );
 
     if (localeProv == null) {
       return ChangeNotifierProvider(
@@ -74,25 +81,37 @@ class _FaqContentState extends State<_FaqContent> {
           children: [
             _buildFintechHeader(context, items.length, tr),
             Expanded(
-              child: ListView(
+              child: CustomScrollView(
                 physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsets.fromLTRB(0, 12, 0, 88),
-                children: [
-                  _buildSearchBox(context, provider, tr),
-                  const SizedBox(height: 10),
-                  _buildCategoryFilterStrip(context, provider, lang),
-                  const SizedBox(height: 12),
-                  if (provider.searchQuery.isEmpty &&
-                      provider.selectedCategory == FaqCategory.all) ...[
-                    _buildSpotlightCarousel(context, tr),
-                    const SizedBox(height: 12),
-                  ],
-                  if (items.isEmpty)
-                    _buildEmptySearchState(context, provider, tr)
-                  else
-                    ...items.map((item) => _buildFaqTile(context, provider, item, lang)),
-                  const SizedBox(height: 24),
+                slivers: [
+                  CupertinoSliverRefreshControl(
+                    onRefresh: () async {
+                      HapticFeedback.lightImpact();
+                      await provider.refresh();
+                    },
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(0, 12, 0, 88),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        _buildSearchBox(context, provider, tr),
+                        const SizedBox(height: 10),
+                        _buildCategoryFilterStrip(context, provider, lang),
+                        const SizedBox(height: 12),
+                        if (provider.searchQuery.isEmpty &&
+                            provider.selectedCategory == FaqCategory.all) ...[
+                          _buildSpotlightCarousel(context, tr),
+                          const SizedBox(height: 12),
+                        ],
+                        if (items.isEmpty)
+                          _buildEmptySearchState(context, provider, tr)
+                        else
+                          ...items.map((item) => _buildFaqTile(context, provider, item, lang)),
+                        const SizedBox(height: 24),
+                      ]),
+                    ),
+                  ),
                 ],
               ),
             ),

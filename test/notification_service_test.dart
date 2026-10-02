@@ -8,12 +8,12 @@ void main() {
       expect(service, isNotNull);
     });
 
-    test('Default broadcast topics match general, announcements, and loan_updates', () {
+    test('Default broadcast topics match all, general, announcements, and loan_updates', () {
       expect(
         NotificationService.defaultTopics,
-        containsAll(['general', 'announcements', 'loan_updates']),
+        containsAll(['all', 'general', 'announcements', 'loan_updates']),
       );
-      expect(NotificationService.defaultTopics.length, 3);
+      expect(NotificationService.defaultTopics.length, 4);
     });
 
     test('Topic subscription and unsubscription methods run safely without throwing',

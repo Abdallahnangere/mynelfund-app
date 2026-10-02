@@ -59,6 +59,15 @@ class AppTranslations {
   // Home Screen
   // ----------------------------------------------------
   String get officialBulletinsTitle => isHausa ? 'Sanarwar Hukuma' : 'Official Bulletins';
+  String get notificationsViewTitle => isHausa ? 'Sanarwar Hukuma' : 'Official Bulletins';
+  String get notificationsSubtitle => isHausa ? 'Bayanai da Sabbin Sanarwa' : 'Real-time Bulletins & Updates';
+  String get notificationsEmptyTitle => isHausa ? 'Babu Sabuwar Sanarwa' : 'No Notifications Yet';
+  String get notificationsEmptyDesc => isHausa
+      ? 'Dukkan sabbin sanarwar hukuma, bayanan shigar kudi da bude fom zasu bayyana a nan da zaran an turo su.'
+      : 'Official announcements, disbursement alerts, and portal updates will appear here in real time.';
+  String get markAllReadLabel => isHausa ? 'Karanta Duka' : 'Mark all read';
+  String get clearNotificationsLabel => isHausa ? 'Goge' : 'Clear';
+  String get searchNotificationsPlaceholder => isHausa ? 'Nemo a cikin sanarwa...' : 'Search bulletins & alerts...';
   String get programOverviewTitle => isHausa ? 'Bayanin Shirin Bashi' : 'Program Overview';
   String get keyLoanPillarsTitle => isHausa ? 'Muhimman Rukunnan Bashi' : 'Key Loan Pillars';
   String get exploreToolsTitle => isHausa ? 'Duba Cancanta da Gwajin Biya' : 'Explore Tools & Guides';

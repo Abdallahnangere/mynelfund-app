@@ -93,6 +93,40 @@ class FaqItem {
     required this.category,
   });
 
+  static FaqCategory parseCategory(String? name) {
+    if (name == null) return FaqCategory.applying;
+    return FaqCategory.values.firstWhere(
+      (c) => c.name.toLowerCase() == name.toLowerCase(),
+      orElse: () => FaqCategory.applying,
+    );
+  }
+
+  factory FaqItem.fromMap(Map<String, dynamic> map, [String? id]) {
+    return FaqItem(
+      id: id ?? map['id']?.toString() ?? '',
+      question: map['question']?.toString() ?? '',
+      answer: map['answer']?.toString() ?? '',
+      statutoryReference: map['statutoryReference']?.toString() ?? '',
+      questionHa: map['questionHa']?.toString() ?? map['question']?.toString() ?? '',
+      answerHa: map['answerHa']?.toString() ?? map['answer']?.toString() ?? '',
+      statutoryReferenceHa: map['statutoryReferenceHa']?.toString() ?? map['statutoryReference']?.toString() ?? '',
+      category: parseCategory(map['category']?.toString()),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'question': question,
+      'answer': answer,
+      'statutoryReference': statutoryReference,
+      'questionHa': questionHa,
+      'answerHa': answerHa,
+      'statutoryReferenceHa': statutoryReferenceHa,
+      'category': category.name,
+    };
+  }
+
   String getQuestion(AppLanguage lang) =>
       lang == AppLanguage.hausa ? questionHa : question;
 

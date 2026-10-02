@@ -12,6 +12,8 @@ import 'core/services/analytics_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/theme/nelfund_theme.dart';
 import 'firebase_options.dart';
+import 'providers/faq_provider.dart';
+import 'providers/notification_provider.dart';
 import 'views/main_tab_scaffold.dart';
 import 'views/splash/splash_view.dart';
 
@@ -31,8 +33,12 @@ void main() async {
   // Paint the first frame immediately so the app opens in milliseconds
   // without waiting for network connections or third-party SDKs
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => LocaleProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => FaqProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+      ],
       child: const MyNelfundApp(),
     ),
   );
@@ -84,8 +90,12 @@ class MyNelfundApp extends StatelessWidget {
     final bool shouldShowOnboarding = showLanguageOnboarding ?? !skipSplash;
 
     if (existingProvider == null) {
-      return ChangeNotifierProvider(
-        create: (_) => LocaleProvider(),
+      return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => LocaleProvider()),
+          ChangeNotifierProvider(create: (_) => FaqProvider()),
+          ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ],
         child: _MyNelfundAppContent(
           skipSplash: skipSplash,
           showLanguageOnboarding: shouldShowOnboarding,

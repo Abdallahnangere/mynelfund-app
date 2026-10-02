@@ -9,6 +9,8 @@ import '../core/services/notification_service.dart';
 import '../core/services/review_service.dart';
 import '../core/services/update_service.dart';
 import '../core/theme/nelfund_colors.dart';
+import '../providers/faq_provider.dart';
+import '../providers/notification_provider.dart';
 import '../widgets/liquid_glass_nav_bar.dart';
 import 'about/about_view.dart';
 import 'calculator/calculator_view.dart';
@@ -42,8 +44,12 @@ class MainTabScaffold extends StatelessWidget {
       showLanguageOnboarding: showLanguageOnboarding,
     );
     if (localeProv == null) {
-      return ChangeNotifierProvider(
-        create: (_) => LocaleProvider(),
+      return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => LocaleProvider()),
+          ChangeNotifierProvider(create: (_) => FaqProvider()),
+          ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ],
         child: content,
       );
     }

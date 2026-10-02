@@ -8,9 +8,11 @@ import '../../core/localization/app_translations.dart';
 import '../../core/localization/locale_provider.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
+import '../../providers/notification_provider.dart';
 import '../../widgets/apple_frosted_card.dart';
 import '../../widgets/liquid_glass_header.dart';
 import '../main_tab_scaffold.dart';
+import '../notifications/notifications_view.dart';
 import '../timeline/timeline_view.dart';
 
 class HomeView extends StatelessWidget {
@@ -294,10 +296,22 @@ class _HomeViewContentState extends State<_HomeViewContent> {
 
   Widget _buildNotificationButton(BuildContext context) {
     final isDark = CupertinoTheme.of(context).brightness == Brightness.dark;
+    NotificationProvider? notifProv;
+    try {
+      notifProv = Provider.of<NotificationProvider>(context);
+    } catch (_) {}
+    final hasUnread = notifProv?.hasUnread ?? false;
 
     return CupertinoButton(
       padding: EdgeInsets.zero,
-      onPressed: () => _showNotificationsSheet(context),
+      onPressed: () {
+        HapticFeedback.lightImpact();
+        Navigator.of(context).push(
+          CupertinoPageRoute(
+            builder: (context) => const NotificationsView(),
+          ),
+        );
+      },
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -326,215 +340,23 @@ class _HomeViewContentState extends State<_HomeViewContent> {
               ),
             ),
           ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE53935),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isDark ? const Color(0xFF161718) : CupertinoColors.white,
-                  width: 1.8,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showNotificationsSheet(BuildContext context) {
-    final tr = AppTranslations.of(context);
-    final isHa = tr.isHausa;
-
-    showCupertinoModalPopup<void>(
-      context: context,
-      builder: (BuildContext modalContext) {
-        return Container(
-          height: MediaQuery.of(modalContext).size.height * 0.65,
-          padding: const EdgeInsets.only(top: 12),
-          decoration: BoxDecoration(
-            color: CupertinoDynamicColor.resolve(
-              const CupertinoDynamicColor.withBrightness(
-                color: Color(0xFFFAFCFA),
-                darkColor: Color(0xFF161A17),
-              ),
-              modalContext,
-            ),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          child: SafeArea(
-            top: false,
-            child: Column(
-              children: [
-                Container(
-                  width: 38,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: CupertinoColors.systemGrey4,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            CupertinoIcons.bell_fill,
-                            color: NelfundColors.emerald,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            tr.officialBulletinsTitle,
-                            style: NelfundTypography.title3.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () => Navigator.of(modalContext).pop(),
-                        child: Text(
-                          tr.buttonDone,
-                          style: NelfundTypography.headline.copyWith(
-                            color: NelfundColors.emerald,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 8),
-                    children: [
-                      _buildNotificationItem(
-                        context: modalContext,
-                        title: isHa
-                            ? 'An Bude Karbar Fom na 2024/2025'
-                            : '2024/2025 Application Window Open',
-                        body: isHa
-                            ? 'Ana cika bashin dalibai a halin yanzu a shafin yanar gizo na nelf.gov.ng. Tabbatar cewa makarantarku ta loda bayananku a Tsarin Tabbatar da Dalibai (SVS).'
-                            : 'Applications for public tertiary institutions are actively underway. Full-time students can submit their requests on nelf.gov.ng without any charges.',
-                        timestamp: isHa
-                            ? 'A Bude Yake Yanzu • Zangon 2024/2025'
-                            : 'Active Now • 2024/2025 Session',
-                        badge: isHa ? 'A Bude Yake' : 'Portal Open',
-                        badgeColor: CupertinoColors.systemGreen,
-                      ),
-                      const SizedBox(height: 12),
-                      _buildNotificationItem(
-                        context: modalContext,
-                        title: isHa
-                            ? 'Kariyar 0% Babu Kudin Ruwa'
-                            : '0% Zero-Interest Protection',
-                        body: isHa
-                            ? 'Karkashin Sashe na 15 na Dokar Lamunin Dalibai ta 2024, duk wani lamuni da aka amince da shi ba shi da kudin ruwa ko boyayyun kudaden banki.'
-                            : 'Under Section 15 of the Students Loans Act 2024, all approved loan facilities carry zero interest rate with no hidden bank charges.',
-                        timestamp: isHa ? 'Dokar 2024' : 'Statutory Act 2024',
-                        badge: isHa ? 'Tabbatacce' : 'Guaranteed',
-                        badgeColor: NelfundColors.emerald,
-                      ),
-                      const SizedBox(height: 12),
-                      _buildNotificationItem(
-                        context: modalContext,
-                        title: isHa
-                            ? 'Dole Makarantarku Ta Loda Bayananku a SVS'
-                            : 'Mandatory SVS Profile Upload',
-                        body: isHa
-                            ? 'Dole ne makarantarku ta loda cikakkun bayanan lambar shigarku zuwa Tsarin Tabbatar da Dalibai (SVS) kafin a tantance aikace-aikacenku.'
-                            : 'Your institution must upload your complete verified matriculation data to the Student Verification System (SVS) before your application can clear verification.',
-                        timestamp: isHa ? 'Ka\'idoji S. 4.2' : 'Guidelines S. 4.2',
-                        badge: isHa ? 'Jan Hankali' : 'Advisory',
-                        badgeColor: const Color(0xFFE67E22),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildNotificationItem({
-    required BuildContext context,
-    required String title,
-    required String body,
-    required String timestamp,
-    required String badge,
-    required Color badgeColor,
-  }) {
-    return AppleFrostedCard(
-      margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(14),
-      borderColor: NelfundColors.emerald.withValues(alpha: 0.18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          if (hasUnread)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                width: 10,
+                height: 10,
                 decoration: BoxDecoration(
-                  color: badgeColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  badge,
-                  style: NelfundTypography.captionBold.copyWith(
-                    color: badgeColor,
-                    fontSize: 11,
+                  color: const Color(0xFFE53935),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isDark ? const Color(0xFF161718) : CupertinoColors.white,
+                    width: 1.8,
                   ),
                 ),
               ),
-              Text(
-                timestamp,
-                style: NelfundTypography.caption.copyWith(
-                  color: CupertinoDynamicColor.resolve(
-                    NelfundColors.secondaryLabel,
-                    context,
-                  ),
-                  fontSize: 11,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: NelfundTypography.headline.copyWith(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            body,
-            style: NelfundTypography.footnote.copyWith(
-              color: CupertinoDynamicColor.resolve(
-                NelfundColors.secondaryLabel,
-                context,
-              ),
-              height: 1.35,
-            ),
-          ),
         ],
       ),
     );

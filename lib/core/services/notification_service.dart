@@ -52,6 +52,7 @@ class NotificationService {
 
   /// Standard broadcast topics for all students
   static const List<String> defaultTopics = [
+    'all',
     'general',
     'announcements',
     'loan_updates',

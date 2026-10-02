@@ -29,12 +29,12 @@ void main() {
     expect(find.text('₦20,000 Monthly Upkeep'), findsOneWidget);
     expect(find.text('Explore Tools & Guides'), findsOneWidget);
 
-    // Verify Notification Modal Popup
+    // Verify Full-Screen Notifications View navigation
     await tester.tap(find.byIcon(CupertinoIcons.bell_fill));
     await tester.pumpAndSettle();
     expect(find.text('Official Bulletins'), findsOneWidget);
-    expect(find.text('2024/2025 Application Window Open'), findsOneWidget);
-    await tester.tap(find.text('Done'));
+    expect(find.byType(CupertinoSearchTextField), findsOneWidget);
+    await tester.tap(find.byIcon(CupertinoIcons.back));
     await tester.pumpAndSettle();
 
     // Verify Quick-Access card to Eligibility Checker

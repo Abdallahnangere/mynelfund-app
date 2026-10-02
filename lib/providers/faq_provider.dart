@@ -1,13 +1,118 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/faq_model.dart';
 
 class FaqProvider extends ChangeNotifier {
+  static const String _cacheKey = 'cached_faqs_v1';
+
   FaqCategory _selectedCategory = FaqCategory.all;
   String _searchQuery = '';
   final Set<String> _expandedIds = {};
 
+  List<FaqItem> _items = List.from(FaqItem.defaultList);
+  bool _isLoading = false;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _firestoreSubscription;
+
+  FaqProvider() {
+    _initialize();
+  }
+
   FaqCategory get selectedCategory => _selectedCategory;
   String get searchQuery => _searchQuery;
+  List<FaqItem> get allItems => List.unmodifiable(_items);
+  bool get isLoading => _isLoading;
+
+  Future<void> _initialize() async {
+    // 1. Immediately load local cache for 0ms offline startup
+    await _loadFromLocalCache();
+
+    // 2. Attach live Firestore listener if Firebase is available
+    _attachFirestoreListener();
+  }
+
+  Future<void> _loadFromLocalCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_cacheKey);
+      if (raw != null && raw.isNotEmpty) {
+        final List<dynamic> decoded = jsonDecode(raw) as List<dynamic>;
+        if (decoded.isNotEmpty) {
+          _items = decoded
+              .map((e) => FaqItem.fromMap(e as Map<String, dynamic>))
+              .toList();
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      debugPrint('[FaqProvider] Local cache read note: $e');
+    }
+  }
+
+  Future<void> _saveToLocalCache(List<FaqItem> items) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = jsonEncode(items.map((e) => e.toMap()).toList());
+      await prefs.setString(_cacheKey, raw);
+    } catch (e) {
+      debugPrint('[FaqProvider] Local cache save note: $e');
+    }
+  }
+
+  void _attachFirestoreListener() {
+    try {
+      if (Firebase.apps.isEmpty) return;
+
+      _firestoreSubscription?.cancel();
+      _firestoreSubscription = FirebaseFirestore.instance
+          .collection('faqs')
+          .snapshots()
+          .listen(
+        (snapshot) {
+          if (snapshot.docs.isNotEmpty) {
+            final remoteItems = snapshot.docs.map((doc) {
+              return FaqItem.fromMap(doc.data(), doc.id);
+            }).toList();
+
+            _items = remoteItems;
+            _saveToLocalCache(remoteItems);
+            notifyListeners();
+            debugPrint('[FaqProvider] Synced ${remoteItems.length} FAQs from Cloud Firestore.');
+          }
+        },
+        onError: (error) {
+          debugPrint('[FaqProvider] Firestore stream note (using cache/defaults): $error');
+        },
+      );
+    } catch (e) {
+      debugPrint('[FaqProvider] Firebase not initialized or offline: $e');
+    }
+  }
+
+  Future<void> refresh() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      if (Firebase.apps.isNotEmpty) {
+        final snapshot = await FirebaseFirestore.instance.collection('faqs').get();
+        if (snapshot.docs.isNotEmpty) {
+          final remoteItems = snapshot.docs.map((doc) {
+            return FaqItem.fromMap(doc.data(), doc.id);
+          }).toList();
+          _items = remoteItems;
+          await _saveToLocalCache(remoteItems);
+        }
+      }
+    } catch (e) {
+      debugPrint('[FaqProvider] Refresh note: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   void setCategory(FaqCategory category) {
     _selectedCategory = category;
@@ -38,7 +143,7 @@ class FaqProvider extends ChangeNotifier {
   }
 
   List<FaqItem> get filteredItems {
-    return FaqItem.defaultList.where((item) {
+    return _items.where((item) {
       // Category filter
       if (_selectedCategory != FaqCategory.all &&
           item.category != _selectedCategory) {
@@ -52,12 +157,24 @@ class FaqProvider extends ChangeNotifier {
         final matchesAnswer = item.answer.toLowerCase().contains(query);
         final matchesRef =
             item.statutoryReference.toLowerCase().contains(query);
-        if (!matchesQuestion && !matchesAnswer && !matchesRef) {
+        final matchesQuestionHa = item.questionHa.toLowerCase().contains(query);
+        final matchesAnswerHa = item.answerHa.toLowerCase().contains(query);
+        if (!matchesQuestion &&
+            !matchesAnswer &&
+            !matchesRef &&
+            !matchesQuestionHa &&
+            !matchesAnswerHa) {
           return false;
         }
       }
 
       return true;
     }).toList();
+  }
+
+  @override
+  void dispose() {
+    _firestoreSubscription?.cancel();
+    super.dispose();
   }
 }
