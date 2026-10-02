@@ -94,13 +94,8 @@ class NotificationProvider extends ChangeNotifier {
             return item.copyWith(isRead: _readIds.contains(item.id));
           }).toList();
 
-          // Sort in-memory by newest first (safest across Firestore variations)
-          items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-          _notifications = items;
-          _saveToLocalCache();
-          notifyListeners();
-          debugPrint('[NotificationProvider] Live Firestore synced ${items.length} bulletins.');
+          _mergeAndPersist(items);
+          debugPrint('[NotificationProvider] Live Firestore synced ${items.length} bulletins (total stored: ${_notifications.length}).');
         },
         onError: (error) {
           debugPrint('[NotificationProvider] Firestore stream error: $error');
@@ -109,6 +104,24 @@ class NotificationProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('[NotificationProvider] Error attaching listener: $e');
     }
+  }
+
+  void _mergeAndPersist(List<NotificationItem> incomingItems) {
+    final Map<String, NotificationItem> map = {
+      for (final n in _notifications) n.id: n,
+    };
+
+    for (final item in incomingItems) {
+      final isRead = _readIds.contains(item.id) || (map[item.id]?.isRead ?? false);
+      map[item.id] = item.copyWith(isRead: isRead);
+    }
+
+    final merged = map.values.toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    _notifications = merged;
+    _saveToLocalCache();
+    notifyListeners();
   }
 
   /// Manually force-reconnect or refresh remote sync
@@ -138,9 +151,7 @@ class NotificationProvider extends ChangeNotifier {
           return item.copyWith(isRead: _readIds.contains(item.id));
         }).toList();
 
-        items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        _notifications = items;
-        await _saveToLocalCache();
+        _mergeAndPersist(items);
       }
     } catch (e) {
       debugPrint('[NotificationProvider] Refresh note: $e');

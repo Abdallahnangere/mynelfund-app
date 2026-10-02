@@ -80,6 +80,64 @@ void main() {
       expect(provider.unreadCount, 0);
       expect(provider.hasUnread, isFalse);
     });
+
+    test('NotificationProvider restores stored notifications and read state on app reopen', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prov1 = NotificationProvider();
+
+      final itemA = NotificationItem(
+        id: 'n_stored_1',
+        title: 'Stored Bulletin',
+        body: 'This must persist across launches.',
+        badge: 'Statutory',
+        badgeColorHex: '#0D5C3A',
+        timestamp: 'Just now',
+        createdAt: DateTime.now(),
+        isRead: false,
+      );
+
+      prov1.addNotificationLocally(itemA);
+      prov1.markAsRead('n_stored_1');
+
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      // Simulate app restart / reopen: create a second provider instance reading from the same mock SharedPreferences
+      final prov2 = NotificationProvider();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect(prov2.notifications.length, 1);
+      expect(prov2.notifications.first.id, 'n_stored_1');
+      expect(prov2.notifications.first.title, 'Stored Bulletin');
+      expect(prov2.notifications.first.isRead, isTrue);
+      expect(prov2.unreadCount, 0);
+    });
+
+    test('NotificationProvider.saveNotificationDirectlyToDisk saves incoming push to disk', () async {
+      SharedPreferences.setMockInitialValues({});
+
+      final pushItem = NotificationItem(
+        id: 'push_bg_1',
+        title: 'Background Push Notification',
+        body: 'Arrived when app was closed.',
+        badge: 'Alert',
+        badgeColorHex: '#0D5C3A',
+        timestamp: 'Today',
+        createdAt: DateTime.now(),
+        isRead: false,
+      );
+
+      // Save directly to disk from simulated background isolate
+      await NotificationProvider.saveNotificationDirectlyToDisk(pushItem);
+
+      // App is opened later by the user
+      final prov = NotificationProvider();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect(prov.notifications.length, 1);
+      expect(prov.notifications.first.id, 'push_bg_1');
+      expect(prov.notifications.first.title, 'Background Push Notification');
+      expect(prov.unreadCount, 1);
+    });
   });
 
   group('NotificationsView Widget Tests', () {

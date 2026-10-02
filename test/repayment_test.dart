@@ -1,14 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_nelfund/models/repayment_model.dart';
 import 'package:my_nelfund/providers/repayment_provider.dart';
 import 'package:my_nelfund/views/calculator/calculator_view.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('RepaymentProvider Statutory Calculation Tests', () {
     late RepaymentProvider provider;
 
     setUp(() {
+      SharedPreferences.setMockInitialValues({});
       provider = RepaymentProvider();
     });
 
@@ -67,7 +71,7 @@ void main() {
 
       // Add 100 Level: 120,000 tuition + 240,000 upkeep = 360,000
       provider.addOrUpdateSessionLoan(
-        const AcademicSessionLoan(
+        AcademicSessionLoan(
           level: 100,
           tuitionFee: 120000.0,
           includeUpkeep: true,
@@ -81,7 +85,7 @@ void main() {
 
       // Add 200 Level loan: 150,000 tuition without upkeep
       provider.addOrUpdateSessionLoan(
-        const AcademicSessionLoan(
+        AcademicSessionLoan(
           level: 200,
           tuitionFee: 150000.0,
           includeUpkeep: false,
@@ -93,7 +97,7 @@ void main() {
 
       // Update 100 Level
       provider.addOrUpdateSessionLoan(
-        const AcademicSessionLoan(
+        AcademicSessionLoan(
           level: 100,
           tuitionFee: 100000.0,
           includeUpkeep: true,
@@ -121,7 +125,7 @@ void main() {
     });
 
     test('AcademicSessionLoan formats currency with two decimal digits and commas', () {
-      const loan = AcademicSessionLoan(
+      final loan = AcademicSessionLoan(
         level: 100,
         tuitionFee: 120000,
         includeUpkeep: true,
@@ -146,7 +150,7 @@ void main() {
       expect(loan5Months.totalAmount, 220000.0);
 
       // 0 months selected with includeUpkeep false
-      const loanNoUpkeep = AcademicSessionLoan(
+      final loanNoUpkeep = AcademicSessionLoan(
         level: 200,
         tuitionFee: 150000,
         includeUpkeep: false,
@@ -312,6 +316,92 @@ void main() {
       expect(find.text('100 Level'), findsAtLeast(1));
       expect(find.text('₦360,000.00'), findsAtLeast(1));
       expect(find.textContaining('+ Upkeep (12 mos): ₦240,000.00'), findsOneWidget);
+    });
+
+    test('AcademicSessionLoan toMap and fromMap serialization preserves all fields', () {
+      final original = AcademicSessionLoan(
+        level: 300,
+        tuitionFee: 125000.0,
+        includeUpkeep: true,
+        upkeepMonths: [1, 2, 3, 4, 5, 6],
+        upkeepAmount: 120000.0,
+      );
+
+      final map = original.toMap();
+      final restored = AcademicSessionLoan.fromMap(map);
+
+      expect(restored.level, 300);
+      expect(restored.tuitionFee, 125000.0);
+      expect(restored.includeUpkeep, true);
+      expect(restored.upkeepMonths, [1, 2, 3, 4, 5, 6]);
+      expect(restored.upkeepAmount, 120000.0);
+      expect(restored.totalAmount, 245000.0);
+    });
+
+    test('RepaymentProvider saves to phone storage and restores on app restart', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prov1 = RepaymentProvider();
+
+      // Configure a realistic student loan
+      prov1.addOrUpdateSessionLoan(
+        AcademicSessionLoan(
+          level: 100,
+          tuitionFee: 100000.0,
+          includeUpkeep: true,
+          upkeepMonths: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        ),
+      );
+      prov1.addOrUpdateSessionLoan(
+        AcademicSessionLoan(
+          level: 200,
+          tuitionFee: 120000.0,
+          includeUpkeep: false,
+        ),
+      );
+      prov1.setMonthlyIncome(250000.0);
+      prov1.setExtraPrepayment(10000.0);
+      prov1.setMode(RepaymentMode.selfEmployedIbr);
+      prov1.setNyscGraduationYear(2027);
+      prov1.setNyscGraduationMonth(7);
+
+      // Allow async SharedPreferences write to complete
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      // Simulate app restart / reopen: instantiate fresh provider reading same disk storage
+      final prov2 = RepaymentProvider();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect(prov2.sessionLoans.length, 2);
+      expect(prov2.sessionLoans[0].level, 100);
+      expect(prov2.sessionLoans[0].upkeepMonths.length, 12);
+      expect(prov2.sessionLoans[1].level, 200);
+      expect(prov2.sessionLoans[1].includeUpkeep, false);
+      expect(prov2.monthlyIncome, 250000.0);
+      expect(prov2.extraPrepayment, 10000.0);
+      expect(prov2.mode, RepaymentMode.selfEmployedIbr);
+      expect(prov2.nyscGraduationYear, 2027);
+      expect(prov2.nyscGraduationMonth, 7);
+      expect(prov2.loanAmount, 340000.0 + 120000.0); // 100k + 240k + 120k = 460k
+    });
+
+    test('RepaymentProvider reset clears memory and removes phone storage', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prov1 = RepaymentProvider();
+      prov1.setMonthlyIncome(300000.0);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      // Reset
+      prov1.reset();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect(prov1.monthlyIncome, 0.0);
+      expect(prov1.sessionLoans.isEmpty, true);
+
+      // Verify second instance starts blank
+      final prov2 = RepaymentProvider();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(prov2.monthlyIncome, 0.0);
+      expect(prov2.sessionLoans.isEmpty, true);
     });
   });
 }

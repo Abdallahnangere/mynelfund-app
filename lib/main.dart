@@ -14,6 +14,7 @@ import 'core/theme/nelfund_theme.dart';
 import 'firebase_options.dart';
 import 'providers/faq_provider.dart';
 import 'providers/notification_provider.dart';
+import 'providers/repayment_provider.dart';
 import 'views/main_tab_scaffold.dart';
 import 'views/splash/splash_view.dart';
 
@@ -42,6 +43,7 @@ void main() async {
 
   final faqProvider = FaqProvider();
   final notificationProvider = NotificationProvider();
+  final repaymentProvider = RepaymentProvider();
 
   // Paint the first frame immediately with instant offline cache and live streams
   runApp(
@@ -50,6 +52,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider.value(value: faqProvider),
         ChangeNotifierProvider.value(value: notificationProvider),
+        ChangeNotifierProvider.value(value: repaymentProvider),
       ],
       child: const MyNelfundApp(),
     ),

@@ -53,7 +53,7 @@ class AcademicSessionLoan {
   final List<int> upkeepMonths; // 1 to 12 (Jan - Dec)
   final double upkeepAmount;
 
-  const AcademicSessionLoan({
+  AcademicSessionLoan({
     required this.level,
     required this.tuitionFee,
     this.includeUpkeep = true,
@@ -104,6 +104,29 @@ class AcademicSessionLoan {
       includeUpkeep: includeUpkeep ?? this.includeUpkeep,
       upkeepMonths: upkeepMonths ?? this.upkeepMonths,
       upkeepAmount: upkeepAmount ?? this.upkeepAmount,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'level': level,
+      'tuitionFee': tuitionFee,
+      'includeUpkeep': includeUpkeep,
+      'upkeepMonths': upkeepMonths,
+      'upkeepAmount': upkeepAmount,
+    };
+  }
+
+  factory AcademicSessionLoan.fromMap(Map<String, dynamic> map) {
+    return AcademicSessionLoan(
+      level: (map['level'] as num?)?.toInt() ?? 100,
+      tuitionFee: (map['tuitionFee'] as num?)?.toDouble() ?? 0.0,
+      includeUpkeep: map['includeUpkeep'] as bool? ?? true,
+      upkeepMonths: (map['upkeepMonths'] as List<dynamic>?)
+              ?.map((e) => (e as num).toInt())
+              .toList() ??
+          const [],
+      upkeepAmount: (map['upkeepAmount'] as num?)?.toDouble(),
     );
   }
 }

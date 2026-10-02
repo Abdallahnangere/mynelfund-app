@@ -49,10 +49,19 @@ class CalculatorView extends StatelessWidget {
       localeProv = Provider.of<LocaleProvider?>(context, listen: false);
     } catch (_) {}
 
-    final content = ChangeNotifierProvider(
-      create: (_) => RepaymentProvider(),
-      child: const _CalculatorContent(),
-    );
+    RepaymentProvider? existingRepayment;
+    try {
+      existingRepayment = Provider.of<RepaymentProvider?>(context, listen: false);
+    } catch (_) {}
+
+    Widget content = const _CalculatorContent();
+
+    if (existingRepayment == null) {
+      content = ChangeNotifierProvider(
+        create: (_) => RepaymentProvider(),
+        child: content,
+      );
+    }
 
     if (localeProv == null) {
       return ChangeNotifierProvider(
@@ -90,7 +99,12 @@ class _CalculatorContentState extends State<_CalculatorContent> {
   }
 
   void _syncIncomeText(double income) {
-    if (income <= 0) return;
+    if (income <= 0) {
+      if (_incomeController.text.isNotEmpty && _incomeController.text != '0') {
+        _incomeController.text = '';
+      }
+      return;
+    }
     final formatted = NumberFormat('#,###').format(income.toInt());
     if (_incomeController.text.replaceAll(',', '') != income.toInt().toString()) {
       _incomeController.text = formatted;

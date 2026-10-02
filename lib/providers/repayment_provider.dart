@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants/nelfund_data.dart';
 import '../core/services/analytics_service.dart';
 import '../models/repayment_model.dart';
 
 class RepaymentProvider extends ChangeNotifier {
+  static const String _storageKey = 'nelfund_configured_repayment_v1';
+
   final List<AcademicSessionLoan> _sessionLoans = [];
 
   double _loanAmount = 0.0;
@@ -12,10 +16,14 @@ class RepaymentProvider extends ChangeNotifier {
   RepaymentMode _mode = RepaymentMode.employedPaye;
   int _nyscGraduationYear = DateTime.now().year;
   int _nyscGraduationMonth = 11; // Standard November passing out parade
+  bool _isLoaded = false;
 
   RepaymentProvider() {
     _syncTotalLoanAmount();
+    _loadFromStorage();
   }
+
+  bool get isLoaded => _isLoaded;
 
   void _syncTotalLoanAmount() {
     if (_sessionLoans.isNotEmpty) {
@@ -35,6 +43,75 @@ class RepaymentProvider extends ChangeNotifier {
   int get nyscGraduationYear => _nyscGraduationYear;
   int get nyscGraduationMonth => _nyscGraduationMonth;
 
+  Future<void> _loadFromStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_storageKey);
+      if (raw != null && raw.isNotEmpty) {
+        final Map<String, dynamic> data = jsonDecode(raw) as Map<String, dynamic>;
+        _monthlyIncome = (data['monthlyIncome'] as num?)?.toDouble() ?? 0.0;
+        _extraPrepayment = (data['extraPrepayment'] as num?)?.toDouble() ?? 0.0;
+
+        final modeStr = data['mode'] as String?;
+        if (modeStr == 'selfEmployedIbr') {
+          _mode = RepaymentMode.selfEmployedIbr;
+        } else {
+          _mode = RepaymentMode.employedPaye;
+        }
+
+        _nyscGraduationYear = (data['nyscGraduationYear'] as num?)?.toInt() ?? DateTime.now().year;
+        _nyscGraduationMonth = (data['nyscGraduationMonth'] as num?)?.toInt() ?? 11;
+
+        final rawLoans = data['sessionLoans'] as List<dynamic>?;
+        if (rawLoans != null && rawLoans.isNotEmpty) {
+          _sessionLoans.clear();
+          for (final item in rawLoans) {
+            _sessionLoans.add(AcademicSessionLoan.fromMap(item as Map<String, dynamic>));
+          }
+          _sessionLoans.sort((a, b) => a.level.compareTo(b.level));
+        }
+
+        _syncTotalLoanAmount();
+        _isLoaded = true;
+        notifyListeners();
+        debugPrint('[RepaymentProvider] Restored ${_sessionLoans.length} session loans from phone storage.');
+      } else {
+        _isLoaded = true;
+      }
+    } catch (e) {
+      debugPrint('[RepaymentProvider] Local storage load note: $e');
+      _isLoaded = true;
+    }
+  }
+
+  Future<void> _saveToStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final data = {
+        'monthlyIncome': _monthlyIncome,
+        'extraPrepayment': _extraPrepayment,
+        'mode': _mode == RepaymentMode.selfEmployedIbr ? 'selfEmployedIbr' : 'employedPaye',
+        'nyscGraduationYear': _nyscGraduationYear,
+        'nyscGraduationMonth': _nyscGraduationMonth,
+        'sessionLoans': _sessionLoans.map((s) => s.toMap()).toList(),
+      };
+      await prefs.setString(_storageKey, jsonEncode(data));
+      debugPrint('[RepaymentProvider] Saved configured loan profile to phone storage.');
+    } catch (e) {
+      debugPrint('[RepaymentProvider] Local storage save note: $e');
+    }
+  }
+
+  Future<void> _clearStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_storageKey);
+      debugPrint('[RepaymentProvider] Cleared configured loan profile from phone storage.');
+    } catch (e) {
+      debugPrint('[RepaymentProvider] Local storage clear note: $e');
+    }
+  }
+
   // Session Loan Management
   void addOrUpdateSessionLoan(AcademicSessionLoan loan) {
     final index = _sessionLoans.indexWhere((s) => s.level == loan.level);
@@ -46,6 +123,7 @@ class RepaymentProvider extends ChangeNotifier {
     _sessionLoans.sort((a, b) => a.level.compareTo(b.level));
     _syncTotalLoanAmount();
     notifyListeners();
+    _saveToStorage();
     _logAnalytics();
   }
 
@@ -57,6 +135,7 @@ class RepaymentProvider extends ChangeNotifier {
       _syncTotalLoanAmount();
     }
     notifyListeners();
+    _saveToStorage();
     _logAnalytics();
   }
 
@@ -64,12 +143,14 @@ class RepaymentProvider extends ChangeNotifier {
   void setLoanAmount(double value) {
     _loanAmount = value;
     notifyListeners();
+    _saveToStorage();
     _logAnalytics();
   }
 
   void setMonthlyIncome(double value) {
     _monthlyIncome = value;
     notifyListeners();
+    _saveToStorage();
     _logAnalytics();
   }
 
@@ -92,6 +173,7 @@ class RepaymentProvider extends ChangeNotifier {
   void setExtraPrepayment(double value) {
     _extraPrepayment = value.clamp(0.0, double.infinity);
     notifyListeners();
+    _saveToStorage();
   }
 
   void setVoluntaryTotalMonthlyPayment(double totalAmount) {
@@ -103,6 +185,7 @@ class RepaymentProvider extends ChangeNotifier {
       _extraPrepayment = 0.0;
     }
     notifyListeners();
+    _saveToStorage();
   }
 
   void setVoluntaryRatePercent(double targetPercent) {
@@ -113,21 +196,25 @@ class RepaymentProvider extends ChangeNotifier {
       _extraPrepayment = 0.0;
     }
     notifyListeners();
+    _saveToStorage();
   }
 
   void setMode(RepaymentMode mode) {
     _mode = mode;
     notifyListeners();
+    _saveToStorage();
   }
 
   void setNyscGraduationYear(int year) {
     _nyscGraduationYear = year;
     notifyListeners();
+    _saveToStorage();
   }
 
   void setNyscGraduationMonth(int month) {
     _nyscGraduationMonth = month;
     notifyListeners();
+    _saveToStorage();
   }
 
   void reset() {
@@ -138,6 +225,7 @@ class RepaymentProvider extends ChangeNotifier {
     _mode = RepaymentMode.employedPaye;
     _nyscGraduationYear = DateTime.now().year;
     _nyscGraduationMonth = 11;
+    _clearStorage();
     notifyListeners();
   }
 
