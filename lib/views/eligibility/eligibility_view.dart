@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/localization/app_locale.dart';
@@ -10,6 +12,7 @@ import '../../core/theme/nelfund_typography.dart';
 import '../../models/eligibility_model.dart';
 import '../../providers/eligibility_provider.dart';
 import '../../widgets/apple_frosted_card.dart';
+import '../../widgets/liquid_glass_header.dart';
 
 class EligibilityView extends StatelessWidget {
   const EligibilityView({super.key});
@@ -352,10 +355,10 @@ class _EligibilityContent extends StatelessWidget {
             _buildFintechHeader(context, tr),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 88),
                 children: [
-                  _buildStepGuideCard(context, tr),
-                  const SizedBox(height: 16),
                   _buildAcademicStreamSelector(context, provider, lang, tr),
                   const SizedBox(height: 16),
                   _buildSectionHeader(tr.coreCriteriaTitle),
@@ -383,144 +386,246 @@ class _EligibilityContent extends StatelessWidget {
   }
 
   Widget _buildFintechHeader(BuildContext context, AppTranslations tr) {
-    return Container(
-      decoration: BoxDecoration(
-        color: CupertinoDynamicColor.resolve(
-          const CupertinoDynamicColor.withBrightness(
-            color: Color(0xF2F8FAF8),
-            darkColor: Color(0xF2161718),
-          ),
-          context,
+    return LiquidGlassHeader(
+      title: tr.eligibilityHeaderTitle,
+      subtitle: tr.isHausa ? 'Binciken Tabbatar da Cancanta' : 'Statutory Diagnostic Checklist',
+      leading: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: NelfundColors.emerald.withValues(alpha: 0.15),
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(
+          CupertinoIcons.checkmark_seal_fill,
+          color: NelfundColors.emerald,
+          size: 22,
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            child: Center(
-              child: Text(
-                tr.eligibilityHeaderTitle,
-                style: NelfundTypography.title2.copyWith(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.4,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: 2.5,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  NelfundColors.emerald.withValues(alpha: 0.1),
-                  NelfundColors.emerald,
-                  NelfundColors.emerald.withValues(alpha: 0.1),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: NelfundColors.emerald.withValues(alpha: 0.4),
-                  blurRadius: 8,
-                  offset: const Offset(0, 1.5),
-                ),
-              ],
-            ),
-          ),
-        ],
+      trailing: _AnimatedHelpButton(
+        isHausa: tr.isHausa,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          _showStudentEligibilityGuideModal(context, tr);
+        },
       ),
     );
   }
 
-  Widget _buildStepGuideCard(BuildContext context, AppTranslations tr) {
+  void _showStudentEligibilityGuideModal(BuildContext context, AppTranslations tr) {
     final isHa = tr.isHausa;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: AppleFrostedCard(
-        padding: const EdgeInsets.all(16),
-        borderColor: NelfundColors.emerald.withValues(alpha: 0.35),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: isHa ? 'Jagoran Cancantar Dalibi' : 'Student Eligibility Guide',
+      barrierColor: CupertinoColors.black.withValues(alpha: 0.45),
+      transitionDuration: const Duration(milliseconds: 280),
+      pageBuilder: (ctx, anim1, anim2) => const SizedBox.shrink(),
+      transitionBuilder: (ctx, anim1, anim2, child) {
+        final curvedValue = Curves.easeOutBack.transform(anim1.value);
+        return Transform.scale(
+          scale: 0.90 + (0.10 * curvedValue),
+          child: Opacity(
+            opacity: anim1.value.clamp(0.0, 1.0),
+            child: Stack(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: NelfundColors.emerald.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    CupertinoIcons.checkmark_shield_fill,
-                    size: 18,
-                    color: NelfundColors.emerald,
+                // 1. Full-window BackdropFilter blur
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                    child: Container(
+                      color: CupertinoColors.black.withValues(alpha: 0.20),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    isHa ? 'Jagoran Cancantar Dalibi' : 'Student Eligibility Guide',
-                    style: NelfundTypography.headline.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+
+                // 2. Centered Frosted Liquid Glass Modal Dialog
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: 420,
+                        maxHeight: MediaQuery.sizeOf(ctx).height * 0.82,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: CupertinoDynamicColor.resolve(
+                            const CupertinoDynamicColor.withBrightness(
+                              color: Color(0xF2FFFFFF),
+                              darkColor: Color(0xF018241C),
+                            ),
+                            context,
+                          ),
+                          borderRadius: BorderRadius.circular(26),
+                          border: Border.all(
+                            color: NelfundColors.emerald.withValues(alpha: 0.40),
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: NelfundColors.emerald.withValues(alpha: 0.14),
+                              blurRadius: 28,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Modal Header Bar with Close Icon
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 18, 16, 12),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(7),
+                                    decoration: BoxDecoration(
+                                      color: NelfundColors.emerald.withValues(alpha: 0.14),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Icon(
+                                      CupertinoIcons.checkmark_shield_fill,
+                                      size: 20,
+                                      color: NelfundColors.emerald,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      isHa ? 'Jagoran Cancantar Dalibi' : 'Student Eligibility Guide',
+                                      style: NelfundTypography.headline.copyWith(
+                                        fontSize: 16.5,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                  CupertinoButton(
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      HapticFeedback.lightImpact();
+                                      Navigator.of(ctx).pop();
+                                    },
+                                    child: Icon(
+                                      CupertinoIcons.xmark_circle_fill,
+                                      size: 26,
+                                      color: CupertinoDynamicColor.resolve(
+                                        NelfundColors.secondaryLabel,
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Container(
+                              height: 0.8,
+                              color: CupertinoDynamicColor.resolve(
+                                const CupertinoDynamicColor.withBrightness(
+                                  color: Color(0x1F000000),
+                                  darkColor: Color(0x2EFFFFFF),
+                                ),
+                                context,
+                              ),
+                            ),
+
+                            // Scrollable Guide Steps Body
+                            Flexible(
+                              child: SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      isHa
+                                          ? 'Bi wadannan matakai domin duba ko ka cancanci samun bashin NELFUND:'
+                                          : 'Follow through the following steps to check if you are eligible for the NELFund Student Loan:',
+                                      style: NelfundTypography.body.copyWith(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w500,
+                                        color: CupertinoDynamicColor.resolve(
+                                          NelfundColors.label,
+                                          context,
+                                        ),
+                                        height: 1.35,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    _buildGuideStepItem(
+                                      context: context,
+                                      stepNumber: '1',
+                                      title: isHa ? 'Zabi Rukunin Karatu' : 'Select Academic Stream',
+                                      description: isHa
+                                          ? 'Zabi ko kai sabon shiga ne (100L ta JAMB), shigar kai-tsaye (Direct Entry/200L), ko mai ci gaba da karatu.'
+                                          : 'Choose whether you are Fresh Entry (100L via JAMB), Direct Entry (200L/DE), or Returning Undergraduate.',
+                                      stepColor: NelfundColors.emerald,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    _buildGuideStepItem(
+                                      context: context,
+                                      stepNumber: '2',
+                                      title: isHa ? 'Cika Sashe na 1 da na 2' : 'Fill Sections 1 & 2',
+                                      description: isHa
+                                          ? 'Danna kowacce alama inda ka cika sharuddan doka a Sashe na 1 tare da shirya takardun KYC a Sashe na 2.'
+                                          : 'Tick every box where you have met the statutory criteria in Section 1 and prepared the required KYC documents in Section 2.',
+                                      stepColor: NelfundColors.emerald,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    _buildGuideStepItem(
+                                      context: context,
+                                      stepNumber: '3',
+                                      title: isHa
+                                          ? 'Sashe na 3 (Gargadi — Abubuwan da Ke Hana Bashi)'
+                                          : 'Section 3 (Caution — Disqualifications)',
+                                      description: isHa
+                                          ? 'KADA ka danna kowane akwati a Sashe na 3 sai dai idan da gaske kana da daya daga cikin abubuwan da ke hana samun bashi (kamar kin biyan wani bashi a baya, magudin jarrabawa, ko aikata babban laifi).'
+                                          : 'Do NOT fill or check any box in Section 3 unless you actually have the disqualifying condition stated therein (such as prior loan default, exam malpractice, or felony).',
+                                      stepColor: CupertinoColors.systemOrange,
+                                      isWarning: true,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            // Modal Footer Action
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 8, 20, 18),
+                              child: CupertinoButton(
+                                padding: const EdgeInsets.symmetric(vertical: 13),
+                                color: NelfundColors.emerald,
+                                borderRadius: BorderRadius.circular(16),
+                                onPressed: () {
+                                  HapticFeedback.lightImpact();
+                                  Navigator.of(ctx).pop();
+                                },
+                                child: Center(
+                                  child: Text(
+                                    isHa ? 'Na Fahimta, Bincika' : 'Got It, Let’s Begin',
+                                    style: NelfundTypography.headline.copyWith(
+                                      color: CupertinoColors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              isHa
-                  ? 'Bi wadannan matakai domin duba ko ka cancanci samun bashin NELFUND:'
-                  : 'Follow through the following steps to check if you are eligible for the NELFund Student Loan:',
-              style: NelfundTypography.body.copyWith(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w500,
-                color: CupertinoDynamicColor.resolve(
-                  NelfundColors.label,
-                  context,
-                ),
-                height: 1.35,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildGuideStepItem(
-              context: context,
-              stepNumber: '1',
-              title: isHa ? 'Zabi Rukunin Karatu' : 'Select Academic Stream',
-              description: isHa
-                  ? 'Zabi ko kai sabon shiga ne (100L ta JAMB), shigar kai-tsaye (Direct Entry/200L), ko mai ci gaba da karatu.'
-                  : 'Choose whether you are Fresh Entry (100L via JAMB), Direct Entry (200L/DE), or Returning Undergraduate.',
-              stepColor: NelfundColors.emerald,
-            ),
-            const SizedBox(height: 10),
-            _buildGuideStepItem(
-              context: context,
-              stepNumber: '2',
-              title: isHa ? 'Cika Sashe na 1 da na 2' : 'Fill Sections 1 & 2',
-              description: isHa
-                  ? 'Danna kowacce alama inda ka cika sharuddan doka a Sashe na 1 tare da shirya takardun KYC a Sashe na 2.'
-                  : 'Tick every box where you have met the statutory criteria in Section 1 and prepared the required KYC documents in Section 2.',
-              stepColor: NelfundColors.emerald,
-            ),
-            const SizedBox(height: 10),
-            _buildGuideStepItem(
-              context: context,
-              stepNumber: '3',
-              title: isHa
-                  ? 'Sashe na 3 (Gargadi — Abubuwan da Ke Hana Bashi)'
-                  : 'Section 3 (Caution — Disqualifications)',
-              description: isHa
-                  ? 'KADA ka danna kowane akwati a Sashe na 3 sai dai idan da gaske kana da daya daga cikin abubuwan da ke hana samun bashi (kamar kin biyan wani bashi a baya, magudin jarrabawa, ko aikata babban laifi).'
-                  : 'Do NOT fill or check any box in Section 3 unless you actually have the disqualifying condition stated therein (such as prior loan default, exam malpractice, or felony).',
-              stepColor: CupertinoColors.systemOrange,
-              isWarning: true,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -1576,3 +1681,114 @@ class _EligibilityContent extends StatelessWidget {
     );
   }
 }
+
+class _AnimatedHelpButton extends StatefulWidget {
+  final VoidCallback onTap;
+  final bool isHausa;
+
+  const _AnimatedHelpButton({
+    required this.onTap,
+    required this.isHausa,
+  });
+
+  @override
+  State<_AnimatedHelpButton> createState() => _AnimatedHelpButtonState();
+}
+
+class _AnimatedHelpButtonState extends State<_AnimatedHelpButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulseController;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _scaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 1.08)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 25,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.08, end: 0.95)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 25,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.95, end: 1.05)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 25,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.05, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeIn)),
+        weight: 25,
+      ),
+    ]).animate(_pulseController);
+
+    _pulseController.forward();
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: () {
+          _pulseController.forward(from: 0.0);
+          widget.onTap();
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: NelfundColors.emerald.withValues(alpha: 0.14),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: NelfundColors.emerald.withValues(alpha: 0.38),
+              width: 0.8,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: NelfundColors.emerald.withValues(alpha: 0.15),
+                blurRadius: 8,
+                spreadRadius: 0.5,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                CupertinoIcons.question_circle_fill,
+                color: NelfundColors.emerald,
+                size: 14,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                widget.isHausa ? 'Jagora' : 'Help Guide',
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: NelfundColors.emerald,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+

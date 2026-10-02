@@ -12,6 +12,7 @@ import '../../core/services/update_service.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
 import '../../widgets/apple_frosted_card.dart';
+import '../../widgets/liquid_glass_header.dart';
 
 class AboutView extends StatelessWidget {
   const AboutView({super.key});
@@ -149,7 +150,9 @@ class _AboutViewContentState extends State<_AboutViewContent> {
             _buildFintechHeader(context, tr),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 88),
                 children: [
                   _buildLanguageSwitcherCard(context, tr),
                   const SizedBox(height: 16),
@@ -175,70 +178,21 @@ class _AboutViewContentState extends State<_AboutViewContent> {
   }
 
   Widget _buildFintechHeader(BuildContext context, AppTranslations tr) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: CupertinoDynamicColor.resolve(
-          const CupertinoDynamicColor.withBrightness(
-            color: Color(0xF2F8FAF8),
-            darkColor: Color(0xF2161718),
-          ),
-          context,
+    return LiquidGlassHeader(
+      title: tr.aboutHeaderTitle,
+      subtitle: tr.isHausa ? 'Bayanai Game da Manhaja da Mai Haɓaka' : 'System Info, Language & Developer Contact',
+      leading: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: NelfundColors.emerald.withValues(alpha: 0.15),
+          shape: BoxShape.circle,
         ),
-        border: Border(
-          bottom: BorderSide(
-            color: CupertinoDynamicColor.resolve(
-              const CupertinoDynamicColor.withBrightness(
-                color: Color(0x18000000),
-                darkColor: Color(0x28FFFFFF),
-              ),
-              context,
-            ),
-            width: 0.5,
-          ),
+        child: const Icon(
+          CupertinoIcons.person_crop_circle_fill,
+          color: NelfundColors.emerald,
+          size: 22,
         ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Center(
-              child: Text(
-                tr.aboutHeaderTitle,
-                style: NelfundTypography.headline.copyWith(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 17,
-                  letterSpacing: -0.4,
-                  color: CupertinoDynamicColor.resolve(
-                    NelfundColors.label,
-                    context,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: 2.5,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  NelfundColors.emerald.withValues(alpha: 0.1),
-                  NelfundColors.emerald,
-                  NelfundColors.emerald.withValues(alpha: 0.1),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: NelfundColors.emerald.withValues(alpha: 0.4),
-                  blurRadius: 6,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

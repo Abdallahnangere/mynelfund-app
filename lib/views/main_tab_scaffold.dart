@@ -1,19 +1,20 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../core/localization/app_translations.dart';
+import '../core/localization/locale_provider.dart';
 import '../core/services/analytics_service.dart';
 import '../core/services/notification_service.dart';
 import '../core/services/review_service.dart';
 import '../core/services/update_service.dart';
 import '../core/theme/nelfund_colors.dart';
+import '../widgets/liquid_glass_nav_bar.dart';
+import 'about/about_view.dart';
 import 'calculator/calculator_view.dart';
 import 'eligibility/eligibility_view.dart';
 import 'faq/faq_view.dart';
 import 'home/home_view.dart';
-import 'about/about_view.dart';
-import 'package:provider/provider.dart';
-import '../core/localization/locale_provider.dart';
 
 class MainTabScaffold extends StatelessWidget {
   final int initialIndex;
@@ -71,7 +72,7 @@ class _MainTabScaffoldContentState extends State<_MainTabScaffoldContent> {
     'About',
   ];
 
-  late final CupertinoTabController _tabController;
+  late int _currentIndex;
   DateTime? _lastBackPressTime;
   OverlayEntry? _toastEntry;
   Timer? _toastTimer;
@@ -88,13 +89,12 @@ class _MainTabScaffoldContentState extends State<_MainTabScaffoldContent> {
   @override
   void initState() {
     super.initState();
-    _tabController = CupertinoTabController(initialIndex: widget.initialIndex);
-    _tabController.addListener(_onTabChanged);
+    _currentIndex = widget.initialIndex;
+    _logCurrentTab(_currentIndex);
     _initAppServices();
   }
 
-  void _onTabChanged() {
-    final index = _tabController.index;
+  void _logCurrentTab(int index) {
     if (index >= 0 && index < _tabNames.length) {
       AnalyticsService.instance.logTabSelected(index, _tabNames[index]);
       AnalyticsService.instance.logScreenView(_tabNames[index]);
@@ -117,21 +117,31 @@ class _MainTabScaffoldContentState extends State<_MainTabScaffoldContent> {
   }
 
   void setTab(int index) {
+    if (_currentIndex == index) {
+      // Pop to root if tapping active tab again
+      final navState = _tabNavKeys[index].currentState;
+      if (navState != null && navState.canPop()) {
+        navState.popUntil((route) => route.isFirst);
+      }
+      return;
+    }
+
     setState(() {
-      _tabController.index = index;
+      _currentIndex = index;
     });
+    _logCurrentTab(index);
   }
 
   void _handleBackPress() {
     // 1. Check if the current tab's nested navigator can pop
-    final currentNavState = _tabNavKeys[_tabController.index].currentState;
+    final currentNavState = _tabNavKeys[_currentIndex].currentState;
     if (currentNavState != null && currentNavState.canPop()) {
       currentNavState.pop();
       return;
     }
 
     // 2. If on any bottom navigation tab other than Home, return to Home
-    if (_tabController.index != 0) {
+    if (_currentIndex != 0) {
       setTab(0);
       return;
     }
@@ -155,7 +165,7 @@ class _MainTabScaffoldContentState extends State<_MainTabScaffoldContent> {
     _toastEntry?.remove();
     _toastEntry = OverlayEntry(
       builder: (ctx) => Positioned(
-        bottom: 80,
+        bottom: 92,
         left: 24,
         right: 24,
         child: Center(
@@ -217,99 +227,155 @@ class _MainTabScaffoldContentState extends State<_MainTabScaffoldContent> {
     _toastTimer = null;
     _toastEntry?.remove();
     _toastEntry = null;
-    _tabController.removeListener(_onTabChanged);
-    _tabController.dispose();
     super.dispose();
+  }
+
+  Widget _buildTabView(int index) {
+    switch (index) {
+      case 0:
+        return HomeView(showLanguageOnboarding: widget.showLanguageOnboarding);
+      case 1:
+        return const EligibilityView();
+      case 2:
+        return const CalculatorView();
+      case 3:
+        return const FaqView();
+      case 4:
+        return const AboutView();
+      default:
+        return const CupertinoPageScaffold(
+          child: Center(child: Text('Unknown')),
+        );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppTranslations.of(context);
+
+    final navItems = [
+      LiquidGlassNavItem(
+        icon: CupertinoIcons.house_alt,
+        activeIcon: CupertinoIcons.house_alt_fill,
+        label: tr.tabHome,
+      ),
+      LiquidGlassNavItem(
+        icon: CupertinoIcons.checkmark_seal,
+        activeIcon: CupertinoIcons.checkmark_seal_fill,
+        label: tr.tabEligibility,
+      ),
+      LiquidGlassNavItem(
+        icon: CupertinoIcons.creditcard,
+        activeIcon: CupertinoIcons.creditcard_fill,
+        label: tr.tabCalculator,
+      ),
+      LiquidGlassNavItem(
+        icon: CupertinoIcons.bubble_left_bubble_right,
+        activeIcon: CupertinoIcons.bubble_left_bubble_right_fill,
+        label: tr.tabFaq,
+      ),
+      LiquidGlassNavItem(
+        icon: CupertinoIcons.person_crop_circle,
+        activeIcon: CupertinoIcons.person_crop_circle_fill,
+        label: tr.tabAbout,
+      ),
+    ];
+
+    final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         _handleBackPress();
       },
-      child: CupertinoTabScaffold(
-        controller: _tabController,
-        tabBar: CupertinoTabBar(
-          height: 58,
-          iconSize: 22,
-          activeColor: NelfundColors.emerald,
-          inactiveColor: CupertinoDynamicColor.resolve(
-            CupertinoColors.systemGrey,
-            context,
-          ),
-          backgroundColor: CupertinoDynamicColor.resolve(
-            const CupertinoDynamicColor.withBrightness(
-              color: Color(0xF2F8FAF8),
-              darkColor: Color(0xF2161816),
-            ),
-            context,
-          ),
-          border: Border(
-            top: BorderSide(
-              color: CupertinoDynamicColor.resolve(
-                const CupertinoDynamicColor.withBrightness(
-                  color: Color(0x24008751),
-                  darkColor: Color(0x3848BB78),
-                ),
-                context,
+      child: CupertinoPageScaffold(
+        resizeToAvoidBottomInset: false,
+        child: Stack(
+          children: [
+            // Ambient Chromatic Canvas
+            _buildAmbientBackground(context, isDark),
+
+            // Active Tab Page View
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: IndexedStack(
+                index: _currentIndex,
+                children: List.generate(5, (index) {
+                  return CupertinoTabView(
+                    navigatorKey: _tabNavKeys[index],
+                    builder: (context) => _buildTabView(index),
+                  );
+                }),
               ),
-              width: 0.6,
             ),
-          ),
-          items: [
-            BottomNavigationBarItem(
-              icon: const Icon(CupertinoIcons.house_alt),
-              activeIcon: const Icon(CupertinoIcons.house_alt_fill),
-              label: AppTranslations.of(context).tabHome,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(CupertinoIcons.checkmark_seal),
-              activeIcon: const Icon(CupertinoIcons.checkmark_seal_fill),
-              label: AppTranslations.of(context).tabEligibility,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(CupertinoIcons.creditcard),
-              activeIcon: const Icon(CupertinoIcons.creditcard_fill),
-              label: AppTranslations.of(context).tabCalculator,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(CupertinoIcons.bubble_left_bubble_right),
-              activeIcon: const Icon(CupertinoIcons.bubble_left_bubble_right_fill),
-              label: AppTranslations.of(context).tabFaq,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(CupertinoIcons.person_crop_circle),
-              activeIcon: const Icon(CupertinoIcons.person_crop_circle_fill),
-              label: AppTranslations.of(context).tabAbout,
+
+            // Floating Liquid Glass Navigation Dock
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                top: false,
+                child: LiquidGlassNavBar(
+                  selectedIndex: _currentIndex,
+                  onTap: setTab,
+                  items: navItems,
+                ),
+              ),
             ),
           ],
         ),
-        tabBuilder: (context, index) {
-          return CupertinoTabView(
-            navigatorKey: _tabNavKeys[index],
-            builder: (context) {
-              switch (index) {
-                case 0:
-                  return HomeView(showLanguageOnboarding: widget.showLanguageOnboarding);
-                case 1:
-                  return const EligibilityView();
-                case 2:
-                  return const CalculatorView();
-                case 3:
-                  return const FaqView();
-                case 4:
-                  return const AboutView();
-                default:
-                  return const CupertinoPageScaffold(
-                    child: Center(child: Text('Unknown')),
-                  );
-              }
-            },
-          );
-        },
+      ),
+    );
+  }
+
+  Widget _buildAmbientBackground(BuildContext context, bool isDark) {
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: Container(
+          color: isDark ? const Color(0xFF111412) : const Color(0xFFF5F8F6),
+          child: Stack(
+            children: [
+              // Top-right subtle emerald aura orb
+              Positioned(
+                top: -60,
+                right: -60,
+                width: 240,
+                height: 240,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        NelfundColors.emerald.withValues(alpha: isDark ? 0.16 : 0.08),
+                        CupertinoColors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              // Bottom-left subtle emerald aura orb
+              Positioned(
+                bottom: 20,
+                left: -40,
+                width: 260,
+                height: 260,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        (isDark ? const Color(0xFF2FD18B) : NelfundColors.emerald)
+                            .withValues(alpha: isDark ? 0.12 : 0.06),
+                        CupertinoColors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

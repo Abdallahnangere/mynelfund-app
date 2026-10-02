@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/nelfund_colors.dart';
@@ -25,6 +26,8 @@ class _SplashViewState extends State<SplashView>
   late final AnimationController _controller;
   late final Animation<double> _logoScaleAnimation;
   late final Animation<double> _logoFadeAnimation;
+  late final Animation<double> _rocketAnimation;
+  late final Animation<double> _taglineFadeAnimation;
   late final Animation<Offset> _badgeSlideAnimation;
   late final Animation<double> _badgeFadeAnimation;
   late final Animation<double> _titleFadeAnimation;
@@ -40,67 +43,83 @@ class _SplashViewState extends State<SplashView>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 2000),
     );
 
-    // 1. Emblem entrance: Scale from 0.85 -> 1.0 & Fade 0.0 -> 1.0 (0% - 55%)
+    // 1. Dual Crest entrance: Scale from 0.85 -> 1.0 & Fade 0.0 -> 1.0 (0% - 45%)
     _logoScaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.55, curve: Curves.easeOutCubic),
+        curve: const Interval(0.0, 0.45, curve: Curves.easeOutCubic),
       ),
     );
     _logoFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.45, curve: Curves.easeIn),
+        curve: const Interval(0.0, 0.35, curve: Curves.easeIn),
       ),
     );
 
-    // 2. Republic Badge entrance: Slide up & Fade (25% - 65%)
+    // 2. Rocket Flight Trajectory: Jets from ABU across to NELFUND (20% - 75%)
+    _rocketAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.20, 0.75, curve: Curves.easeInOutCubic),
+      ),
+    );
+
+    // 3. Student Tagline Pill entrance: Fade & gentle float (35% - 65%)
+    _taglineFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.35, 0.65, curve: Curves.easeIn),
+      ),
+    );
+
+    // 3. Republic Badge entrance: Slide up & Fade (45% - 70%)
     _badgeSlideAnimation = Tween<Offset>(
       begin: const Offset(0.0, 0.4),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.25, 0.65, curve: Curves.easeOutBack),
+        curve: const Interval(0.45, 0.70, curve: Curves.easeOutBack),
       ),
     );
     _badgeFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.25, 0.60, curve: Curves.easeIn),
+        curve: const Interval(0.45, 0.68, curve: Curves.easeIn),
       ),
     );
 
-    // 3. App Title & Subtitle: Fade (45% - 80%)
+    // 4. App Title & Subtitle: Fade (55% - 80%)
     _titleFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.45, 0.80, curve: Curves.easeOut),
+        curve: const Interval(0.55, 0.80, curve: Curves.easeOut),
       ),
     );
 
-    // 4. Continue Button: Fade & gentle scale up (55% - 90%)
+    // 5. Continue Button: Fade & gentle scale up (65% - 90%)
     _buttonFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.55, 0.90, curve: Curves.easeIn),
+        curve: const Interval(0.65, 0.90, curve: Curves.easeIn),
       ),
     );
     _buttonScaleAnimation = Tween<double>(begin: 0.90, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.55, 0.90, curve: Curves.easeOutBack),
+        curve: const Interval(0.65, 0.90, curve: Curves.easeOutBack),
       ),
     );
 
-    // 5. Activity Indicator & Footer (70% - 100%)
+    // 6. Activity Indicator & Footer (75% - 100%)
     _footerFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.70, 1.0, curve: Curves.easeIn),
+        curve: const Interval(0.75, 1.0, curve: Curves.easeIn),
       ),
     );
 
@@ -190,34 +209,161 @@ class _SplashViewState extends State<SplashView>
                   children: [
                     const Spacer(flex: 3),
 
-                    // Staggered Stage 1: Official Emblem with Frosted Frame
+                    // Staggered Stage 1: Dual Crest Station (ABU & NELFUND) with Rocket Bridge
                     ScaleTransition(
                       scale: _logoScaleAnimation,
                       child: FadeTransition(
                         opacity: _logoFadeAnimation,
-                        child: AppleFrostedCard(
-                          padding: const EdgeInsets.all(22),
-                          margin: EdgeInsets.zero,
-                          borderRadius: 28,
-                          borderColor: NelfundColors.emerald.withValues(alpha: 0.3),
-                          backgroundColor: CupertinoDynamicColor.resolve(
-                            const CupertinoDynamicColor.withBrightness(
-                              color: Color(0xF2FFFFFF),
-                              darkColor: Color(0xF018241C),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Left Crest: ABU Ahmadu Bello University
+                            AppleFrostedCard(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                              margin: EdgeInsets.zero,
+                              borderRadius: 22,
+                              borderColor: NelfundColors.emerald.withValues(alpha: 0.32),
+                              backgroundColor: CupertinoDynamicColor.resolve(
+                                const CupertinoDynamicColor.withBrightness(
+                                  color: Color(0xF2FFFFFF),
+                                  darkColor: Color(0xF018241C),
+                                ),
+                                context,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/abu_logo.png',
+                                    width: 62,
+                                    height: 62,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'ABU Zaria',
+                                    style: NelfundTypography.captionBold.copyWith(
+                                      fontSize: 10.5,
+                                      color: NelfundColors.emerald,
+                                      letterSpacing: 0.4,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            context,
-                          ),
-                          child: Image.asset(
-                            'assets/images/nelfund_logo.png',
-                            width: 108,
-                            height: 108,
-                            fit: BoxFit.contain,
-                          ),
+
+                            // Dynamic Flight Corridor: Animated Rocket Jetting from ABU to NELFUND
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              child: _RocketFlightBridge(
+                                animation: _rocketAnimation,
+                                isDark: isDark,
+                              ),
+                            ),
+
+                            // Right Crest: NELFUND Federal Education Loan Fund
+                            AppleFrostedCard(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                              margin: EdgeInsets.zero,
+                              borderRadius: 22,
+                              borderColor: NelfundColors.emerald.withValues(alpha: 0.32),
+                              backgroundColor: CupertinoDynamicColor.resolve(
+                                const CupertinoDynamicColor.withBrightness(
+                                  color: Color(0xF2FFFFFF),
+                                  darkColor: Color(0xF018241C),
+                                ),
+                                context,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/nelfund_logo.png',
+                                    width: 62,
+                                    height: 62,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'NELFUND',
+                                    style: NelfundTypography.captionBold.copyWith(
+                                      fontSize: 10.5,
+                                      color: NelfundColors.emerald,
+                                      letterSpacing: 0.4,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+
+                    // Inspiring Student Innovation Tagline
+                    FadeTransition(
+                      opacity: _taglineFadeAnimation,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: NelfundColors.emerald.withValues(
+                            alpha: isDark ? 0.16 : 0.08,
+                          ),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: NelfundColors.emerald.withValues(
+                              alpha: isDark ? 0.35 : 0.22,
+                            ),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  CupertinoIcons.sparkles,
+                                  size: 13,
+                                  color: NelfundColors.emerald,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'For Students, By a Student',
+                                  style: NelfundTypography.captionBold.copyWith(
+                                    color: NelfundColors.emerald,
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'From ABU to the World 🌍',
+                              style: NelfundTypography.footnote.copyWith(
+                                color: CupertinoDynamicColor.resolve(
+                                  NelfundColors.secondaryLabel,
+                                  context,
+                                ),
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
 
                     // Staggered Stage 2: Federal Republic of Nigeria Pill Badge
                     SlideTransition(
@@ -376,5 +522,147 @@ class _SplashViewState extends State<SplashView>
         ),
       ),
     );
+  }
+}
+
+class _RocketFlightBridge extends StatelessWidget {
+  final Animation<double> animation;
+  final bool isDark;
+
+  const _RocketFlightBridge({
+    required this.animation,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const double width = 80;
+    const double height = 52;
+    const double arcHeight = 15;
+
+    return SizedBox(
+      width: width,
+      height: height,
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (context, child) {
+          final progress = animation.value;
+          final x = progress * (width - 24);
+          final y = -math.sin(progress * math.pi) * arcHeight;
+          final dx = width - 24;
+          final dy = -math.pi * arcHeight * math.cos(progress * math.pi);
+          // Angle of motion for the rocket
+          final angle = math.atan2(dy, dx);
+
+          return Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              CustomPaint(
+                size: const Size(width, height),
+                painter: _RocketTrajectoryPainter(
+                  progress: progress,
+                  arcHeight: arcHeight,
+                  isDark: isDark,
+                ),
+              ),
+              Positioned(
+                left: x,
+                top: (height / 2 - 12) + y,
+                child: Transform.rotate(
+                  angle: angle,
+                  child: const Text(
+                    '🚀',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _RocketTrajectoryPainter extends CustomPainter {
+  final double progress;
+  final double arcHeight;
+  final bool isDark;
+
+  _RocketTrajectoryPainter({
+    required this.progress,
+    required this.arcHeight,
+    required this.isDark,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final width = size.width;
+    final height = size.height;
+    final startX = 2.0;
+    final endX = width - 12.0;
+    final midY = height / 2 + 4.0;
+
+    // 1. Draw subtle dashed guide trajectory arc
+    final guidePaint = Paint()
+      ..color = NelfundColors.emerald.withValues(alpha: isDark ? 0.28 : 0.20)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+
+    final path = Path();
+    path.moveTo(startX, midY);
+    path.quadraticBezierTo(
+      (startX + endX) / 2,
+      midY - arcHeight * 2.2,
+      endX,
+      midY,
+    );
+
+    final pathMetrics = path.computeMetrics().toList();
+    if (pathMetrics.isEmpty) return;
+
+    final metric = pathMetrics.first;
+    double distance = 0.0;
+    const dashLength = 4.0;
+    const dashSpace = 3.5;
+
+    while (distance < metric.length) {
+      final extractLength = math.min(dashLength, metric.length - distance);
+      final segment = metric.extractPath(distance, distance + extractLength);
+      canvas.drawPath(segment, guidePaint);
+      distance += dashLength + dashSpace;
+    }
+
+    // 2. Draw glowing jet thrust exhaust trail behind the rocket
+    if (progress > 0.04) {
+      final trailPaint = Paint()
+        ..shader = LinearGradient(
+          colors: [
+            CupertinoColors.systemOrange.withValues(alpha: 0.0),
+            CupertinoColors.systemYellow.withValues(alpha: 0.5),
+            NelfundColors.emerald,
+          ],
+          stops: const [0.0, 0.4, 1.0],
+        ).createShader(Rect.fromLTWH(0, 0, width, height))
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round
+        ..strokeWidth = 2.4;
+
+      final currentLength = metric.length * progress;
+      final trailStart = math.max(0.0, currentLength - 26.0);
+
+      if (currentLength > trailStart) {
+        final trailSegment = metric.extractPath(trailStart, currentLength);
+        canvas.drawPath(trailSegment, trailPaint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _RocketTrajectoryPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.isDark != isDark ||
+        oldDelegate.arcHeight != arcHeight;
   }
 }

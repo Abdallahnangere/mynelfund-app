@@ -32,10 +32,24 @@ void main() {
     // ==========================================
     // TAB 1: ELIGIBILITY CHECKER
     // ==========================================
-    expect(find.text('Student Eligibility Guide'), findsOneWidget);
-    expect(find.textContaining('Follow through the following steps to check if you are eligible'), findsOneWidget);
+    // Verify screen starts immediately with Academic Stream Selector
+    expect(find.text('Fresh Entry'), findsOneWidget);
+    expect(find.text('Direct Entry'), findsOneWidget);
+    expect(find.text('Undergraduate'), findsOneWidget);
     expect(find.text('Reset'), findsNothing);
     expect(find.text('Evaluate My Eligibility'), findsOneWidget);
+
+    // Verify Animated Help button opens the dismissable Student Eligibility Guide modal
+    expect(find.text('Help Guide'), findsOneWidget);
+    await tester.tap(find.text('Help Guide'));
+    await tester.pumpAndSettle();
+    expect(find.text('Student Eligibility Guide'), findsOneWidget);
+    expect(find.textContaining('Follow through the following steps to check if you are eligible'), findsOneWidget);
+
+    // Dismiss the modal
+    await tester.tap(find.text('Got It, Let’s Begin'));
+    await tester.pumpAndSettle();
+    expect(find.text('Student Eligibility Guide'), findsNothing);
 
     // Switch academic stream
     await tester.tap(find.text('Direct Entry'));

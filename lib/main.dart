@@ -5,6 +5,7 @@ import 'package:flutter/material.dart'
     show DefaultMaterialLocalizations, MaterialLocalizations;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/localization/locale_provider.dart';
 import 'core/services/analytics_service.dart';
@@ -16,6 +17,16 @@ import 'views/splash/splash_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Edge-to-edge immersive liquid glass status and system navigation styling
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Color(0x00000000),
+      systemNavigationBarColor: Color(0x00000000),
+      systemNavigationBarDividerColor: Color(0x00000000),
+    ),
+  );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   // Paint the first frame immediately so the app opens in milliseconds
   // without waiting for network connections or third-party SDKs

@@ -9,7 +9,9 @@ import '../../core/localization/locale_provider.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
 import '../../widgets/apple_frosted_card.dart';
+import '../../widgets/liquid_glass_header.dart';
 import '../main_tab_scaffold.dart';
+import '../timeline/timeline_view.dart';
 
 class HomeView extends StatelessWidget {
   final bool showLanguageOnboarding;
@@ -94,7 +96,9 @@ class _HomeViewContentState extends State<_HomeViewContent> {
             _buildFintechHeader(context),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 88),
                 children: [
                   _buildSectionHeader(tr.programOverviewTitle),
                   _buildActOverviewCard(context),
@@ -117,104 +121,37 @@ class _HomeViewContentState extends State<_HomeViewContent> {
   Widget _buildFintechHeader(BuildContext context) {
     final tr = AppTranslations.of(context);
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(18, 12, 18, 14),
-      decoration: BoxDecoration(
-        color: CupertinoDynamicColor.resolve(
-          const CupertinoDynamicColor.withBrightness(
-            color: Color(0xF2F8FAF8),
-            darkColor: Color(0xF2161718),
-          ),
-          context,
-        ),
-        border: Border(
-          bottom: BorderSide(
-            color: CupertinoDynamicColor.resolve(
-              const CupertinoDynamicColor.withBrightness(
-                color: Color(0x18000000),
-                darkColor: Color(0x28FFFFFF),
-              ),
-              context,
+    return LiquidGlassHeader(
+      title: tr.appTitle,
+      subtitle: tr.appSubtitle,
+      leading: Container(
+        width: 42,
+        height: 42,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: CupertinoColors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: NelfundColors.emerald.withValues(alpha: 0.18),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
-            width: 0.5,
+          ],
+          border: Border.all(
+            color: NelfundColors.emerald.withValues(alpha: 0.35),
+            width: 1.2,
+          ),
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            'assets/images/nelfund_logo.png',
+            fit: BoxFit.contain,
           ),
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              // Top Left: NELFUND icon
-              Container(
-                width: 44,
-                height: 44,
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: CupertinoColors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: NelfundColors.emerald.withValues(alpha: 0.18),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                  border: Border.all(
-                    color: NelfundColors.emerald.withValues(alpha: 0.35),
-                    width: 1.2,
-                  ),
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/images/nelfund_logo.png',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              // Title & Sub-tagline
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      tr.appTitle,
-                      style: NelfundTypography.title2.copyWith(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.4,
-                      ),
-                    ),
-                    const SizedBox(height: 1),
-                    Text(
-                      tr.appSubtitle,
-                      style: NelfundTypography.footnote.copyWith(
-                        color: CupertinoDynamicColor.resolve(
-                          NelfundColors.secondaryLabel,
-                          context,
-                        ),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12.5,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-
-              // Notification Bell Button
-              _buildNotificationButton(context),
-            ],
-          ),
-          const SizedBox(height: 10),
-          // Prominent Cupertino Segmented Language Toggle
-          _buildHeaderLanguageToggle(context),
-        ],
-      ),
+      trailing: _buildNotificationButton(context),
+      bottom: _buildHeaderLanguageToggle(context),
     );
   }
 
@@ -779,6 +716,98 @@ class _HomeViewContentState extends State<_HomeViewContent> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          _buildTimelineTrackerBanner(context, tr),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineTrackerBanner(BuildContext context, AppTranslations tr) {
+    return AppleFrostedCard(
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.all(14),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.of(context).push(
+          CupertinoPageRoute(
+            builder: (_) => const TimelineView(),
+          ),
+        );
+      },
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: NelfundColors.emerald.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Center(
+              child: Icon(
+                CupertinoIcons.hourglass_bottomhalf_fill,
+                color: NelfundColors.emerald,
+                size: 21,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tr.timelineHeaderTitle,
+                      style: NelfundTypography.headline.copyWith(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: NelfundColors.emerald.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        tr.isHausa ? 'Wa\'adi' : 'Section 4.2',
+                        style: NelfundTypography.captionBold.copyWith(
+                          color: NelfundColors.emerald,
+                          fontSize: 10.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  tr.isHausa
+                      ? 'Duba wa\'adin matakai 5 na neman lamuni da duba korafe-korafe.'
+                      : 'Track statutory 5-stage turnaround timelines & grievance directory.',
+                  style: NelfundTypography.footnote.copyWith(
+                    color: CupertinoDynamicColor.resolve(
+                      NelfundColors.secondaryLabel,
+                      context,
+                    ),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 4),
+          Icon(
+            CupertinoIcons.chevron_right,
+            size: 14,
+            color: CupertinoDynamicColor.resolve(
+              NelfundColors.tertiaryLabel,
+              context,
+            ),
           ),
         ],
       ),

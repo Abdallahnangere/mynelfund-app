@@ -45,13 +45,24 @@ void main() {
     await tester.pumpAndSettle();
 
     // Now Eligibility tab is active
+    expect(find.text('Fresh Entry'), findsOneWidget);
+    expect(find.text('Direct Entry'), findsOneWidget);
+    expect(find.text('Undergraduate'), findsOneWidget);
+    expect(find.text('Reset'), findsNothing);
+    expect(find.text('Evaluate My Eligibility'), findsOneWidget);
+    expect(find.text('3. Statutory Disqualification Bars'), findsOneWidget);
+
+    // Verify Animated Help button opens the dismissable Student Eligibility Guide modal
+    expect(find.text('Help Guide'), findsOneWidget);
+    await tester.tap(find.text('Help Guide'));
+    await tester.pumpAndSettle();
     expect(find.text('Student Eligibility Guide'), findsOneWidget);
     expect(find.textContaining('Follow through the following steps to check if you are eligible'), findsOneWidget);
-    expect(find.text('Reset'), findsNothing);
-    expect(find.text('Fresh Entry'), findsOneWidget);
-    expect(find.text('Evaluate My Eligibility'), findsOneWidget);
-    expect(find.text('Visit Official Portal for Guidelines'), findsOneWidget);
-    expect(find.text('3. Statutory Disqualification Bars'), findsOneWidget);
+
+    // Dismiss modal
+    await tester.tap(find.text('Got It, Let’s Begin'));
+    await tester.pumpAndSettle();
+    expect(find.text('Student Eligibility Guide'), findsNothing);
 
     // Verify Evaluate modal popup opens
     await tester.tap(find.text('Evaluate My Eligibility'));

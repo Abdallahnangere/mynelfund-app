@@ -9,6 +9,7 @@ import '../../core/theme/nelfund_typography.dart';
 import '../../models/repayment_model.dart';
 import '../../providers/repayment_provider.dart';
 import '../../widgets/apple_frosted_card.dart';
+import '../../widgets/liquid_glass_header.dart';
 
 class ThousandsSeparatorInputFormatter extends TextInputFormatter {
   static final NumberFormat _formatter = NumberFormat('#,###');
@@ -107,7 +108,9 @@ class _CalculatorContentState extends State<_CalculatorContent> {
             _buildFintechHeader(context),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 88),
                 children: [
                   _buildTipBanner(context),
                   const SizedBox(height: 14),
@@ -135,71 +138,21 @@ class _CalculatorContentState extends State<_CalculatorContent> {
   Widget _buildFintechHeader(BuildContext context) {
     final tr = AppTranslations.of(context);
 
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: CupertinoDynamicColor.resolve(
-          const CupertinoDynamicColor.withBrightness(
-            color: Color(0xF2F8FAF8),
-            darkColor: Color(0xF2161718),
-          ),
-          context,
+    return LiquidGlassHeader(
+      title: tr.calcHeaderTitle,
+      subtitle: tr.isHausa ? 'Binciken Basussuka da Jadawalin Biya' : '10% Statutory Deduction Calculator',
+      leading: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: NelfundColors.emerald.withValues(alpha: 0.15),
+          shape: BoxShape.circle,
         ),
-        border: Border(
-          bottom: BorderSide(
-            color: CupertinoDynamicColor.resolve(
-              const CupertinoDynamicColor.withBrightness(
-                color: Color(0x18000000),
-                darkColor: Color(0x28FFFFFF),
-              ),
-              context,
-            ),
-            width: 0.5,
-          ),
+        child: const Icon(
+          CupertinoIcons.creditcard_fill,
+          color: NelfundColors.emerald,
+          size: 20,
         ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Center(
-              child: Text(
-                tr.calcHeaderTitle,
-                style: NelfundTypography.headline.copyWith(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 17,
-                  letterSpacing: -0.4,
-                  color: CupertinoDynamicColor.resolve(
-                    NelfundColors.label,
-                    context,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // Emerald ambient lighting separator line
-          Container(
-            height: 2.5,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  NelfundColors.emerald.withValues(alpha: 0.1),
-                  NelfundColors.emerald,
-                  NelfundColors.emerald.withValues(alpha: 0.1),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: NelfundColors.emerald.withValues(alpha: 0.4),
-                  blurRadius: 6,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

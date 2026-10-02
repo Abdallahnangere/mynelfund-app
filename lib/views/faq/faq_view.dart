@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/localization/app_locale.dart';
 import '../../core/localization/app_translations.dart';
@@ -9,6 +10,7 @@ import '../../core/theme/nelfund_typography.dart';
 import '../../models/faq_model.dart';
 import '../../providers/faq_provider.dart';
 import '../../widgets/apple_frosted_card.dart';
+import '../../widgets/liquid_glass_header.dart';
 
 class FaqView extends StatelessWidget {
   const FaqView({super.key});
@@ -73,7 +75,9 @@ class _FaqContentState extends State<_FaqContent> {
             _buildFintechHeader(context, items.length, tr),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 88),
                 children: [
                   _buildSearchBox(context, provider, tr),
                   const SizedBox(height: 10),
@@ -103,95 +107,39 @@ class _FaqContentState extends State<_FaqContent> {
         ? '$count Tambayoyi'
         : '$count ${count == 1 ? 'Topic' : 'Topics'}';
 
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: CupertinoDynamicColor.resolve(
-          const CupertinoDynamicColor.withBrightness(
-            color: Color(0xF2F8FAF8),
-            darkColor: Color(0xF2161718),
-          ),
-          context,
+    return LiquidGlassHeader(
+      title: tr.faqHeaderTitle,
+      subtitle: tr.isHausa ? 'Bincika Tambayoyi da Amsoshi' : 'Official Legal & Policy Knowledge Base',
+      leading: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: NelfundColors.emerald.withValues(alpha: 0.15),
+          shape: BoxShape.circle,
         ),
-        border: Border(
-          bottom: BorderSide(
-            color: CupertinoDynamicColor.resolve(
-              const CupertinoDynamicColor.withBrightness(
-                color: Color(0x18000000),
-                darkColor: Color(0x28FFFFFF),
-              ),
-              context,
-            ),
-            width: 0.5,
-          ),
+        child: const Icon(
+          CupertinoIcons.bubble_left_bubble_right_fill,
+          color: NelfundColors.emerald,
+          size: 19,
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Center(
-                  child: Text(
-                    tr.faqHeaderTitle,
-                    style: NelfundTypography.headline.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17,
-                      letterSpacing: -0.4,
-                      color: CupertinoDynamicColor.resolve(
-                        NelfundColors.label,
-                        context,
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: NelfundColors.emerald.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      countLabel,
-                      style: NelfundTypography.captionBold.copyWith(
-                        color: NelfundColors.emerald,
-                        fontSize: 11.5,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: NelfundColors.emerald.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: NelfundColors.emerald.withValues(alpha: 0.3),
+            width: 0.8,
           ),
-          Container(
-            height: 2.5,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  NelfundColors.emerald.withValues(alpha: 0.1),
-                  NelfundColors.emerald,
-                  NelfundColors.emerald.withValues(alpha: 0.1),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: NelfundColors.emerald.withValues(alpha: 0.4),
-                  blurRadius: 6,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
+        ),
+        child: Text(
+          countLabel,
+          style: NelfundTypography.captionBold.copyWith(
+            color: NelfundColors.emerald,
+            fontSize: 11.5,
           ),
-        ],
+        ),
       ),
     );
   }
@@ -223,6 +171,7 @@ class _FaqContentState extends State<_FaqContent> {
     AppLanguage lang,
   ) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -233,7 +182,10 @@ class _FaqContentState extends State<_FaqContent> {
             child: CupertinoButton(
               padding: EdgeInsets.zero,
               minimumSize: Size.zero,
-              onPressed: () => provider.setCategory(cat),
+              onPressed: () {
+                HapticFeedback.selectionClick();
+                provider.setCategory(cat);
+              },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding:

@@ -16,6 +16,11 @@ void main() {
       await tester.pump(const Duration(milliseconds: 1800));
 
       expect(find.byType(SplashView), findsOneWidget);
+      expect(find.text('ABU Zaria'), findsOneWidget);
+      expect(find.text('NELFUND'), findsOneWidget);
+      expect(find.text('🚀'), findsOneWidget);
+      expect(find.text('For Students, By a Student'), findsOneWidget);
+      expect(find.text('From ABU to the World 🌍'), findsOneWidget);
       expect(find.text('Federal Republic of Nigeria'), findsOneWidget);
       expect(find.text('My NELFund'), findsOneWidget);
       expect(find.text('Nigerian Education Loan Fund'), findsOneWidget);

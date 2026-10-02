@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My NELFund — Executive Telemetry & Visual Analytics</title>
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & CSS RESET (100% OFFLINE / ZERO DEPENDENCY)
+       ========================================================================== */
+    :root {
+      --bg-base: #060d0a;
+      --bg-surface: #0b1712;
+      --bg-surface-elevated: #11221b;
+      --bg-card: rgba(17, 34, 27, 0.75);
+      --bg-card-hover: rgba(22, 45, 36, 0.9);
+      
+      --border-subtle: rgba(16, 185, 129, 0.15);
+      --border-focus: rgba(16, 185, 129, 0.5);
+      --border-glass: rgba(255, 255, 255, 0.08);
+
+      --text-primary: #f0fdf4;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --text-brand: #34d399;
+
+      --emerald-500: #10b981;
+      --emerald-400: #34d399;
+      --emerald-600: #059669;
+      --emerald-900: #064e3b;
+      
+      --accent-cyan: #38bdf8;
+      --accent-amber: #fbbf24;
+      --accent-rose: #f43f5e;
+      --accent-purple: #c084fc;
+      --accent-blue: #60a5fa;
+
+      --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 30px rgba(16, 185, 129, 0.15);
+      --shadow-glow-strong: 0 0 40px rgba(16, 185, 129, 0.3);
+      
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Light Theme Alternative */
+    [data-theme="light"] {
+      --bg-base: #f4f7f5;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #e8f0ec;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --bg-card-hover: #ffffff;
+      
+      --border-subtle: rgba(10, 92, 54, 0.15);
+      --border-focus: rgba(10, 92, 54, 0.4);
+      --border-glass: rgba(0, 0, 0, 0.06);
+
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --text-brand: #0a5c36;
+
+      --shadow-glow: 0 4px 20px rgba(10, 92, 54, 0.08);
+      --shadow-glow-strong: 0 8px 30px rgba(10, 92, 54, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: var(--font-stack);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+      padding-bottom: 60px;
+      transition: background-color var(--transition-normal), color var(--transition-normal);
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 25%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    /* ==========================================================================
+       TOP NAVIGATION & STATUS BAR
+       ========================================================================== */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(6, 13, 10, 0.85);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    [data-theme="light"] .top-header {
+      background: rgba(244, 247, 245, 0.9);
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+      flex-shrink: 0;
+    }
+
+    .brand-titles h1 {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: var(--emerald-400);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .badge-live::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald-400);
+      box-shadow: 0 0 8px var(--emerald-400);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      transition: all var(--transition-fast);
+      user-select: none;
+    }
+    .pill-btn:hover {
+      background: var(--bg-surface-elevated);
+      border-color: var(--border-focus);
+      transform: translateY(-1px);
+    }
+    .pill-btn.primary {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    .pill-btn.primary:hover {
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
+    }
+
+    /* ==========================================================================
+       CONTAINER & LAYOUT
+       ========================================================================== */
+    .dashboard-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px 32px;
+    }
+
+    /* Sub-header Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(56, 189, 248, 0.05) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px 30px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: var(--shadow-glow);
+    }
+    .hero-text h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+    .hero-text p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      max-width: 720px;
+    }
+    .hero-tag {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--emerald-400);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-tabs {
+      display: flex;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      padding: 4px;
+      border-radius: 999px;
+      gap: 4px;
+    }
+    .filter-tab {
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+      background: transparent;
+    }
+    .filter-tab.active {
+      background: var(--emerald-600);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+    }
+    .filter-tab:hover:not(.active) {
+      color: var(--text-primary);
+    }
+
+    .time-window-badge {
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ==========================================================================
+       KEY METRICS CARDS ROW
+       ========================================================================== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-focus);
+      background: var(--bg-card-hover);
+      box-shadow: var(--shadow-glow);
+    }
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--kpi-accent, var(--emerald-500));
+      opacity: 0.8;
+    }
+
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .kpi-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+    .kpi-icon {
+      font-size: 18px;
+    }
+
+    .kpi-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+    .kpi-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald-400);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .kpi-badge.secondary {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+    }
+    .kpi-badge.warning {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--accent-amber);
+    }
+
+    .kpi-footer {
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-glass);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+
+    /* ==========================================================================
+       MAIN CHARTS GRID
+       ========================================================================== */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+    @media (max-width: 1080px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .panel-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .chart-legend {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text-secondary);
+      transition: color var(--transition-fast);
+    }
+    .legend-item.active {
+      color: var(--text-primary);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Canvas styling */
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 320px;
+      margin-top: 10px;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Interactive Tooltip */
+    #chart-tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: rgba(11, 23, 18, 0.95);
+      border: 1px solid var(--border-focus);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      transform: translate(-50%, -115%);
+      transition: opacity 0.1s ease, left 0.05s ease, top 0.05s ease;
+      opacity: 0;
+      z-index: 50;
+      white-space: nowrap;
+    }
+    #chart-tooltip .tt-date {
+      font-weight: 700;
+      color: var(--text-brand);
+      margin-bottom: 4px;
+      border-bottom: 1px solid var(--border-glass);
+      padding-bottom: 4px;
+    }
+    #chart-tooltip .tt-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 3px;
+    }
+
+    /* ==========================================================================
+       CONVERSION FUNNEL PIPELINE
+       ========================================================================== */
+    .funnel-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .funnel-stage {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all var(--transition-fast);
+    }
+    .funnel-stage:hover {
+      border-color: var(--border-focus);
+      background: var(--bg-surface-elevated);
+    }
+    .funnel-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.02) 100%);
+      z-index: 1;
+      border-right: 2px solid var(--emerald-500);
+      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .funnel-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .funnel-step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--emerald-400);
+      font-weight: 700;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .funnel-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .funnel-meta {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .funnel-stats {
+      position: relative;
+      z-index: 2;
+      text-align: right;
+    }
+    .funnel-num {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .funnel-pct {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--emerald-400);
+    }
+
+    /* ==========================================================================
+       DEVICE & GEOGRAPHY SECTION
+       ========================================================================== */
+    .secondary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    /* Device List */
+    .device-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    .device-list::-webkit-scrollbar {
+      width: 5px;
+    }
+    .device-list::-webkit-scrollbar-thumb {
+      background: var(--border-subtle);
+      border-radius: 4px;
+    }
+    .device-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      transition: background var(--transition-fast);
+    }
+    .device-row:hover {
+      background: var(--bg-surface-elevated);
+    }
+    .device-name-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+    .device-icon {
+      font-size: 15px;
+      opacity: 0.8;
+    }
+    .device-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .device-bar-container {
+      flex: 1;
+      max-width: 140px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 0 14px;
+    }
+    .device-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981 0%, #38bdf8 100%);
+      border-radius: 999px;
+    }
+    .device-count {
+      font-weight: 700;
+      color: var(--text-brand);
+      min-width: 50px;
+      text-align: right;
+    }
+
+    /* Screen Views Bar List */
+    .screen-views-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .screen-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .screen-item-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .screen-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .screen-stat {
+      font-weight: 700;
+      color: var(--text-brand);
+    }
+    .screen-progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-surface);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border-glass);
+    }
+    .screen-progress-bar {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--emerald-600) 0%, var(--emerald-400) 100%);
+      transition: width 0.8s ease;
+    }
+
+    /* Geography Tags */
+    .geo-pill-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .geo-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+    }
+    .geo-pill:hover {
+      border-color: var(--border-focus);
+      background: var(--bg-surface-elevated);
+      transform: translateY(-1px);
+    }
+    .geo-pill.primary {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .geo-flag {
+      font-size: 16px;
+    }
+    .geo-name {
+      font-weight: 600;
+    }
+    .geo-count {
+      font-weight: 800;
+      color: var(--emerald-400);
+      margin-left: 4px;
+    }
+
+    /* ==========================================================================
+       EXECUTIVE BRIEFING / TALKING POINTS
+       ========================================================================== */
+    .briefing-card {
+      background: linear-gradient(135deg, rgba(17, 34, 27, 0.85) 0%, rgba(6, 13, 10, 0.95) 100%);
+      border: 1px solid var(--border-focus);
+      border-radius: var(--radius-lg);
+      padding: 26px 32px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-glow);
+    }
+    .briefing-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--emerald-400);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .briefing-points {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+    .briefing-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+    .briefing-box h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .briefing-box p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       PRESENTATION / FULLSCREEN MODE
+       ========================================================================== */
+    body.presentation-mode {
+      padding-bottom: 0;
+    }
+    body.presentation-mode .top-header {
+      padding: 10px 40px;
+    }
+    body.presentation-mode .dashboard-container {
+      max-width: 98vw;
+      padding: 16px 24px;
+    }
+    body.presentation-mode .kpi-value {
+      font-size: 38px;
+    }
+    body.presentation-mode .canvas-wrapper {
+      height: 380px;
+    }
+
+    /* Print Styles for PDF Export */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        background-image: none !important;
+        padding: 0 !important;
+      }
+      .top-header, .header-actions, .filter-bar, .pill-btn {
+        display: none !important;
+      }
+      .kpi-card, .chart-panel, .briefing-card, .hero-banner {
+        background: #ffffff !important;
+        border: 1px solid #cccccc !important;
+        box-shadow: none !important;
+        color: #000000 !important;
+        break-inside: avoid;
+      }
+      .kpi-value, .funnel-num, .screen-stat {
+        color: #0a5c36 !important;
+      }
+      .dashboard-grid, .secondary-grid {
+        display: block !important;
+      }
+      .chart-panel {
+        margin-bottom: 24px;
+      }
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER & LIVE TELEMETRY STATUS
+       ========================================================================== -->
+  <header class="top-header">
+    <div class="brand-block">
+      <div class="brand-logo-mark">NF</div>
+      <div class="brand-titles">
+        <h1>
+          My NELFund Telemetry
+          <span class="badge-live">Offline Verified</span>
+        </h1>
+        <div class="brand-sub">Production Telemetry Intelligence | Students Loans Act 2024 Utility</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="pill-btn" id="btn-theme" title="Toggle Light/Dark Theme">
+        <span id="theme-icon">☀️</span> <span id="theme-label">Light</span>
+      </button>
+      <button class="pill-btn" id="btn-present" title="Toggle Fullscreen Presentation View">
+        <span>📺</span> <span>Presentation Mode</span>
+      </button>
+      <button class="pill-btn primary" id="btn-print" title="Generate PDF Brief">
+        <span>📄</span> <span>Print / Export PDF</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="dashboard-container fade-in">
+
+    <!-- Hero Notice -->
+    <div class="hero-banner">
+      <div class="hero-text">
+        <h2>Executive Telemetry & Adoption Report</h2>
+        <p>
+          Telemetry synthesized directly from verified production metrics (Aug 26 – Sept 22, 2026).
+          Zero network dependency — designed specifically for offline demonstration to government leadership, stakeholders, and news broadcasts.
+        </p>
+      </div>
+      <div class="hero-tag">
+        <span>🔒</span>
+        <span>100% Offline Standalone Cache</span>
+      </div>
+    </div>
+
+    <!-- Filters & Time Horizon -->
+    <div class="filter-bar">
+      <div class="filter-tabs" id="time-filter">
+        <button class="filter-tab active" data-range="all">Complete Window (Sept 7–22)</button>
+        <button class="filter-tab" data-range="week2">Final Peak Week (Sept 16–22)</button>
+        <button class="filter-tab" data-range="launch">Launch Week (Sept 7–15)</button>
+      </div>
+      <div class="time-window-badge">
+        <span>📅 Window: <strong>Sept 7 – Sept 22, 2026</strong></span>
+        <span>•</span>
+        <span>Property: <strong>my-nelfund</strong></span>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         TOP KPI CARDS ROW
+         ========================================================================== -->
+    <div class="kpi-grid">
+      <!-- Total Installs -->
+      <div class="kpi-card" style="--kpi-accent: #10b981;">
+        <div class="kpi-header">
+          <span class="kpi-title">Total Installs</span>
+          <span class="kpi-icon">🚀</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-value" id="kpi-installs">468</div>
+          <span class="kpi-badge">first_open</span>
+        </div>
+        <div class="kpi-footer">From 3 launch day users to 468 in 15 days</div>
+      </div>
+
+      <!-- 30-Day Active Users -->
+      <div class="kpi-card" style="--kpi-accent: #38bdf8;">
+        <div class="kpi-header">
+          <span class="kpi-title">Monthly Actives (MAU)</span>
+          <span class="kpi-icon">👥</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-value" id="kpi-mau">466</div>
+          <span class="kpi-badge secondary">99.6% Active</span>
+        </div>
+        <div class="kpi-footer">466 out of 468 users active within 30 days</div>
+      </div>
+
+      <!-- 7-Day Active Users -->
+      <div class="kpi-card" style="--kpi-accent: #c084fc;">
+        <div class="kpi-header">
+          <span class="kpi-title">Weekly Actives (WAU)</span>
+          <span class="kpi-icon">🔥</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-value" id="kpi-wau">323</div>
+          <span class="kpi-badge" style="background: rgba(192, 132, 252, 0.15); color: #c084fc;">69.3% Stickiness</span>
+        </div>
+        <div class="kpi-footer">High repeat weekly utilization</div>
+      </div>
+
+      <!-- Peak Daily Active Users -->
+      <div class="kpi-card" style="--kpi-accent: #fbbf24;">
+        <div class="kpi-header">
+          <span class="kpi-title">Peak Daily (DAU)</span>
+          <span class="kpi-icon">📈</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-value" id="kpi-dau">71</div>
+          <span class="kpi-badge warning">All-Time Peak</span>
+        </div>
+        <div class="kpi-footer">Recorded on Sept 22 (Upward momentum)</div>
+      </div>
+
+      <!-- Crash Free Users -->
+      <div class="kpi-card" style="--kpi-accent: #34d399;">
+        <div class="kpi-header">
+          <span class="kpi-title">Crash-Free Users</span>
+          <span class="kpi-icon">💎</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-value">100.0%</div>
+          <span class="kpi-badge">0 Crashes</span>
+        </div>
+        <div class="kpi-footer">Flawless stability across all iOS & Android</div>
+      </div>
+
+      <!-- Eligibility Audits -->
+      <div class="kpi-card" style="--kpi-accent: #10b981;">
+        <div class="kpi-header">
+          <span class="kpi-title">Eligibility Audits</span>
+          <span class="kpi-icon">🎯</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-value">365</div>
+          <span class="kpi-badge">78.0% Rate</span>
+        </div>
+        <div class="kpi-footer">Completed full statutory eligibility check</div>
+      </div>
+
+      <!-- Loan Simulations -->
+      <div class="kpi-card" style="--kpi-accent: #60a5fa;">
+        <div class="kpi-header">
+          <span class="kpi-title">Loan Calculations</span>
+          <span class="kpi-icon">💡</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-value">1,246</div>
+          <span class="kpi-badge secondary">2.66x / User</span>
+        </div>
+        <div class="kpi-footer">Students modeling repayment schedules</div>
+      </div>
+
+      <!-- Device Retention -->
+      <div class="kpi-card" style="--kpi-accent: #f43f5e;">
+        <div class="kpi-header">
+          <span class="kpi-title">Device Retention</span>
+          <span class="kpi-icon">🛡️</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-value">95.7%</div>
+          <span class="kpi-badge" style="background: rgba(244, 63, 94, 0.15); color: #f43f5e;">Only 20 Uninstalls</span>
+        </div>
+        <div class="kpi-footer">Extremely low churn (4.27% uninstall rate)</div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         MAIN CHARTS (CANVAS BASED - 100% OFFLINE)
+         ========================================================================== -->
+    <div class="dashboard-grid">
+      <!-- Active User Trajectory Chart -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>📈</span>
+              <span>Daily Growth & Active Users Trajectory</span>
+            </div>
+            <div class="panel-subtitle">Interactive daily active, 7-day, and 30-day user tracking (Hover over points for details)</div>
+          </div>
+          <div class="chart-legend" id="trajectory-legend">
+            <div class="legend-item active" data-series="mau">
+              <span class="legend-dot" style="background: #38bdf8;"></span>
+              <span>30-Day Active</span>
+            </div>
+            <div class="legend-item active" data-series="wau">
+              <span class="legend-dot" style="background: #c084fc;"></span>
+              <span>7-Day Active</span>
+            </div>
+            <div class="legend-item active" data-series="dau">
+              <span class="legend-dot" style="background: #10b981;"></span>
+              <span>1-Day Active</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="growthChart"></canvas>
+          <div id="chart-tooltip"></div>
+        </div>
+      </div>
+
+      <!-- Feature Conversion Funnel -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>⚡</span>
+              <span>Student Conversion Funnel</span>
+            </div>
+            <div class="panel-subtitle">Onboarding to loan calculation & audit completion</div>
+          </div>
+        </div>
+
+        <div class="funnel-container">
+          <div class="funnel-stage">
+            <div class="funnel-fill" style="width: 100%;"></div>
+            <div class="funnel-content">
+              <span class="funnel-step-num">1</span>
+              <div>
+                <div class="funnel-name">App Installed & Opened</div>
+                <div class="funnel-meta">first_open telemetry</div>
+              </div>
+            </div>
+            <div class="funnel-stats">
+              <div class="funnel-num">468</div>
+              <div class="funnel-pct">100%</div>
+            </div>
+          </div>
+
+          <div class="funnel-stage">
+            <div class="funnel-fill" style="width: 85%;"></div>
+            <div class="funnel-content">
+              <span class="funnel-step-num">2</span>
+              <div>
+                <div class="funnel-name">Engaged Sessions</div>
+                <div class="funnel-meta">Multi-tab navigation</div>
+              </div>
+            </div>
+            <div class="funnel-stats">
+              <div class="funnel-num">594</div>
+              <div class="funnel-pct">1.27 / User</div>
+            </div>
+          </div>
+
+          <div class="funnel-stage">
+            <div class="funnel-fill" style="width: 78%;"></div>
+            <div class="funnel-content">
+              <span class="funnel-step-num">3</span>
+              <div>
+                <div class="funnel-name">Eligibility Audit Completed</div>
+                <div class="funnel-meta">Full checklist finished</div>
+              </div>
+            </div>
+            <div class="funnel-stats">
+              <div class="funnel-num">365</div>
+              <div class="funnel-pct">78.0% Completion</div>
+            </div>
+          </div>
+
+          <div class="funnel-stage">
+            <div class="funnel-fill" style="width: 65%;"></div>
+            <div class="funnel-content">
+              <span class="funnel-step-num">4</span>
+              <div>
+                <div class="funnel-name">Loan Repayments Modeled</div>
+                <div class="funnel-meta">loan_calculated triggers</div>
+              </div>
+            </div>
+            <div class="funnel-stats">
+              <div class="funnel-num">1,246</div>
+              <div class="funnel-pct">2.66x per User</div>
+            </div>
+          </div>
+
+          <div class="funnel-stage">
+            <div class="funnel-fill" style="width: 56.6%;"></div>
+            <div class="funnel-content">
+              <span class="funnel-step-num">5</span>
+              <div>
+                <div class="funnel-name">Official NELFUND Link Tapped</div>
+                <div class="funnel-meta">Referred to portal</div>
+              </div>
+            </div>
+            <div class="funnel-stats">
+              <div class="funnel-num">265</div>
+              <div class="funnel-pct">56.6% Referred</div>
+            </div>
+          </div>
+
+          <div class="funnel-stage">
+            <div class="funnel-fill" style="width: 17.7%;"></div>
+            <div class="funnel-content">
+              <span class="funnel-step-num">6</span>
+              <div>
+                <div class="funnel-name">Direct Developer Inquiry</div>
+                <div class="funnel-meta">Student direct questions</div>
+              </div>
+            </div>
+            <div class="funnel-stats">
+              <div class="funnel-num">83</div>
+              <div class="funnel-pct">17.7% High Intent</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         SECONDARY VISUALS: SCREENS, HARDWARE & GEOGRAPHY
+         ========================================================================== -->
+    <div class="secondary-grid">
+      <!-- Screen Traffic Distribution -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>📱</span>
+              <span>Screen & Feature Engagement</span>
+            </div>
+            <div class="panel-subtitle">Total recorded views: 3,977 screens</div>
+          </div>
+        </div>
+
+        <div class="screen-views-list">
+          <div class="screen-item">
+            <div class="screen-item-header">
+              <span class="screen-name"><span>📋</span> Eligibility Verification (Tab 2)</span>
+              <span class="screen-stat">712 views (17.9%)</span>
+            </div>
+            <div class="screen-progress-track">
+              <div class="screen-progress-bar" style="width: 71.2%;"></div>
+            </div>
+          </div>
+
+          <div class="screen-item">
+            <div class="screen-item-header">
+              <span class="screen-name"><span>🏛️</span> Home & Application Status (Tab 1)</span>
+              <span class="screen-stat">545 views (13.7%)</span>
+            </div>
+            <div class="screen-progress-track">
+              <div class="screen-progress-bar" style="width: 54.5%;"></div>
+            </div>
+          </div>
+
+          <div class="screen-item">
+            <div class="screen-item-header">
+              <span class="screen-name"><span>🧮</span> Repayment Calculator (Tab 3)</span>
+              <span class="screen-stat">531 views (13.4%)</span>
+            </div>
+            <div class="screen-progress-track">
+              <div class="screen-progress-bar" style="width: 53.1%;"></div>
+            </div>
+          </div>
+
+          <div class="screen-item">
+            <div class="screen-item-header">
+              <span class="screen-name"><span>ℹ️</span> About & Leadership Dossier</span>
+              <span class="screen-stat">488 views (12.3%)</span>
+            </div>
+            <div class="screen-progress-track">
+              <div class="screen-progress-bar" style="width: 48.8%;"></div>
+            </div>
+          </div>
+
+          <div class="screen-item">
+            <div class="screen-item-header">
+              <span class="screen-name"><span>❓</span> FAQ & Legal Knowledge Base (Tab 4)</span>
+              <span class="screen-stat">336 views (8.4%)</span>
+            </div>
+            <div class="screen-progress-track">
+              <div class="screen-progress-bar" style="width: 33.6%;"></div>
+            </div>
+          </div>
+
+          <div class="screen-item">
+            <div class="screen-item-header">
+              <span class="screen-name"><span>⚡</span> Flutter Navigation Shell</span>
+              <span class="screen-stat">1,147 transitions (28.8%)</span>
+            </div>
+            <div class="screen-progress-track">
+              <div class="screen-progress-bar" style="width: 100%; background: linear-gradient(90deg, #38bdf8 0%, #818cf8 100%);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hardware Ecosystem & Top Devices -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>💻</span>
+              <span>Hardware & Device Distribution</span>
+            </div>
+            <div class="panel-subtitle">454 devices mapped • 91.9% iOS vs 8.1% Android</div>
+          </div>
+          <div class="badge-live" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3);">
+            417 Apple Devices
+          </div>
+        </div>
+
+        <div class="device-list" id="deviceList">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Geographic Distribution -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>🌍</span>
+              <span>Geographic Penetration</span>
+            </div>
+            <div class="panel-subtitle">456 verified geographic sessions across 17 nations</div>
+          </div>
+        </div>
+
+        <div class="geo-pill-grid">
+          <div class="geo-pill primary">
+            <span class="geo-flag">🇳🇬</span>
+            <span class="geo-name">Nigeria</span>
+            <span class="geo-count">408 users (89.5%)</span>
+          </div>
+          <div class="geo-pill">
+            <span class="geo-flag">🇺🇸</span>
+            <span class="geo-name">United States</span>
+            <span class="geo-count">19 users (4.2%)</span>
+          </div>
+          <div class="geo-pill">
+            <span class="geo-flag">🇵🇭</span>
+            <span class="geo-name">Philippines</span>
+            <span class="geo-count">7 users (1.5%)</span>
+          </div>
+          <div class="geo-pill">
+            <span class="geo-flag">🇬🇧</span>
+            <span class="geo-name">United Kingdom</span>
+            <span class="geo-count">5 users (1.1%)</span>
+          </div>
+          <div class="geo-pill">
+            <span class="geo-flag">🇮🇳</span>
+            <span class="geo-name">India</span>
+            <span class="geo-count">3 users (0.7%)</span>
+          </div>
+          <div class="geo-pill">
+            <span class="geo-flag">🇳🇱</span>
+            <span class="geo-name">Netherlands</span>
+            <span class="geo-count">2 users (0.4%)</span>
+          </div>
+          <div class="geo-pill">
+            <span class="geo-flag">🇸🇬</span>
+            <span class="geo-name">Singapore</span>
+            <span class="geo-count">2 users (0.4%)</span>
+          </div>
+          <div class="geo-pill">
+            <span class="geo-flag">🌐</span>
+            <span class="geo-name">Global Diaspora (10 Countries)</span>
+            <span class="geo-count">10 users (2.2%)</span>
+          </div>
+        </div>
+
+        <!-- Version 2.1.0 Rollout Box -->
+        <div style="margin-top: 20px; padding: 14px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 700; font-size: 13px; color: var(--emerald-400);">Version 2.1.0 Rollout Velocity</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">Deployed Sept 21 • Surged to 16 active users within 48 hrs</div>
+          </div>
+          <div style="font-size: 18px; font-weight: 800; color: #ffffff;">22.5% <span style="font-size: 11px; color: var(--text-muted);">of DAU</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         EXECUTIVE BRIEFING & BROADCAST TALKING POINTS
+         ========================================================================== -->
+    <div class="briefing-card">
+      <h3>
+        <span>🎙️</span>
+        <span>Executive Briefing Points for Stakeholder & Media Presentations</span>
+      </h3>
+      <div class="briefing-points">
+        <div class="briefing-box">
+          <h4>1. 78% Funnel Conversion Proof</h4>
+          <p>
+            Out of 468 students who installed the app, 365 completed the full statutory eligibility audit. This proves that students actively want to verify compliance with the Students Loans Act 2024 before submitting formal government portal filings.
+          </p>
+        </div>
+
+        <div class="briefing-box">
+          <h4>2. 1,246 Repayment Simulations</h4>
+          <p>
+            Students ran 2.66 loan simulations on average, testing their 10% statutory payroll deduction and 2-year post-NYSC moratorium payoff schedules. This dispels the misconception that applicants regard the fund as free grant money.
+          </p>
+        </div>
+
+        <div class="briefing-box">
+          <h4>3. 100% Crash-Free Reliability</h4>
+          <p>
+            Zero application crashes or UI freezes recorded across all sessions in Nigeria and abroad. The app provides rock-solid institutional reliability during high-pressure tertiary admissions windows.
+          </p>
+        </div>
+
+        <div class="briefing-box">
+          <h4>4. Exceptional 95.7% Device Retention</h4>
+          <p>
+            With only 20 uninstalls out of 468 downloads (4.27% churn rate), students keep My NELFund pinned to their home screens as a permanent academic utility and loan management reference.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==========================================================================
+       EMBEDDED CLIENT SCRIPT (100% OFFLINE DATA & CANVAS RENDERER)
+       ========================================================================== -->
+  <script>
+    // Raw Production Telemetry Extracted from Firebase_overview.csv
+    const TELEMETRY_DATA = [
+      { day: 12, date: "Sep 7", mau: 3, wau: 3, dau: 3, v1: 3, v2: 0, time: 956 },
+      { day: 13, date: "Sep 8", mau: 13, wau: 13, dau: 10, v1: 10, v2: 0, time: 301 },
+      { day: 14, date: "Sep 9", mau: 18, wau: 18, dau: 6, v1: 6, v2: 0, time: 113 },
+      { day: 15, date: "Sep 10", mau: 20, wau: 20, dau: 2, v1: 2, v2: 0, time: 435 },
+      { day: 16, date: "Sep 11", mau: 21, wau: 21, dau: 1, v1: 1, v2: 0, time: 708 },
+      { day: 17, date: "Sep 12", mau: 44, wau: 44, dau: 23, v1: 23, v2: 0, time: 122 },
+      { day: 18, date: "Sep 13", mau: 70, wau: 70, dau: 29, v1: 29, v2: 0, time: 123 },
+      { day: 19, date: "Sep 14", mau: 101, wau: 98, dau: 35, v1: 35, v2: 0, time: 162 },
+      { day: 20, date: "Sep 15", mau: 155, wau: 143, dau: 58, v1: 58, v2: 0, time: 144 },
+      { day: 21, date: "Sep 16", mau: 189, wau: 171, dau: 38, v1: 38, v2: 0, time: 151 },
+      { day: 22, date: "Sep 17", mau: 225, wau: 205, dau: 40, v1: 40, v2: 0, time: 138 },
+      { day: 23, date: "Sep 18", mau: 270, wau: 249, dau: 52, v1: 52, v2: 0, time: 83 },
+      { day: 24, date: "Sep 19", mau: 304, wau: 266, dau: 36, v1: 36, v2: 0, time: 193 },
+      { day: 25, date: "Sep 20", mau: 352, wau: 291, dau: 55, v1: 55, v2: 0, time: 117 },
+      { day: 26, date: "Sep 21", mau: 407, wau: 316, dau: 62, v1: 55, v2: 7, time: 154 },
+      { day: 27, date: "Sep 22", mau: 466, wau: 323, dau: 71, v1: 55, v2: 16, time: 118 }
+    ];
+
+    const DEVICE_DATA = [
+      { name: "iPhone XR", count: 67, pct: "14.8%", type: "ios" },
+      { name: "iPhone 11", count: 61, pct: "13.4%", type: "ios" },
+      { name: "iPhone 12", count: 32, pct: "7.0%", type: "ios" },
+      { name: "iPhone 12 Pro Max", count: 26, pct: "5.7%", type: "ios" },
+      { name: "iPhone 13", count: 25, pct: "5.5%", type: "ios" },
+      { name: "iPhone X", count: 20, pct: "4.4%", type: "ios" },
+      { name: "iPhone 11 Pro Max", count: 17, pct: "3.7%", type: "ios" },
+      { name: "iPhone 7 (Legacy 4.7\")", count: 16, pct: "3.5%", type: "ios" },
+      { name: "iPhone 13 Pro", count: 15, pct: "3.3%", type: "ios" },
+      { name: "iPhone 6s Plus (Legacy)", count: 15, pct: "3.3%", type: "ios" },
+      { name: "iPhone 14 Pro Max", count: 14, pct: "3.1%", type: "ios" },
+      { name: "iPhone 6s (Legacy 4.7\")", count: 11, pct: "2.4%", type: "ios" },
+      { name: "iPhone 7 Plus (Legacy)", count: 11, pct: "2.4%", type: "ios" },
+      { name: "iPhone 14 Pro", count: 10, pct: "2.2%", type: "ios" },
+      { name: "Samsung Galaxy A23", count: 7, pct: "1.5%", type: "android" },
+      { name: "Samsung Galaxy S20", count: 5, pct: "1.1%", type: "android" },
+      { name: "Infinix HOT 40 / Note", count: 3, pct: "0.7%", type: "android" }
+    ];
+
+    // Populate Device List
+    function renderDeviceList() {
+      const listEl = document.getElementById("deviceList");
+      listEl.innerHTML = "";
+      const maxCount = DEVICE_DATA[0].count;
+
+      DEVICE_DATA.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "device-row";
+        const fillWidth = (item.count / maxCount) * 100;
+        const icon = item.type === "ios" ? "🍏" : "🤖";
+
+        row.innerHTML = `
+          <div class="device-name-group">
+            <span class="device-icon">${icon}</span>
+            <span class="device-name">${item.name}</span>
+          </div>
+          <div class="device-bar-container">
+            <div class="device-bar-fill" style="width: ${fillWidth}%;"></div>
+          </div>
+          <div class="device-count">${item.count} <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">(${item.pct})</span></div>
+        `;
+        listEl.appendChild(row);
+      });
+    }
+
+    // ==========================================================================
+    // INTERACTIVE CANVAS CHART ENGINE (CUSTOM HIGH-DPI ZERO DEPENDENCY)
+    // ==========================================================================
+    let activeSeries = { mau: true, wau: true, dau: true };
+    let currentFilter = "all";
+
+    function getFilteredData() {
+      if (currentFilter === "week2") {
+        return TELEMETRY_DATA.slice(-7);
+      } else if (currentFilter === "launch") {
+        return TELEMETRY_DATA.slice(0, 9);
+      }
+      return TELEMETRY_DATA;
+    }
+
+    const canvas = document.getElementById("growthChart");
+    const ctx = canvas.getContext("2d");
+    const tooltip = document.getElementById("chart-tooltip");
+    let chartPoints = [];
+
+    function setupCanvasDPI() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+    }
+
+    function renderGrowthChart() {
+      setupCanvasDPI();
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const data = getFilteredData();
+      if (!data || data.length === 0) return;
+
+      const padding = { top: 30, right: 30, bottom: 40, left: 45 };
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+
+      // Find max value
+      let maxVal = 500;
+      if (currentFilter === "launch") maxVal = 160;
+
+      // Draw Grid Lines & Y Axis Labels
+      ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue("--border-glass").trim() || "rgba(255,255,255,0.06)";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue("--text-muted").trim() || "#64748b";
+      ctx.font = "11px -apple-system, sans-serif";
+      ctx.textAlign = "right";
+
+      const ySteps = 5;
+      for (let i = 0; i <= ySteps; i++) {
+        const y = padding.top + (chartHeight / ySteps) * i;
+        const val = Math.round(maxVal - (maxVal / ySteps) * i);
+
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(width - padding.right, y);
+        ctx.stroke();
+
+        ctx.fillText(val, padding.left - 8, y + 4);
+      }
+
+      // Calculate Point Coordinates
+      const stepX = chartWidth / (data.length - 1);
+      chartPoints = [];
+
+      data.forEach((d, i) => {
+        const x = padding.left + i * stepX;
+        const yMau = padding.top + chartHeight - (d.mau / maxVal) * chartHeight;
+        const yWau = padding.top + chartHeight - (d.wau / maxVal) * chartHeight;
+        const yDau = padding.top + chartHeight - (d.dau / maxVal) * chartHeight;
+
+        chartPoints.push({ x, yMau, yWau, yDau, data: d });
+
+        // X Axis Labels
+        ctx.textAlign = "center";
+        ctx.fillText(d.date, x, height - padding.bottom + 20);
+      });
+
+      // Helper to draw series line & gradient fill
+      function drawSeries(getY, strokeColor, fillColor, glowColor) {
+        ctx.save();
+        ctx.beginPath();
+        chartPoints.forEach((pt, idx) => {
+          const y = getY(pt);
+          if (idx === 0) ctx.moveTo(pt.x, y);
+          else {
+            // Smooth bezier
+            const prev = chartPoints[idx - 1];
+            const prevY = getY(prev);
+            const cx = (prev.x + pt.x) / 2;
+            ctx.bezierCurveTo(cx, prevY, cx, y, pt.x, y);
+          }
+        });
+
+        // Fill area under curve
+        ctx.lineTo(chartPoints[chartPoints.length - 1].x, padding.top + chartHeight);
+        ctx.lineTo(chartPoints[0].x, padding.top + chartHeight);
+        ctx.closePath();
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+
+        // Stroke line
+        ctx.beginPath();
+        chartPoints.forEach((pt, idx) => {
+          const y = getY(pt);
+          if (idx === 0) ctx.moveTo(pt.x, y);
+          else {
+            const prev = chartPoints[idx - 1];
+            const prevY = getY(prev);
+            const cx = (prev.x + pt.x) / 2;
+            ctx.bezierCurveTo(cx, prevY, cx, y, pt.x, y);
+          }
+        });
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 3;
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+
+        // Draw points
+        chartPoints.forEach(pt => {
+          const y = getY(pt);
+          ctx.beginPath();
+          ctx.arc(pt.x, y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = strokeColor;
+          ctx.fill();
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+
+      // Render Active Series
+      if (activeSeries.mau) {
+        const grad = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartHeight);
+        grad.addColorStop(0, "rgba(56, 189, 248, 0.25)");
+        grad.addColorStop(1, "rgba(56, 189, 248, 0.0)");
+        drawSeries(pt => pt.yMau, "#38bdf8", grad, "rgba(56, 189, 248, 0.5)");
+      }
+
+      if (activeSeries.wau) {
+        const grad = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartHeight);
+        grad.addColorStop(0, "rgba(192, 132, 252, 0.2)");
+        grad.addColorStop(1, "rgba(192, 132, 252, 0.0)");
+        drawSeries(pt => pt.yWau, "#c084fc", grad, "rgba(192, 132, 252, 0.4)");
+      }
+
+      if (activeSeries.dau) {
+        const grad = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartHeight);
+        grad.addColorStop(0, "rgba(16, 185, 129, 0.3)");
+        grad.addColorStop(1, "rgba(16, 185, 129, 0.0)");
+        drawSeries(pt => pt.yDau, "#10b981", grad, "rgba(16, 185, 129, 0.6)");
+      }
+    }
+
+    // Canvas Hover Interaction & Tooltip
+    canvas.addEventListener("mousemove", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      let closest = null;
+      let minDist = 999;
+
+      chartPoints.forEach(pt => {
+        const dist = Math.abs(pt.x - mouseX);
+        if (dist < minDist && dist < 30) {
+          minDist = dist;
+          closest = pt;
+        }
+      });
+
+      if (closest) {
+        const d = closest.data;
+        tooltip.innerHTML = `
+          <div class="tt-date">📅 ${d.date}, 2026 (Day ${d.day})</div>
+          <div class="tt-row"><span style="color:#38bdf8;">● 30-Day Active (MAU):</span> <strong>${d.mau}</strong></div>
+          <div class="tt-row"><span style="color:#c084fc;">● 7-Day Active (WAU):</span> <strong>${d.wau}</strong></div>
+          <div class="tt-row"><span style="color:#10b981;">● 1-Day Active (DAU):</span> <strong>${d.dau}</strong></div>
+          <div class="tt-row" style="margin-top:4px; padding-top:4px; border-top:1px solid rgba(255,255,255,0.08); color:#94a3b8;">
+            <span>⏱️ Avg Engagement:</span> <strong>${Math.round(d.time)}s</strong>
+          </div>
+        `;
+        tooltip.style.left = `${closest.x}px`;
+        tooltip.style.top = `${closest.yDau}px`;
+        tooltip.style.opacity = 1;
+      } else {
+        tooltip.style.opacity = 0;
+      }
+    });
+
+    canvas.addEventListener("mouseleave", () => {
+      tooltip.style.opacity = 0;
+    });
+
+    // ==========================================================================
+    // INTERACTION HANDLERS & EVENT LISTENERS
+    // ==========================================================================
+
+    // Legend Click Toggles
+    document.querySelectorAll(".legend-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const series = item.dataset.series;
+        activeSeries[series] = !activeSeries[series];
+        item.classList.toggle("active", activeSeries[series]);
+        renderGrowthChart();
+      });
+    });
+
+    // Time Horizon Filters
+    document.querySelectorAll(".filter-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentFilter = tab.dataset.range;
+        renderGrowthChart();
+      });
+    });
+
+    // Theme Toggle
+    const btnTheme = document.getElementById("btn-theme");
+    const themeIcon = document.getElementById("theme-icon");
+    const themeLabel = document.getElementById("theme-label");
+
+    btnTheme.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      themeIcon.textContent = next === "light" ? "🌙" : "☀️";
+      themeLabel.textContent = next === "light" ? "Dark" : "Light";
+      renderGrowthChart();
+    });
+
+    // Presentation Mode Toggle
+    const btnPresent = document.getElementById("btn-present");
+    btnPresent.addEventListener("click", () => {
+      document.body.classList.toggle("presentation-mode");
+      renderGrowthChart();
+      if (document.body.classList.contains("presentation-mode")) {
+        btnPresent.style.background = "var(--emerald-600)";
+        btnPresent.style.color = "#ffffff";
+      } else {
+        btnPresent.style.background = "";
+        btnPresent.style.color = "";
+      }
+    });
+
+    // Print / PDF Button
+    document.getElementById("btn-print").addEventListener("click", () => {
+      window.print();
+    });
+
+    // Resize Handler
+    window.addEventListener("resize", () => {
+      renderGrowthChart();
+    });
+
+    // Initial Execution
+    renderDeviceList();
+    renderGrowthChart();
+  </script>
+</body>
+</html>

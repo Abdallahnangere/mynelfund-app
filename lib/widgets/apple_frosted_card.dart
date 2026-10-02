@@ -1,8 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import '../core/theme/nelfund_colors.dart';
 
-/// An authentic Apple HIG frosted glass card with subtle border and blur.
+/// An authentic Apple HIG & Liquid Glass frosted card with specular light border,
+/// glass reflection sheen, and hardware-accelerated backdrop blur.
 class AppleFrostedCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -13,6 +15,7 @@ class AppleFrostedCard extends StatelessWidget {
   final VoidCallback? onTap;
   final bool hasBlur;
   final bool showShadow;
+  final bool showSpecularShine;
 
   const AppleFrostedCard({
     super.key,
@@ -23,8 +26,9 @@ class AppleFrostedCard extends StatelessWidget {
     this.backgroundColor,
     this.borderColor,
     this.onTap,
-    this.hasBlur = true,
+    this.hasBlur = false,
     this.showShadow = true,
+    this.showSpecularShine = true,
   });
 
   @override
@@ -35,7 +39,7 @@ class AppleFrostedCard extends StatelessWidget {
         CupertinoDynamicColor.resolve(NelfundColors.glassBorder, context);
     final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
 
-    Widget content = Container(
+    Widget cardBody = Container(
       padding: padding,
       decoration: BoxDecoration(
         color: cardBg,
@@ -48,37 +52,70 @@ class AppleFrostedCard extends StatelessWidget {
             ? [
                 BoxShadow(
                   color: isDark
-                      ? const Color(0x33000000)
-                      : const Color(0x0D000000),
-                  blurRadius: 12,
+                      ? const Color(0x40000000)
+                      : const Color(0x0F002E1B),
+                  blurRadius: 14,
                   offset: const Offset(0, 4),
                   spreadRadius: 0,
                 ),
+                if (showSpecularShine)
+                  BoxShadow(
+                    color: NelfundColors.emerald.withValues(alpha: isDark ? 0.08 : 0.04),
+                    blurRadius: 20,
+                    offset: const Offset(0, 2),
+                    spreadRadius: -2,
+                  ),
               ]
             : null,
       ),
-      child: child,
+      child: Stack(
+        children: [
+          if (showSpecularShine)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(borderRadius),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        (isDark ? CupertinoColors.white : CupertinoColors.white)
+                            .withValues(alpha: isDark ? 0.06 : 0.25),
+                        CupertinoColors.white.withValues(alpha: 0.0),
+                        (isDark ? NelfundColors.emerald : NelfundColors.emerald)
+                            .withValues(alpha: isDark ? 0.04 : 0.03),
+                      ],
+                      stops: const [0.0, 0.4, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          child,
+        ],
+      ),
     );
 
     if (hasBlur) {
-      content = ClipRRect(
+      cardBody = ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: content,
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: cardBody,
         ),
       );
     } else {
-      content = ClipRRect(
+      cardBody = ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
-        child: content,
+        child: cardBody,
       );
     }
 
     if (margin != EdgeInsets.zero) {
-      content = Padding(
+      cardBody = Padding(
         padding: margin,
-        child: content,
+        child: cardBody,
       );
     }
 
@@ -86,11 +123,14 @@ class AppleFrostedCard extends StatelessWidget {
       return CupertinoButton(
         padding: EdgeInsets.zero,
         minimumSize: Size.zero,
-        onPressed: onTap,
-        child: content,
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          onTap?.call();
+        },
+        child: cardBody,
       );
     }
 
-    return content;
+    return cardBody;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../core/localization/app_locale.dart';
@@ -9,6 +10,7 @@ import '../../core/theme/nelfund_typography.dart';
 import '../../models/timeline_model.dart';
 import '../../providers/timeline_provider.dart';
 import '../../widgets/apple_frosted_card.dart';
+import '../../widgets/liquid_glass_header.dart';
 
 class TimelineView extends StatelessWidget {
   const TimelineView({super.key});
@@ -46,43 +48,75 @@ class _TimelineContent extends StatelessWidget {
     final provider = context.watch<TimelineProvider>();
     final eval = provider.getEvaluation(lang);
 
+    final canPop = Navigator.of(context).canPop();
+
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(tr.timelineHeaderTitle),
-        trailing: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: provider.reset,
-          child: Text(tr.isHausa ? 'Sake Farawa' : 'Reset'),
-        ),
-        backgroundColor: CupertinoDynamicColor.resolve(
-          const CupertinoDynamicColor.withBrightness(
-            color: Color(0xCCF8FAF8),
-            darkColor: Color(0xCC161718),
-          ),
-          context,
-        ),
-      ),
       child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 14),
+        bottom: false,
+        child: Column(
           children: [
-            _buildIntroHeader(context, tr),
-            const SizedBox(height: 12),
-            _buildSectionHeader(tr.onTrackEvaluatorTitle),
-            _buildEvaluatorInputCard(context, provider, lang, tr),
-            const SizedBox(height: 12),
-            _buildHealthResultCard(context, eval, lang, tr),
-            const SizedBox(height: 20),
-            _buildSectionHeader(
-              tr.isHausa
-                  ? 'Matakan Neman Lamuni na Doka (Sashe na 4.2)'
-                  : 'Official Statutory Turnaround Journey (Section 4.2)',
+            LiquidGlassHeader(
+              title: tr.timelineHeaderTitle,
+              subtitle: tr.isHausa
+                  ? 'Matakan doka & bibiyar lokaci'
+                  : 'Statutory turnaround stages & tracker',
+              leading: canPop
+                  ? CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Icon(
+                        CupertinoIcons.chevron_back,
+                        color: NelfundColors.emerald,
+                        size: 26,
+                      ),
+                    )
+                  : null,
+              trailing: CupertinoButton(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                minimumSize: Size.zero,
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  provider.reset();
+                },
+                child: Text(
+                  tr.isHausa ? 'Sake Farawa' : 'Reset',
+                  style: const TextStyle(
+                    color: NelfundColors.emerald,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
             ),
-            ...SlaStageInfo.allStages.map((info) => _buildJourneyStageCard(context, info, lang, tr)),
-            const SizedBox(height: 16),
-            _buildSectionHeader(tr.grievanceDirectoryTitle),
-            _buildGrievanceCard(context, tr),
-            const SizedBox(height: 24),
+            Expanded(
+              child: ListView(
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 88),
+                children: [
+                  _buildIntroHeader(context, tr),
+                  const SizedBox(height: 12),
+                  _buildSectionHeader(tr.onTrackEvaluatorTitle),
+                  _buildEvaluatorInputCard(context, provider, lang, tr),
+                  const SizedBox(height: 12),
+                  _buildHealthResultCard(context, eval, lang, tr),
+                  const SizedBox(height: 20),
+                  _buildSectionHeader(
+                    tr.isHausa
+                        ? 'Matakan Neman Lamuni na Doka (Sashe na 4.2)'
+                        : 'Official Statutory Turnaround Journey (Section 4.2)',
+                  ),
+                  ...SlaStageInfo.allStages.map((info) => _buildJourneyStageCard(context, info, lang, tr)),
+                  const SizedBox(height: 16),
+                  _buildSectionHeader(tr.grievanceDirectoryTitle),
+                  _buildGrievanceCard(context, tr),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
           ],
         ),
       ),
