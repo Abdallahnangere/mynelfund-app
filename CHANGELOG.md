@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Developer Identity Refinement**: Updated developer profile to strictly highlight academic affiliation as a student at Ahmadu Bello University (ABU), Zaria, removing external agency designations.
 - **Strictly Technical Feedback Focus**: Explicitly communicated that developer feedback channels are dedicated solely to mobile application bugs, performance improvements, and UI enhancements.
-- **Version Bump**: Upgraded production build target to `v2.2.5` (Build 10).
+- **iOS Push Notifications Infrastructure**: Added `Runner.entitlements` with `aps-environment`, configured `UIBackgroundModes` (`remote-notification`, `fetch`) in `Info.plist`, restored standard `GeneratedPluginRegistrant` in `AppDelegate.swift`, and implemented an APNs token resolution wait loop in `NotificationService` before requesting FCM registration.
+- **Version Bump**: Upgraded production build target to `v2.2.5` (Build 11).
 
 ---
 

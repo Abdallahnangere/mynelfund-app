@@ -1330,7 +1330,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
-                      'v2.2.5+10',
+                      'v2.2.5+11',
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w800,
@@ -1539,8 +1539,8 @@ class _AboutViewContentState extends State<_AboutViewContent> {
           const SizedBox(height: 10),
           Text(
             tr.isHausa
-                ? 'Siffa ta 2.2.5+10 • Dokar Bashin Ɗalibai domin samar da ilimi mai zurfi ta shekarar 2024'
-                : 'Version 2.2.5+10 • Students Loans (Access to Higher Education) Act 2024',
+                ? 'Siffa ta 2.2.5+11 • Dokar Bashin Ɗalibai domin samar da ilimi mai zurfi ta shekarar 2024'
+                : 'Version 2.2.5+11 • Students Loans (Access to Higher Education) Act 2024',
             textAlign: TextAlign.center,
             style: NelfundTypography.caption.copyWith(
               color: CupertinoDynamicColor.resolve(
@@ -1639,7 +1639,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Text(
-                        'v2.2.5+10',
+                        'v2.2.5+11',
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w800,
@@ -1660,7 +1660,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                           sheetCtx,
                           tr,
                           version: 'v2.2.5',
-                          build: 'Build 10',
+                          build: 'Build 11',
                           date: 'Oct 2026',
                           isCurrent: true,
                           title: tr.isHausa

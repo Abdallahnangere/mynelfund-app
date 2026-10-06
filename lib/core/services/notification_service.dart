@@ -110,7 +110,18 @@ class NotificationService {
       // 3. Register background handler
       FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-      // 4. Retrieve FCM Registration Token
+      // 4. On iOS, wait for APNs device token to resolve before querying FCM token or topics
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        String? apnsToken;
+        for (int i = 0; i < 10; i++) {
+          apnsToken = await _messaging!.getAPNSToken();
+          if (apnsToken != null) break;
+          await Future.delayed(const Duration(milliseconds: 500));
+        }
+        debugPrint('[NotificationService] iOS APNs Token status: ${apnsToken != null ? "Ready" : "Pending"}');
+      }
+
+      // 5. Retrieve FCM Registration Token
       try {
         _fcmToken = await _messaging!.getToken();
         debugPrint('[NotificationService] FCM Registration Token: $_fcmToken');
@@ -125,10 +136,10 @@ class NotificationService {
         _syncCurrentLanguage();
       });
 
-      // 5. Subscribe to default broadcast topics
+      // 6. Subscribe to default broadcast topics
       await _subscribeToDefaultTopics();
 
-      // 5b. Sync active language preference and subscribe to lang topic
+      // 6b. Sync active language preference and subscribe to lang topic
       await _syncCurrentLanguage();
 
       // 6. Handle notification click when app is opened from terminated state
