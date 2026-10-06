@@ -42,11 +42,30 @@ const toastContainer = document.getElementById('toast-container');
 document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   checkSystemHealth();
+  loadUserStats();
   loadFaqs();
   loadNotifications();
   setupLivePreview();
   setupEventHandlers();
+  setInterval(loadUserStats, 15000); // Live poll device stats
 });
+
+async function loadUserStats() {
+  try {
+    const res = await fetch(`${API_BASE}/api/user-stats`);
+    const data = await res.json();
+    if (data.success) {
+      const totalEl = document.getElementById('stats-total');
+      const enEl = document.getElementById('stats-en');
+      const haEl = document.getElementById('stats-ha');
+      if (totalEl) totalEl.textContent = data.totalDevices || 0;
+      if (enEl) enEl.textContent = data.englishCount || 0;
+      if (haEl) haEl.textContent = data.hausaCount || 0;
+    }
+  } catch (err) {
+    console.warn('Could not load user stats:', err);
+  }
+}
 
 // Tab Navigation
 function initTabs() {
@@ -168,6 +187,7 @@ function openCreateModal() {
   document.getElementById('form-answer').value = '';
   document.getElementById('form-answer-ha').value = '';
   document.getElementById('form-ref').value = 'Students Loans Act 2024';
+  document.getElementById('form-ref-ha').value = '';
   faqModal.classList.add('show');
 }
 
@@ -183,6 +203,7 @@ window.openEditModal = function(id) {
   document.getElementById('form-answer').value = item.answer || '';
   document.getElementById('form-answer-ha').value = item.answerHa || '';
   document.getElementById('form-ref').value = item.statutoryReference || '';
+  document.getElementById('form-ref-ha').value = item.statutoryReferenceHa || '';
   faqModal.classList.add('show');
 };
 
@@ -358,6 +379,7 @@ function setupEventHandlers() {
       answer: document.getElementById('form-answer').value,
       answerHa: document.getElementById('form-answer-ha').value,
       statutoryReference: document.getElementById('form-ref').value,
+      statutoryReferenceHa: document.getElementById('form-ref-ha').value,
     };
 
     const url = isEdit ? `${API_BASE}/api/faqs/${encodeURIComponent(id)}` : `${API_BASE}/api/faqs`;
@@ -386,15 +408,21 @@ function setupEventHandlers() {
   notifForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = document.getElementById('btn-send-push');
+    const topicSelect = document.getElementById('notif-topic');
+    const notifTitleHa = document.getElementById('notif-title-ha');
+    const notifBodyHa = document.getElementById('notif-body-ha');
+
     submitBtn.disabled = true;
     submitBtn.textContent = 'Dispatching to FCM Topic...';
 
     const payload = {
       title: notifTitle.value.trim(),
+      titleHa: notifTitleHa ? notifTitleHa.value.trim() : '',
       body: notifBody.value.trim(),
+      bodyHa: notifBodyHa ? notifBodyHa.value.trim() : '',
       badge: notifBadge.value,
       badgeColorHex: notifBadgeColor.value,
-      topic: 'all',
+      topic: topicSelect ? topicSelect.value : 'all',
     };
 
     try {
@@ -408,6 +436,8 @@ function setupEventHandlers() {
         showToast('Push notification dispatched & saved to Firestore!');
         notifTitle.value = '';
         notifBody.value = '';
+        if (notifTitleHa) notifTitleHa.value = '';
+        if (notifBodyHa) notifBodyHa.value = '';
         await loadNotifications();
       } else {
         showToast(data.error || 'Failed to dispatch push notification', true);

@@ -12,6 +12,9 @@ class NotificationItem {
   final DateTime createdAt;
   final bool isRead;
   final String? actionUrl;
+  final String? titleHa;
+  final String? bodyHa;
+  final String? languageTarget;
 
   const NotificationItem({
     required this.id,
@@ -23,6 +26,9 @@ class NotificationItem {
     required this.createdAt,
     this.isRead = false,
     this.actionUrl,
+    this.titleHa,
+    this.bodyHa,
+    this.languageTarget,
   });
 
   NotificationItem copyWith({
@@ -35,6 +41,9 @@ class NotificationItem {
     DateTime? createdAt,
     bool? isRead,
     String? actionUrl,
+    String? titleHa,
+    String? bodyHa,
+    String? languageTarget,
   }) {
     return NotificationItem(
       id: id ?? this.id,
@@ -46,7 +55,26 @@ class NotificationItem {
       createdAt: createdAt ?? this.createdAt,
       isRead: isRead ?? this.isRead,
       actionUrl: actionUrl ?? this.actionUrl,
+      titleHa: titleHa ?? this.titleHa,
+      bodyHa: bodyHa ?? this.bodyHa,
+      languageTarget: languageTarget ?? this.languageTarget,
     );
+  }
+
+  /// Returns localized title based on active language
+  String getLocalizedTitle(bool isHausa) {
+    if (isHausa && titleHa != null && titleHa!.trim().isNotEmpty) {
+      return titleHa!;
+    }
+    return title;
+  }
+
+  /// Returns localized body based on active language
+  String getLocalizedBody(bool isHausa) {
+    if (isHausa && bodyHa != null && bodyHa!.trim().isNotEmpty) {
+      return bodyHa!;
+    }
+    return body;
   }
 
   Color get badgeColor {
@@ -91,6 +119,9 @@ class NotificationItem {
       createdAt: parsedDate,
       isRead: map['isRead'] == true,
       actionUrl: map['actionUrl']?.toString(),
+      titleHa: map['titleHa']?.toString(),
+      bodyHa: map['bodyHa']?.toString(),
+      languageTarget: map['languageTarget']?.toString(),
     );
   }
 
@@ -105,6 +136,9 @@ class NotificationItem {
       'createdAt': createdAt.toIso8601String(),
       'isRead': isRead,
       'actionUrl': actionUrl,
+      'titleHa': titleHa,
+      'bodyHa': bodyHa,
+      'languageTarget': languageTarget,
     };
   }
 }

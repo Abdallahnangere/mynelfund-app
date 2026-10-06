@@ -50,6 +50,8 @@ class _NotificationsViewState extends State<NotificationsView> {
     return list.where((item) {
       return item.title.toLowerCase().contains(_searchQuery) ||
           item.body.toLowerCase().contains(_searchQuery) ||
+          (item.titleHa?.toLowerCase().contains(_searchQuery) ?? false) ||
+          (item.bodyHa?.toLowerCase().contains(_searchQuery) ?? false) ||
           item.badge.toLowerCase().contains(_searchQuery);
     }).toList();
   }
@@ -308,7 +310,10 @@ class _NotificationsViewState extends State<NotificationsView> {
     required bool isDark,
     required VoidCallback onTap,
   }) {
+    final tr = AppTranslations.of(context);
     final badgeColor = item.badgeColor;
+    final displayTitle = item.getLocalizedTitle(tr.isHausa);
+    final displayBody = item.getLocalizedBody(tr.isHausa);
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -370,7 +375,7 @@ class _NotificationsViewState extends State<NotificationsView> {
             ),
             const SizedBox(height: 10),
             Text(
-              item.title,
+              displayTitle,
               style: NelfundTypography.headline.copyWith(
                 fontWeight: !item.isRead ? FontWeight.w800 : FontWeight.w700,
                 color: CupertinoDynamicColor.resolve(
@@ -382,7 +387,7 @@ class _NotificationsViewState extends State<NotificationsView> {
             ),
             const SizedBox(height: 6),
             Text(
-              item.body,
+              displayBody,
               style: NelfundTypography.subhead.copyWith(
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.secondaryLabel,

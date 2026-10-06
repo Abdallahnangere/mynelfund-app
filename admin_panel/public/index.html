@@ -37,7 +37,7 @@
           <span class="status-dot" id="system-status-dot"></span>
           <span class="status-label" id="system-status-text">Connecting...</span>
         </div>
-        <p class="build-ver">v2.2.0 • Production Service</p>
+        <p class="build-ver">v2.2.5 • Production Service</p>
       </div>
     </aside>
 
@@ -50,6 +50,9 @@
           <p class="sub-heading" id="page-subheading">Manage verified statutory student loan policies & guidance in real time</p>
         </div>
         <div class="header-actions">
+          <span id="badge-device-stats" class="badge-env" style="background: rgba(13, 92, 58, 0.12); color: #0D5C3A; border: 1px solid rgba(13, 92, 58, 0.25); font-weight: 600;">
+            📱 Devices: <span id="stats-total">0</span> (EN: <span id="stats-en">0</span> | HA: <span id="stats-ha">0</span>)
+          </span>
           <span class="badge-env">Cloud Firestore Live</span>
         </div>
       </header>
@@ -113,18 +116,38 @@
           <div class="dispatch-form-card">
             <div class="card-header">
               <h3>Compose Push Bulletin</h3>
-              <p>Dispatched immediately via Firebase Admin SDK with high-priority channel priority.</p>
+              <p>Dispatched immediately via Firebase Admin SDK with language-targeted FCM routing.</p>
             </div>
 
             <form id="notification-form">
               <div class="form-group">
-                <label for="notif-title">Bulletin Title *</label>
+                <label for="notif-topic">Target Audience / Language Channel *</label>
+                <select id="notif-topic" class="form-input">
+                  <option value="all">🌐 All Devices (Language-Targeted Routing)</option>
+                  <option value="lang_en">🇬🇧 English Users Only (Topic: lang_en)</option>
+                  <option value="lang_ha">🇳🇬 Hausa Users Only (Topic: lang_ha)</option>
+                </select>
+                <small class="help-text">Select audience. If "All Devices" is chosen and Hausa fields are filled, pure English is sent to English users and pure Hausa to Hausa users.</small>
+              </div>
+
+              <div class="form-group">
+                <label for="notif-title">English Bulletin Title *</label>
                 <input type="text" id="notif-title" class="form-input" placeholder="e.g. 2024/2025 Application Window Open" required>
               </div>
 
               <div class="form-group">
-                <label for="notif-body">Bulletin Body / Content *</label>
-                <textarea id="notif-body" class="form-textarea" rows="4" placeholder="e.g. Full-time students in federal and state tertiary institutions can now submit their loan requests via nelf.gov.ng..." required></textarea>
+                <label for="notif-body">English Bulletin Content *</label>
+                <textarea id="notif-body" class="form-textarea" rows="3" placeholder="e.g. Full-time students in federal and state tertiary institutions can now submit their loan requests via nelf.gov.ng..." required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="notif-title-ha">Hausa Bulletin Title (Optional)</label>
+                <input type="text" id="notif-title-ha" class="form-input" placeholder="e.g. An Bude Tagar Aikace-Aikace ta 2024/2025">
+              </div>
+
+              <div class="form-group">
+                <label for="notif-body-ha">Hausa Bulletin Content (Optional)</label>
+                <textarea id="notif-body-ha" class="form-textarea" rows="3" placeholder="e.g. Dalibai a jami'o'i da manyan makarantun gwamnatin tarayya da na jihohi yanzu za su iya gabatar da neman bashin karatu..."></textarea>
               </div>
 
               <div class="form-row">
@@ -149,12 +172,6 @@
                     <option value="#1976D2">Navy Blue (#1976D2)</option>
                   </select>
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label for="notif-topic">Broadcast Target Topic</label>
-                <input type="text" id="notif-topic" class="form-input" value="all" readonly>
-                <small class="help-text">Broadcasts to all Android & iOS devices registered with topic 'all'. Arrives as a heads-up banner even when app is closed.</small>
               </div>
 
               <button type="submit" id="btn-send-push" class="btn btn-primary btn-block">
@@ -277,6 +294,11 @@
           <div class="form-group">
             <label for="form-ref">Statutory Reference / Legal Citation</label>
             <input type="text" id="form-ref" class="form-input" placeholder="e.g. Students Loans Act 2024, Section 6.1">
+          </div>
+
+          <div class="form-group">
+            <label for="form-ref-ha">Statutory Reference (Hausa Translation)</label>
+            <input type="text" id="form-ref-ha" class="form-input" placeholder="e.g. Dokar Lamunin Dalibai ta 2024, Sashe na 6.1">
           </div>
         </div>
 

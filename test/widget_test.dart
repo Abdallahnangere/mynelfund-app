@@ -111,7 +111,7 @@ void main() {
     expect(find.text('08164135836'), findsWidgets);
     expect(find.text('Chat on WhatsApp (WhatsApp Only)'), findsOneWidget);
     expect(find.text('Abdullahi Adam Usman'), findsWidgets);
-    expect(find.text('Co-Founder, Anjal Solutions Ltd'), findsWidgets);
+    expect(find.text('Student • Ahmadu Bello University (ABU)'), findsWidgets);
     expect(find.text('Official Clarification & Disclaimer'), findsOneWidget);
     expect(find.text('Official NELFUND Channels'), findsOneWidget);
   });

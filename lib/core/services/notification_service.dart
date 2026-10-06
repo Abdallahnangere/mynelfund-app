@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../firebase_options.dart';
 import '../../models/notification_model.dart';
 import '../../providers/notification_provider.dart';
+import '../localization/app_locale.dart';
 import '../theme/nelfund_colors.dart';
 import 'analytics_service.dart';
 
@@ -119,10 +122,14 @@ class NotificationService {
       _messaging!.onTokenRefresh.listen((newToken) {
         _fcmToken = newToken;
         debugPrint('[NotificationService] FCM Token refreshed: $newToken');
+        _syncCurrentLanguage();
       });
 
       // 5. Subscribe to default broadcast topics
       await _subscribeToDefaultTopics();
+
+      // 5b. Sync active language preference and subscribe to lang topic
+      await _syncCurrentLanguage();
 
       // 6. Handle notification click when app is opened from terminated state
       final RemoteMessage? initialMessage = await _messaging!.getInitialMessage();
@@ -139,6 +146,78 @@ class NotificationService {
       debugPrint('[NotificationService] Push notifications initialized successfully.');
     } catch (e) {
       debugPrint('[NotificationService] Push notifications unavailable in this environment: $e');
+    }
+  }
+
+  /// Helper to get or lazily persist unique device ID
+  Future<String> getOrCreateDeviceId() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      var id = prefs.getString('nelfund_device_uuid_v1');
+      if (id == null || id.isEmpty) {
+        id = 'dev_${DateTime.now().millisecondsSinceEpoch}_${(DateTime.now().microsecondsSinceEpoch % 100000)}';
+        await prefs.setString('nelfund_device_uuid_v1', id);
+      }
+      return id;
+    } catch (_) {
+      return 'dev_${DateTime.now().millisecondsSinceEpoch}';
+    }
+  }
+
+  /// Read saved language from preferences and sync
+  Future<void> _syncCurrentLanguage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedCode = prefs.getString('app_language_preference');
+      final lang = savedCode == 'ha' ? AppLanguage.hausa : AppLanguage.english;
+      await syncLanguagePreference(lang);
+    } catch (e) {
+      debugPrint('[NotificationService] Error reading language for sync: $e');
+    }
+  }
+
+  /// Synchronize the user's language preference to Firestore and re-align FCM language topics.
+  /// Called immediately when user toggles language and on app startup.
+  Future<void> syncLanguagePreference(AppLanguage language) async {
+    if (kIsWeb) return;
+
+    try {
+      final isHausa = language == AppLanguage.hausa;
+      final targetTopic = isHausa ? 'lang_ha' : 'lang_en';
+      final oppositeTopic = isHausa ? 'lang_en' : 'lang_ha';
+
+      // 1. Re-align FCM topic subscription
+      if (_messaging != null) {
+        try {
+          await _messaging!.subscribeToTopic(targetTopic);
+          await _messaging!.unsubscribeFromTopic(oppositeTopic);
+          debugPrint('[NotificationService] Re-aligned FCM topic: +$targetTopic, -$oppositeTopic');
+        } catch (topicErr) {
+          debugPrint('[NotificationService] Topic subscription switch error: $topicErr');
+        }
+      }
+
+      // 2. Sync to Cloud Firestore 'user_preferences' collection
+      final deviceId = await getOrCreateDeviceId();
+      if (Firebase.apps.isNotEmpty) {
+        final Map<String, dynamic> docData = {
+          'deviceId': deviceId,
+          'fcmToken': _fcmToken,
+          'language': language.code,
+          'platform': defaultTargetPlatform.name,
+          'lastSyncedAt': FieldValue.serverTimestamp(),
+          'updatedAt': DateTime.now().toIso8601String(),
+        };
+
+        await FirebaseFirestore.instance
+            .collection('user_preferences')
+            .doc(deviceId)
+            .set(docData, SetOptions(merge: true));
+
+        debugPrint('[NotificationService] Synced language "${language.code}" to Firestore doc /user_preferences/$deviceId');
+      }
+    } catch (e) {
+      debugPrint('[NotificationService] Error syncing language preference to Firestore: $e');
     }
   }
 

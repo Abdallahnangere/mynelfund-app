@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_nelfund/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   testWidgets('Full End-to-End User Journey Across All 5 Tabs',
@@ -8,6 +10,22 @@ void main() {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
+
+    SharedPreferences.setMockInitialValues({
+      'cached_faqs_v1': jsonEncode([
+        {
+          'id': 'def_1',
+          'question': 'What is the Global Standing Instruction (GSI) mandate?',
+          'answer':
+              'Under Section 5.3, willful defaulters will have their outstanding loan amount automatically swept via GSI.',
+          'statutoryReference': 'Section 5.3(d) (GSI Auto-Debit)',
+          'questionHa': 'Menene ma\'anar umarnin banki na GSI?',
+          'answerHa': 'Za a rinka kwasar kudin bashinsa kai-tsaye ta hanyar GSI.',
+          'statutoryReferenceHa': 'Sashe na 5.3(d)',
+          'category': 'defaultRecovery',
+        }
+      ]),
+    });
 
     // 1. Launch Application
     await tester.pumpWidget(const MyNelfundApp(skipSplash: true));
@@ -134,11 +152,11 @@ void main() {
     expect(find.text('08164135836'), findsWidgets);
     expect(find.text('Chat on WhatsApp (WhatsApp Only)'), findsOneWidget);
     expect(find.text('Abdullahi Adam Usman'), findsWidgets);
-    expect(find.text('Co-Founder, Anjal Solutions Ltd'), findsWidgets);
+    expect(find.text('Student • Ahmadu Bello University (ABU)'), findsWidgets);
     expect(find.text('Official Clarification & Disclaimer'), findsOneWidget);
     expect(find.text('Official NELFUND Channels'), findsOneWidget);
     expect(find.text('nelf.gov.ng'), findsOneWidget);
-    expect(find.text('info@nelf.gov.ng'), findsOneWidget);
+    expect(find.textContaining('info@nelf.gov.ng'), findsWidgets);
 
     // Return to Home tab
     await tester.tap(find.byIcon(CupertinoIcons.house_alt));

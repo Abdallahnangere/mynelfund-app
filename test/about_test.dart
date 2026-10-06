@@ -23,13 +23,23 @@ void main() {
     expect(find.text('ABOUT DEVELOPER & BUILDER'), findsOneWidget);
     expect(find.textContaining('My NELFund is an independent civic initiative'), findsOneWidget);
     expect(find.text('Abdullahi Adam Usman'), findsWidgets);
-    expect(find.text('Co-Founder, Anjal Solutions Ltd'), findsWidgets);
+    expect(find.text('Student • Ahmadu Bello University (ABU)'), findsWidgets);
     expect(find.text('300 Level Student of International Studies.'), findsWidgets);
     expect(find.text('Ahmadu Bello University (ABU), Zaria.'), findsWidgets);
-    expect(find.text('Visit www.anjalsolutionsltd.com'), findsOneWidget);
+    expect(find.text('Co-Founder, Anjal Solutions Ltd'), findsNothing);
+    expect(find.text('Visit www.anjalsolutionsltd.com'), findsNothing);
 
-    // Developer Contact Section
+    // Digital Solutions CTA Card
+    expect(find.text('DIGITAL INNOVATION & DEVELOPMENT'), findsOneWidget);
+    expect(find.text('Need a Digital Solution for Yourself, Business, or Organisation?'), findsOneWidget);
+    expect(find.text('Chat on WhatsApp • Discuss Your Idea'), findsOneWidget);
+    expect(find.text('Mobile & Web Apps'), findsOneWidget);
+    expect(find.text('Business Systems'), findsOneWidget);
+
+    // Developer Contact Section & Official Loan Notice
     expect(find.text('Contact Developer'), findsOneWidget);
+    expect(find.text('Official NELFUND & Loan Enquiries'), findsOneWidget);
+    expect(find.textContaining('Email Official NELFUND Support'), findsOneWidget);
     expect(find.text('08164135836'), findsWidgets);
     expect(find.text('Call: 08164135836'), findsOneWidget);
     expect(find.text('Chat on WhatsApp (WhatsApp Only)'), findsOneWidget);
@@ -44,7 +54,7 @@ void main() {
     // Official NELFUND Channels Card
     expect(find.text('Official NELFUND Channels'), findsOneWidget);
     expect(find.text('nelf.gov.ng'), findsOneWidget);
-    expect(find.text('info@nelf.gov.ng'), findsOneWidget);
+    expect(find.text('info@nelf.gov.ng'), findsWidgets);
     expect(find.text('Open Portal'), findsOneWidget);
     expect(find.text('Send Email'), findsOneWidget);
 
@@ -56,6 +66,6 @@ void main() {
 
     // Footer
     expect(find.textContaining('for Nigerian Students'), findsOneWidget);
-    expect(find.text('www.anjalsolutionsltd.com'), findsWidgets);
+    expect(find.text('www.anjalsolutionsltd.com'), findsNothing);
   });
 }

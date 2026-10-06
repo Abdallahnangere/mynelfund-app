@@ -109,9 +109,15 @@ class _FaqContentState extends State<_FaqContent> {
                           _buildSpotlightCarousel(context, tr),
                           const SizedBox(height: 12),
                         ],
-                        if (items.isEmpty)
-                          _buildEmptySearchState(context, provider, tr)
-                        else
+                        if (items.isEmpty) ...[
+                          if (provider.isLoading)
+                            _buildLoadingState(context, tr)
+                          else if (provider.searchQuery.isNotEmpty ||
+                              provider.selectedCategory != FaqCategory.all)
+                            _buildEmptySearchState(context, provider, tr)
+                          else
+                            _buildEmptyOfflineState(context, provider, tr),
+                        ] else
                           ...items.map((item) => _buildFaqTile(context, provider, item, lang)),
                         const SizedBox(height: 24),
                       ]),
@@ -476,6 +482,100 @@ class _FaqContentState extends State<_FaqContent> {
             child: Text(
               tr.isHausa ? 'Sake Farawa' : 'Reset Search Filters',
               style: const TextStyle(fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState(BuildContext context, AppTranslations tr) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CupertinoActivityIndicator(radius: 14),
+          const SizedBox(height: 16),
+          Text(
+            tr.isHausa
+                ? 'Ana saukar da bayanan tambayoyi...'
+                : 'Loading official FAQs from Firestore...',
+            style: NelfundTypography.footnote.copyWith(
+              color: CupertinoDynamicColor.resolve(
+                  NelfundColors.secondaryLabel, context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyOfflineState(
+      BuildContext context, FaqProvider provider, AppTranslations tr) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 68,
+            height: 68,
+            decoration: BoxDecoration(
+              color: NelfundColors.emerald.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: Icon(
+                CupertinoIcons.wifi_slash,
+                size: 32,
+                color: NelfundColors.emerald,
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Text(
+            tr.isHausa
+                ? 'Ba a Sami Bayanan Tambayoyi ba'
+                : 'No Cached Knowledge Base',
+            textAlign: TextAlign.center,
+            style: NelfundTypography.headline.copyWith(fontSize: 17),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            tr.isHausa
+                ? 'Haɗa wayarka da intanet domin saukar da dukkan tambayoyin hukuma. Da zarar an sauke, za su ci gaba da aiki koda babu intanet.'
+                : 'Connect to the internet to download official statutory FAQs. Once downloaded, they will remain available 100% offline.',
+            textAlign: TextAlign.center,
+            style: NelfundTypography.footnote.copyWith(
+              color: CupertinoDynamicColor.resolve(
+                  NelfundColors.secondaryLabel, context),
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 20),
+          CupertinoButton(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            color: NelfundColors.emerald,
+            borderRadius: BorderRadius.circular(12),
+            onPressed: () async {
+              HapticFeedback.mediumImpact();
+              await provider.refresh();
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(CupertinoIcons.arrow_clockwise,
+                    size: 16, color: CupertinoColors.white),
+                const SizedBox(width: 8),
+                Text(
+                  tr.isHausa ? 'Sake Gwada Haɗawa' : 'Retry Connection',
+                  style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: CupertinoColors.white),
+                ),
+              ],
             ),
           ),
         ],

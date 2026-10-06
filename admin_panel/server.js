@@ -257,6 +257,103 @@ app.get('/api/faqs', async (req, res) => {
   }
 });
 
+// Helper to build FCM push message payload with max heads-up priority
+function buildPushMessage(topic, title, body, docId, timestampFormatted, badge, badgeColorHex, actionUrl) {
+  return {
+    topic: topic || 'all',
+    notification: {
+      title,
+      body,
+    },
+    data: {
+      id: docId,
+      title,
+      body,
+      badge: badge || 'Advisory',
+      badgeColorHex: badgeColorHex || '#0D5C3A',
+      timestamp: timestampFormatted || 'Today',
+      actionUrl: actionUrl || '',
+      click_action: 'FLUTTER_NOTIFICATION_CLICK',
+    },
+    android: {
+      priority: 'high',
+      notification: {
+        channelId: 'high_importance_channel',
+        priority: 'max',
+        defaultSound: true,
+        defaultVibrateTimings: true,
+        visibility: 'public',
+        notificationCount: 1,
+      },
+    },
+    apns: {
+      headers: {
+        'apns-priority': '10',
+      },
+      payload: {
+        aps: {
+          sound: 'default',
+          badge: 1,
+          alert: {
+            title,
+            body,
+          },
+        },
+      },
+    },
+  };
+}
+
+// Helper to dispatch targeted push notifications on FAQ create or update
+async function dispatchFaqPushNotification(isNew, questionText, questionTextHa) {
+  if (!messaging || !db) return;
+  try {
+    const docId = `notif_${Date.now()}`;
+    const timestampFormatted = new Date().toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+
+    // Pure English copy
+    const titleEn = isNew ? '📢 New FAQ Available' : '📢 FAQ Policy Updated';
+    const previewEn = (questionText || '').trim();
+    const bodyEn = previewEn.length > 80 ? previewEn.substring(0, 77) + '...' : (previewEn || 'Official FAQ knowledge base has been updated.');
+
+    // Pure Hausa copy
+    const titleHa = isNew ? '📢 Sabuwar Tambaya Ta Samu' : '📢 An Sabunta Tambaya';
+    const previewHa = (questionTextHa || questionText || '').trim();
+    const bodyHa = previewHa.length > 80 ? previewHa.substring(0, 77) + '...' : (previewHa || 'An sabunta rumbun tambayoyin hukumar NELFUND.');
+
+    // 1. Save single bilingual record in Firestore 'notifications' collection
+    const notifRecord = {
+      id: docId,
+      title: titleEn,
+      titleHa: titleHa,
+      body: bodyEn,
+      bodyHa: bodyHa,
+      badge: isNew ? 'New Policy' : 'Updated',
+      badgeColorHex: '#0D5C3A',
+      timestamp: timestampFormatted,
+      actionUrl: '',
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    await db.collection('notifications').doc(docId).set(notifRecord);
+
+    // 2. Dispatch pure English push notification to English topic subscribers
+    const payloadEn = buildPushMessage('lang_en', titleEn, bodyEn, docId, timestampFormatted, 'New Policy', '#0D5C3A', '');
+    const resEn = await messaging.send(payloadEn);
+    console.log(`[API] English FAQ Push dispatched to 'lang_en'. FCM ID: ${resEn}`);
+
+    // 3. Dispatch pure Hausa push notification to Hausa topic subscribers
+    const payloadHa = buildPushMessage('lang_ha', titleHa, bodyHa, docId, timestampFormatted, 'Sabuntawa', '#0D5C3A', '');
+    const resHa = await messaging.send(payloadHa);
+    console.log(`[API] Hausa FAQ Push dispatched to 'lang_ha'. FCM ID: ${resHa}`);
+  } catch (err) {
+    console.error('[API] Error dispatching targeted FAQ push notifications:', err.message);
+  }
+}
+
 // Create FAQ
 app.post('/api/faqs', async (req, res) => {
   if (!db) {
@@ -294,6 +391,10 @@ app.post('/api/faqs', async (req, res) => {
 
     await db.collection('faqs').doc(docId).set(payload, { merge: true });
     console.log(`[API] Saved FAQ: ${docId}`);
+
+    // Automatically send targeted push notifications by language
+    dispatchFaqPushNotification(true, payload.question, payload.questionHa);
+
     res.json({ success: true, id: docId, data: payload });
   } catch (error) {
     console.error('[API] Error saving FAQ:', error);
@@ -313,6 +414,15 @@ app.put('/api/faqs/:id', async (req, res) => {
     body.updatedAt = admin.firestore.FieldValue.serverTimestamp();
 
     await db.collection('faqs').doc(id).set(body, { merge: true });
+    console.log(`[API] Updated FAQ: ${id}`);
+
+    // Automatically send targeted push notifications by language
+    dispatchFaqPushNotification(
+      false,
+      body.question || 'Updated statutory FAQ policy',
+      body.questionHa || body.question || 'An sabunta ka\'idar dokar lamuni',
+    );
+
     res.json({ success: true, id, message: 'FAQ updated successfully' });
   } catch (error) {
     console.error('[API] Error updating FAQ:', error);
@@ -420,7 +530,9 @@ app.post('/api/notifications/send', async (req, res) => {
   try {
     const {
       title,
+      titleHa,
       body,
+      bodyHa,
       badge = 'Advisory',
       badgeColorHex = '#0D5C3A',
       topic = 'all',
@@ -441,7 +553,9 @@ app.post('/api/notifications/send', async (req, res) => {
     const notificationRecord = {
       id: docId,
       title: title.trim(),
+      titleHa: (titleHa || title).trim(),
       body: body.trim(),
+      bodyHa: (bodyHa || body).trim(),
       badge: badge.trim(),
       badgeColorHex: badgeColorHex.trim(),
       timestamp: timestampFormatted,
@@ -449,57 +563,24 @@ app.post('/api/notifications/send', async (req, res) => {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
-    // 1. Save to Firestore 'notifications' collection so app users see it in-app forever
+    // 1. Save to Firestore 'notifications' collection so app users see it in-app
     await db.collection('notifications').doc(docId).set(notificationRecord);
 
-    // 2. Dispatch High-Importance Push to FCM topic
-    // Configured specifically for heads-up display, sound, vibration on both Android & iOS
-    const pushPayload = {
-      topic: topic.trim() || 'all',
-      notification: {
-        title: title.trim(),
-        body: body.trim(),
-      },
-      data: {
-        id: docId,
-        title: title.trim(),
-        body: body.trim(),
-        badge: badge.trim(),
-        badgeColorHex: badgeColorHex.trim(),
-        timestamp: timestampFormatted,
-        actionUrl: actionUrl.trim(),
-        click_action: 'FLUTTER_NOTIFICATION_CLICK',
-      },
-      android: {
-        priority: 'high',
-        notification: {
-          channelId: 'high_importance_channel',
-          priority: 'max',
-          defaultSound: true,
-          defaultVibrateTimings: true,
-          visibility: 'public',
-          notificationCount: 1,
-        },
-      },
-      apns: {
-        headers: {
-          'apns-priority': '10',
-        },
-        payload: {
-          aps: {
-            sound: 'default',
-            badge: 1,
-            alert: {
-              title: title.trim(),
-              body: body.trim(),
-            },
-          },
-        },
-      },
-    };
+    let fcmResponse = '';
 
-    const fcmResponse = await messaging.send(pushPayload);
-    console.log(`[API] Push notification dispatched successfully. FCM Message ID: ${fcmResponse}`);
+    // 2. Dispatch targeted or broadcast push
+    if (topic === 'all' && titleHa && bodyHa && (titleHa !== title || bodyHa !== body)) {
+      // Dispatches targeted push notifications per language
+      const msgEn = buildPushMessage('lang_en', title.trim(), body.trim(), docId, timestampFormatted, badge, badgeColorHex, actionUrl);
+      const msgHa = buildPushMessage('lang_ha', titleHa.trim(), bodyHa.trim(), docId, timestampFormatted, badge, badgeColorHex, actionUrl);
+      const [rEn, rHa] = await Promise.all([messaging.send(msgEn), messaging.send(msgHa)]);
+      fcmResponse = `En: ${rEn}, Ha: ${rHa}`;
+      console.log(`[API] Targeted push notifications dispatched. ${fcmResponse}`);
+    } else {
+      const msg = buildPushMessage(topic.trim() || 'all', title.trim(), body.trim(), docId, timestampFormatted, badge, badgeColorHex, actionUrl);
+      fcmResponse = await messaging.send(msg);
+      console.log(`[API] Push notification dispatched to topic "${topic}". FCM Message ID: ${fcmResponse}`);
+    }
 
     res.json({
       success: true,
@@ -510,6 +591,40 @@ app.post('/api/notifications/send', async (req, res) => {
   } catch (error) {
     console.error('[API] Error sending push notification:', error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Device stats and language breakdown endpoint
+app.get('/api/user-stats', async (req, res) => {
+  if (!db) {
+    return res.status(503).json({ error: 'Firestore is not connected' });
+  }
+
+  try {
+    const snap = await db.collection('user_preferences').get();
+    let totalDevices = 0;
+    let englishCount = 0;
+    let hausaCount = 0;
+
+    snap.forEach((doc) => {
+      totalDevices++;
+      const data = doc.data();
+      if (data.language === 'ha') {
+        hausaCount++;
+      } else {
+        englishCount++;
+      }
+    });
+
+    res.json({
+      success: true,
+      totalDevices,
+      englishCount,
+      hausaCount,
+    });
+  } catch (err) {
+    console.error('[API] Error getting user stats:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 

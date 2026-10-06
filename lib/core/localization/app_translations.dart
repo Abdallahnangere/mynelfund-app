@@ -310,18 +310,45 @@ class AppTranslations {
       : 'My NELFund is an independent civic initiative developed and built by:';
 
   String get developerName => 'Abdullahi Adam Usman';
-  String get developerRole => 'Co-Founder, Anjal Solutions Ltd';
+  String get developerRole => isHausa
+      ? 'Ɗalibi • Jami\'ar Ahmadu Bello (ABU)'
+      : 'Student • Ahmadu Bello University (ABU)';
   String get developerEducation => isHausa
-      ? 'Dalibi mai karatu a aji na 300 a Sashen Nazarin Harkokin Kasashen Duniya.\nJami\'ar Ahmadu Bello (ABU), Zaria.'
+      ? 'Ɗalibi mai karatu a aji na 300 a Sashen Nazarin Harkokin Ƙasa da Ƙasa.\nJami\'ar Ahmadu Bello (ABU), Zaria.'
       : '300 Level Student of International Studies.\nAhmadu Bello University (ABU), Zaria.';
-
-  String get developerWebsiteLabel => 'www.anjalsolutionsltd.com';
-  String get developerWebsiteUrl => 'https://www.anjalsolutionsltd.com';
 
   String get contactDeveloperTitle => isHausa ? 'Tuntuba' : 'Contact Developer';
   String get contactDeveloperDesc => isHausa
-      ? 'Kana da wata shawara, gyara, ko tambaya kan wannan manhaja? Ko kana so a maka manhaja irinta? Tuntubi mai ginawa kai-tsaye:'
-      : 'Have feedback, suggestions, or technical questions about this guide? Reach out directly to the developer:';
+      ? 'Kuna da wata shawara, gyaran kuskuren fasaha (bugs), ko ra\'ayi kan aikin wannan manhaja? Ku tuntubi mai haɓakawa kai-tsaye:'
+      : 'Have technical feedback, bug reports, or feature suggestions regarding this mobile app? Reach out directly to the developer:';
+
+  // Official Loan Inquiry Disclaimer
+  String get loanInquiryNoticeTitle => isHausa
+      ? 'Batutuwan da suka Shafi NELFUND da Lamuni'
+      : 'Official NELFUND & Loan Enquiries';
+  String get loanInquiryNoticeDesc => isHausa
+      ? 'Duk wata matsala ko tambaya kan cika fom ɗin bashi, tantancewar makaranta (SVS), amincewa, ko fitar da kuɗin karatu da alawus, hukumar NELFUND ce kaɗai ke da alhakin su. Mai haɓaka wannan manhaja ba shi da hurumi ko damar shiga bayanan ɗalibai na hukuma. Da fatan a tuntuɓi hukuma kai-tsaye:'
+      : 'For all matters concerning loan applications, SVS school verification, approvals, upkeep stipends, or school fee disbursement, contact official NELFUND administrators directly. The app developer has no access to personal student records or loan accounts. Please contact the agency directly:';
+  String get contactOfficialNelfundEmailBtn => isHausa
+      ? 'Tura Imel zuwa Hukumar NELFUND'
+      : 'Email Official NELFUND Support';
+
+  // Digital Solutions CTA
+  String get digitalSolutionsBadge => isHausa
+      ? 'FASAHA DA MANHAJOJIN ZAMANI'
+      : 'DIGITAL INNOVATION & DEVELOPMENT';
+  String get digitalSolutionsTitle => isHausa
+      ? 'Kuna Buƙatar Manhaja ko Tsarin Dijital don Kanku, Kasuwanci, ko Ƙungiya?'
+      : 'Need a Digital Solution for Yourself, Business, or Organisation?';
+  String get digitalSolutionsDesc => isHausa
+      ? 'Kuna da tunani ko aikin manhajar waya (mobile app), shafin yanar gizo, ko tsarin kwamfuta na zamani don kanku, kasuwancinku, ko ƙungiyarku? Daga fasaha zuwa aiki mai nagarta da tsari, ku tuntube mu domin tattaunawa da mayar da burinku gaskiya.'
+      : 'Have a vision for a mobile app, high-performance web platform, automated system, or custom digital product? Whether you are an individual with an idea, a growing business, or an organisation seeking modern tech solutions, let\'s build something exceptional together.';
+  String get digitalSolutionsPill1 => isHausa ? 'Manhajojin Waya da Yanar Gizo' : 'Mobile & Web Apps';
+  String get digitalSolutionsPill2 => isHausa ? 'Tsarin Kasuwanci na Zamani' : 'Business Systems';
+  String get digitalSolutionsPill3 => isHausa ? 'Daga Tunani zuwa Aiki' : 'Idea to Execution';
+  String get digitalSolutionsCtaButton => isHausa
+      ? 'Tattauna a WhatsApp • Faɗi Shirinku'
+      : 'Chat on WhatsApp • Discuss Your Idea';
 
   String get directCallPhone => '08164135836';
   String get whatsappPhone => '09076872520';

@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/notification_service.dart';
 import 'app_locale.dart';
 
 class LocaleProvider extends ChangeNotifier {
@@ -28,6 +30,7 @@ class LocaleProvider extends ChangeNotifier {
         }
         notifyListeners();
       }
+      unawaited(NotificationService.instance.syncLanguagePreference(_currentLanguage));
     } catch (e) {
       debugPrint('[LocaleProvider] Error loading language preference: $e');
     }
@@ -44,6 +47,9 @@ class LocaleProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('[LocaleProvider] Error saving language preference: $e');
     }
+
+    // Immediately sync to Cloud Firestore and re-align FCM language topics
+    unawaited(NotificationService.instance.syncLanguagePreference(language));
   }
 
   Future<void> toggleLanguage() async {
