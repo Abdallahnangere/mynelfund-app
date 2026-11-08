@@ -302,7 +302,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                         AppTranslations.of(context).walletBadge,
                         style: const TextStyle(
                           fontSize: 11,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 1.0,
                           color: NelfundColors.emerald,
                         ),
@@ -332,7 +332,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                         AppTranslations.of(context).buttonAddLoanYear,
                         style: const TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: CupertinoColors.white,
                         ),
                       ),
@@ -346,7 +346,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
               AppTranslations.of(context).totalPortfolioLabel,
               style: TextStyle(
                 fontSize: 10.5,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 letterSpacing: 0.9,
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.secondaryLabel,
@@ -359,7 +359,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
               proj.formattedLoanAmount,
               style: TextStyle(
                 fontSize: 26,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 letterSpacing: -0.5,
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.label,
@@ -385,7 +385,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                             : AppTranslations.of(context).statutoryMonthlyDeductionLabel,
                         style: TextStyle(
                           fontSize: 9.5,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 0.7,
                           color: CupertinoDynamicColor.resolve(
                             NelfundColors.secondaryLabel,
@@ -400,7 +400,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                             : '${proj.formattedStatutoryDeduction} / mo',
                         style: const TextStyle(
                           fontSize: 15.5,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: NelfundColors.emerald,
                         ),
                       ),
@@ -434,7 +434,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                         AppTranslations.of(context).expectedPayoffTimeLabel,
                         style: TextStyle(
                           fontSize: 9.5,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 0.7,
                           color: CupertinoDynamicColor.resolve(
                             NelfundColors.secondaryLabel,
@@ -449,7 +449,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                         ),
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: CupertinoDynamicColor.resolve(
                             NelfundColors.label,
                             context,
@@ -467,7 +467,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                             : AppTranslations.of(context).zeroInterestTag,
                         style: TextStyle(
                           fontSize: 10.5,
-                          fontWeight: proj.isVoluntaryAccelerated ? FontWeight.w700 : FontWeight.normal,
+                          fontWeight: proj.isVoluntaryAccelerated ? FontWeight.w600 : FontWeight.normal,
                           color: proj.isVoluntaryAccelerated
                               ? NelfundColors.emerald
                               : CupertinoDynamicColor.resolve(
@@ -585,7 +585,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                           session.getLevelLabel(tr.language),
                           style: const TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: NelfundColors.emerald,
                           ),
                         ),
@@ -599,7 +599,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                               session.formattedTotal,
                               style: NelfundTypography.headline.copyWith(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -728,7 +728,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                               : tr.addLoanYearTitle,
                           style: NelfundTypography.headline.copyWith(
                             fontSize: 17,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         CupertinoButton(
@@ -796,7 +796,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                         child: Text(
                           '₦ ',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             color: NelfundColors.emerald,
                           ),
                         ),
@@ -847,7 +847,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                                   tr.includeUpkeepLabel,
                                   style: const TextStyle(
                                     fontSize: 14,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -855,7 +855,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                                   tr.upkeepAutoCalculated,
                                   style: NelfundTypography.caption.copyWith(
                                     color: NelfundColors.emerald,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
@@ -918,7 +918,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                                   '${upkeepMonths.length}/12',
                                   style: const TextStyle(
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w600,
                                     color: NelfundColors.emerald,
                                   ),
                                 ),
@@ -1057,7 +1057,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                                           : tr.noMonthsSelected,
                                       style: TextStyle(
                                         fontSize: 11.5,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.w500,
                                         color: upkeepMonths.isNotEmpty
                                             ? NelfundColors.emerald
                                             : CupertinoColors.systemOrange,
@@ -1085,14 +1085,14 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                             tr.sessionLoanTotalLabel(selectedLevel),
                             style: const TextStyle(
                               fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           Text(
                             totalFormatted,
                             style: const TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w600,
                               color: NelfundColors.emerald,
                             ),
                           ),
@@ -1124,7 +1124,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                           existingLoan != null ? tr.buttonUpdateLoan : tr.buttonAddToWallet,
                           style: const TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: CupertinoColors.white,
                           ),
                         ),
@@ -1172,7 +1172,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                         : 'Employment & Income Configurator',
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -1221,7 +1221,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                         '${provider.nyscGraduationYear}',
                         style: NelfundTypography.headline.copyWith(
                           fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -1343,7 +1343,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 child: Text(
                   '₦ ',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: NelfundColors.emerald,
                   ),
                 ),
@@ -1417,7 +1417,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             color: isSelected ? CupertinoColors.white : null,
           ),
         ),
@@ -1455,7 +1455,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                     tr.postNyscGraceCardTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -1626,7 +1626,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                     tr.complianceGuideTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -1800,7 +1800,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   tr.voluntaryRepaymentTitle,
                   style: NelfundTypography.headline.copyWith(
                     fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -1840,7 +1840,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 Text(
                   tr.statutoryBaselineLabel,
                   style: NelfundTypography.caption.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     fontSize: 11.5,
                   ),
                 ),
@@ -1848,7 +1848,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   '${proj.formattedStatutoryDeduction} / mo',
                   style: const TextStyle(
                     fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: NelfundColors.emerald,
                   ),
                 ),
@@ -1937,7 +1937,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
               child: Text(
                 '₦ ',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   color: NelfundColors.emerald,
                 ),
               ),
@@ -1990,7 +1990,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                       tr.debtFreeEarlierBadge(proj.formattedTimeSaved),
                       style: const TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: NelfundColors.emerald,
                       ),
                     ),
@@ -2032,7 +2032,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
           label,
           style: TextStyle(
             fontSize: 11.5,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             color: isSelected
                 ? CupertinoColors.white
                 : CupertinoDynamicColor.resolve(
@@ -2141,7 +2141,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                 monthLabel,
                 style: TextStyle(
                   fontSize: 11.5,
-                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected
                       ? CupertinoColors.white
                       : CupertinoDynamicColor.resolve(
@@ -2188,7 +2188,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
           label,
           style: TextStyle(
             fontSize: 11,
-            fontWeight: isSelected && !isClear ? FontWeight.w700 : FontWeight.w500,
+            fontWeight: isSelected && !isClear ? FontWeight.w600 : FontWeight.w400,
             color: isSelected && !isClear
                 ? NelfundColors.emerald
                 : (isClear ? CupertinoColors.systemRed : null),
@@ -2287,7 +2287,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                                           tr.calcGuideTitle,
                                           style: NelfundTypography.headline.copyWith(
                                             fontSize: 16.5,
-                                            fontWeight: FontWeight.w700,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                         Text(
@@ -2334,7 +2334,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                                       tr.calcGuideIntro,
                                       style: NelfundTypography.body.copyWith(
                                         fontSize: 13.5,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w400,
                                         color: CupertinoDynamicColor.resolve(
                                           NelfundColors.label,
                                           context,
@@ -2384,7 +2384,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                                   style: const TextStyle(
                                     color: CupertinoColors.white,
                                     fontSize: 14.5,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
@@ -2438,7 +2438,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
               stepNumber,
               style: TextStyle(
                 color: stepColor,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
             ),
@@ -2452,7 +2452,7 @@ class _CalculatorContentState extends State<_CalculatorContent> {
                   title,
                   style: NelfundTypography.headline.copyWith(
                     fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 3),
@@ -2574,7 +2574,7 @@ class _AnimatedHelpButtonState extends State<_AnimatedHelpButton>
                 widget.isHausa ? 'Jagora' : 'Help Guide',
                 style: const TextStyle(
                   fontSize: 11.5,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: NelfundColors.emerald,
                 ),
               ),

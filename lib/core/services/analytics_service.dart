@@ -178,4 +178,51 @@ class AnalyticsService {
       );
     } catch (_) {}
   }
+
+  /// Log Sauki Go Companion App Promo Impression
+  Future<void> logSaukiPromoImpression({
+    required String placement,
+  }) async {
+    try {
+      await _analytics?.logEvent(
+        name: 'sauki_promo_impression',
+        parameters: {
+          'placement': placement,
+        },
+      );
+    } catch (_) {}
+  }
+
+  /// Log Sauki Go Startup / On-Demand Modal Dismissal
+  Future<void> logSaukiPromoDismissed({
+    required String trigger,
+  }) async {
+    try {
+      await _analytics?.logEvent(
+        name: 'sauki_promo_dismissed',
+        parameters: {
+          'trigger': trigger,
+        },
+      );
+    } catch (_) {}
+  }
+
+  /// Log Sauki Go Store Badge Click (App Store / Google Play)
+  Future<void> logSaukiPromoStoreClick({
+    required String store,
+    required String placement,
+    required String url,
+  }) async {
+    try {
+      await _analytics?.logEvent(
+        name: 'sauki_promo_store_clicked',
+        parameters: {
+          'store': store,
+          'placement': placement,
+          'url': url,
+        },
+      );
+    } catch (_) {}
+  }
 }
+

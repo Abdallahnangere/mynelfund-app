@@ -486,7 +486,7 @@ class _TimelineContent extends StatelessWidget {
                 child: Text(
                   '${isHa ? 'Shawarar Mataki: ' : 'Recommended Action: '}${eval.actionableAdvice}',
                   style: NelfundTypography.footnote.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     fontSize: 12,
                   ),
                 ),
@@ -524,7 +524,7 @@ class _TimelineContent extends StatelessWidget {
                     '${info.stageNumber}',
                     style: NelfundTypography.captionBold.copyWith(
                       color: NelfundColors.emerald,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

@@ -169,7 +169,7 @@ class ReviewService {
             child: Text(
               rateActionLabel,
               style: const TextStyle(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: NelfundColors.emerald,
               ),
             ),

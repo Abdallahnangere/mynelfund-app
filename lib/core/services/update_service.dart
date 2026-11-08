@@ -122,7 +122,7 @@ class UpdateService {
               child: Text(
                 'Open $storeName',
                 style: const TextStyle(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: NelfundColors.emerald,
                 ),
               ),
@@ -161,7 +161,7 @@ class UpdateService {
             child: const Text(
               'Update Now',
               style: TextStyle(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: NelfundColors.emerald,
               ),
             ),

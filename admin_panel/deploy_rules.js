@@ -22,6 +22,10 @@ service cloud.firestore {
     match /user_preferences/{deviceId} {
       allow read, write: if true;
     }
+    match /app_config/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

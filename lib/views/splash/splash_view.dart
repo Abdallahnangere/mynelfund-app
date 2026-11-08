@@ -137,7 +137,7 @@ class _SplashViewState extends State<SplashView>
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 550),
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const MainTabScaffold(showLanguageOnboarding: true),
+            const MainTabScaffold(showStartupPromo: true),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -339,7 +339,7 @@ class _SplashViewState extends State<SplashView>
                                   style: NelfundTypography.captionBold.copyWith(
                                     color: NelfundColors.emerald,
                                     fontSize: 12.5,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w600,
                                     letterSpacing: 0.3,
                                   ),
                                 ),
@@ -354,7 +354,7 @@ class _SplashViewState extends State<SplashView>
                                   context,
                                 ),
                                 fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w500,
                                 letterSpacing: 0.4,
                               ),
                             ),
@@ -419,7 +419,7 @@ class _SplashViewState extends State<SplashView>
                             'My NELFund',
                             style: NelfundTypography.title1.copyWith(
                               fontSize: 32,
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w600,
                               letterSpacing: -0.5,
                             ),
                           ),
@@ -433,7 +433,7 @@ class _SplashViewState extends State<SplashView>
                                 context,
                               ),
                               fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                           const SizedBox(height: 8),

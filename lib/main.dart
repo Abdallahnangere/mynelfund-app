@@ -14,6 +14,7 @@ import 'core/theme/nelfund_theme.dart';
 import 'firebase_options.dart';
 import 'providers/faq_provider.dart';
 import 'providers/notification_provider.dart';
+import 'providers/promo_provider.dart';
 import 'providers/repayment_provider.dart';
 import 'views/main_tab_scaffold.dart';
 import 'views/splash/splash_view.dart';
@@ -43,6 +44,7 @@ void main() async {
 
   final faqProvider = FaqProvider();
   final notificationProvider = NotificationProvider();
+  final promoProvider = PromoProvider();
   final repaymentProvider = RepaymentProvider();
 
   // Paint the first frame immediately with instant offline cache and live streams
@@ -52,6 +54,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider.value(value: faqProvider),
         ChangeNotifierProvider.value(value: notificationProvider),
+        ChangeNotifierProvider.value(value: promoProvider),
         ChangeNotifierProvider.value(value: repaymentProvider),
       ],
       child: const MyNelfundApp(),
@@ -62,12 +65,14 @@ void main() async {
   unawaited(_initializeBackgroundServices(
     faqProvider: faqProvider,
     notificationProvider: notificationProvider,
+    promoProvider: promoProvider,
   ));
 }
 
 Future<void> _initializeBackgroundServices({
   required FaqProvider faqProvider,
   required NotificationProvider notificationProvider,
+  required PromoProvider promoProvider,
 }) async {
   if (kIsWeb) {
     debugPrint('[Main] Web environment: running in offline presentation mode.');
@@ -83,6 +88,7 @@ Future<void> _initializeBackgroundServices({
     // Instantly sync remote Firestore data
     faqProvider.syncRemote();
     notificationProvider.syncRemote();
+    promoProvider.syncRemote();
   } catch (e) {
     debugPrint('[Main] Remote sync background note: $e');
   }
@@ -97,12 +103,12 @@ Future<void> _initializeBackgroundServices({
 
 class MyNelfundApp extends StatelessWidget {
   final bool skipSplash;
-  final bool? showLanguageOnboarding;
+  final bool? showStartupPromo;
 
   const MyNelfundApp({
     super.key,
     this.skipSplash = false,
-    this.showLanguageOnboarding,
+    this.showStartupPromo,
   });
 
   @override
@@ -112,7 +118,7 @@ class MyNelfundApp extends StatelessWidget {
       existingProvider = Provider.of<LocaleProvider?>(context, listen: false);
     } catch (_) {}
 
-    final bool shouldShowOnboarding = showLanguageOnboarding ?? !skipSplash;
+    final bool shouldShowPromo = showStartupPromo ?? !skipSplash;
 
     if (existingProvider == null) {
       return MultiProvider(
@@ -120,17 +126,18 @@ class MyNelfundApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => LocaleProvider()),
           ChangeNotifierProvider(create: (_) => FaqProvider()),
           ChangeNotifierProvider(create: (_) => NotificationProvider()),
+          ChangeNotifierProvider(create: (_) => PromoProvider()),
         ],
         child: _MyNelfundAppContent(
           skipSplash: skipSplash,
-          showLanguageOnboarding: shouldShowOnboarding,
+          showStartupPromo: shouldShowPromo,
         ),
       );
     }
 
     return _MyNelfundAppContent(
       skipSplash: skipSplash,
-      showLanguageOnboarding: shouldShowOnboarding,
+      showStartupPromo: shouldShowPromo,
     );
   }
 }
@@ -167,11 +174,11 @@ class FallbackMaterialLocalizationsDelegate
 
 class _MyNelfundAppContent extends StatelessWidget {
   final bool skipSplash;
-  final bool showLanguageOnboarding;
+  final bool showStartupPromo;
 
   const _MyNelfundAppContent({
     required this.skipSplash,
-    required this.showLanguageOnboarding,
+    required this.showStartupPromo,
   });
 
   @override
@@ -199,12 +206,12 @@ class _MyNelfundAppContent extends StatelessWidget {
       onGenerateRoute: (settings) {
         return CupertinoPageRoute(
           builder: (context) => skipSplash
-              ? MainTabScaffold(showLanguageOnboarding: showLanguageOnboarding)
+              ? MainTabScaffold(showStartupPromo: showStartupPromo)
               : const SplashView(),
         );
       },
       home: skipSplash
-          ? MainTabScaffold(showLanguageOnboarding: showLanguageOnboarding)
+          ? MainTabScaffold(showStartupPromo: showStartupPromo)
           : const SplashView(),
     );
   }

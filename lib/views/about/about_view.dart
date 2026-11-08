@@ -45,8 +45,6 @@ class _AboutViewContent extends StatefulWidget {
 class _AboutViewContentState extends State<_AboutViewContent> {
   static const String directCallNumber = '08164135836';
   static const String whatsappRawNumber = '09076872520';
-  static const String anjalSolutionsUrl = 'https://www.anjalsolutionsltd.com';
-  static const String anjalSolutionsLabel = 'www.anjalsolutionsltd.com';
   static const String nelfundWebsiteUrl = 'https://nelf.gov.ng';
   static const String nelfundEmail = 'info@nelf.gov.ng';
 
@@ -234,7 +232,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         tr.languageCardTitle,
                         style: NelfundTypography.headline.copyWith(
                           fontSize: 15.5,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
@@ -286,8 +284,8 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: currentLang == AppLanguage.english
-                                  ? FontWeight.w800
-                                  : FontWeight.w600,
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
                               color: currentLang == AppLanguage.english
                                   ? NelfundColors.emerald
                                   : CupertinoDynamicColor.resolve(
@@ -341,8 +339,8 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: currentLang == AppLanguage.hausa
-                                  ? FontWeight.w800
-                                  : FontWeight.w600,
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
                               color: currentLang == AppLanguage.hausa
                                   ? NelfundColors.emerald
                                   : CupertinoDynamicColor.resolve(
@@ -450,7 +448,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                       'AU',
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w600,
                         color: CupertinoColors.white,
                         letterSpacing: 1.1,
                       ),
@@ -466,7 +464,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         tr.developerName,
                         style: NelfundTypography.title2.copyWith(
                           fontSize: 17.5,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: -0.3,
                         ),
                       ),
@@ -488,7 +486,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                           tr.developerRole,
                           style: TextStyle(
                             fontSize: 11.5,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w500,
                             color: CupertinoDynamicColor.resolve(
                               const CupertinoDynamicColor.withBrightness(
                                 color: Color(0xFF007A48),
@@ -529,7 +527,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         ? 'Ɗalibi mai karatu a aji na 300 a Sashen Nazarin Harkokin Ƙasashen Duniya.'
                         : '300 Level Student of International Studies.',
                     style: NelfundTypography.footnote.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                       fontSize: 13,
                     ),
                   ),
@@ -552,7 +550,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         ? 'Jami\'ar Ahmadu Bello (ABU), Zaria.'
                         : 'Ahmadu Bello University (ABU), Zaria.',
                     style: NelfundTypography.footnote.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w400,
                       fontSize: 13,
                       color: CupertinoDynamicColor.resolve(
                         NelfundColors.secondaryLabel,
@@ -618,7 +616,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
               tr.digitalSolutionsTitle,
               style: NelfundTypography.title2.copyWith(
                 fontSize: 16.5,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 letterSpacing: -0.3,
                 height: 1.25,
               ),
@@ -673,7 +671,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                       tr.digitalSolutionsCtaButton,
                       style: const TextStyle(
                         fontSize: 13.5,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: CupertinoColors.white,
                         letterSpacing: -0.2,
                       ),
@@ -714,7 +712,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
             text,
             style: TextStyle(
               fontSize: 11,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: CupertinoDynamicColor.resolve(
                 NelfundColors.secondaryLabel,
                 context,
@@ -762,7 +760,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                     tr.contactDeveloperTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 16,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -815,7 +813,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                           tr.loanInquiryNoticeTitle,
                           style: const TextStyle(
                             fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: CupertinoColors.systemBlue,
                           ),
                         ),
@@ -859,7 +857,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                             '${tr.contactOfficialNelfundEmailBtn} ($nelfundEmail)',
                             style: const TextStyle(
                               fontSize: 12,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                               color: CupertinoColors.white,
                             ),
                           ),
@@ -918,7 +916,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                               isHa ? 'KIRA KAI-TSAYE' : 'DIRECT CALL & SUPPORT',
                               style: const TextStyle(
                                 fontSize: 10.5,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 letterSpacing: 0.8,
                                 color: NelfundColors.emerald,
                               ),
@@ -952,7 +950,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                               isHa ? 'A Buɗe' : 'Available',
                               style: const TextStyle(
                                 fontSize: 10,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                                 color: CupertinoColors.systemGreen,
                               ),
                             ),
@@ -967,7 +965,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                     directCallNumber,
                     style: TextStyle(
                       fontSize: 26,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                       letterSpacing: 1.2,
                       color: CupertinoDynamicColor.resolve(
                         NelfundColors.label,
@@ -1002,7 +1000,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                                     : 'Call: $directCallNumber',
                                 style: const TextStyle(
                                   fontSize: 13,
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w600,
                                   color: CupertinoColors.white,
                                 ),
                               ),
@@ -1064,7 +1062,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                       tr.whatsappButtonLabel,
                       style: const TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: CupertinoColors.white,
                         letterSpacing: -0.2,
                       ),
@@ -1108,7 +1106,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                     tr.clarificationTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: CupertinoColors.systemOrange,
                     ),
                   ),
@@ -1178,7 +1176,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                     tr.officialChannelsTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -1279,7 +1277,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
               buttonLabel,
               style: const TextStyle(
                 fontSize: 11.5,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: CupertinoColors.white,
               ),
             ),
@@ -1317,7 +1315,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                     storeTitle,
                     style: NelfundTypography.headline.copyWith(
                       fontSize: 15.5,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -1333,7 +1331,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                       'v2.2.5+11',
                       style: TextStyle(
                         fontSize: 11.5,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: NelfundColors.emerald,
                       ),
                     ),
@@ -1377,7 +1375,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                           rateButtonLabel,
                           style: const TextStyle(
                             fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: CupertinoColors.white,
                           ),
                         ),
@@ -1415,7 +1413,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                           tr.isHausa ? 'Duba Sabuntawa' : 'Check Update',
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                             color: CupertinoDynamicColor.resolve(
                               NelfundColors.label,
                               context,
@@ -1453,7 +1451,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         : "What's New / Version History",
                     style: TextStyle(
                       fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                       color: CupertinoDynamicColor.resolve(
                         NelfundColors.label,
                         context,
@@ -1495,7 +1493,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                 tr.isHausa ? 'An samar da shi da ' : 'Built with ',
                 style: const TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w400,
                   color: CupertinoColors.systemGrey,
                 ),
               ),
@@ -1508,7 +1506,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                 tr.isHausa ? ' domin Ɗaliban Najeriya' : ' for Nigerian Students',
                 style: const TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w400,
                   color: CupertinoColors.systemGrey,
                 ),
               ),
@@ -1520,7 +1518,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
               color: NelfundColors.emerald,
             ),
           ),
@@ -1614,7 +1612,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                             tr.isHausa ? 'Tarihin Sauye-sauye' : 'Version History',
                             style: NelfundTypography.headline.copyWith(
                               fontSize: 17,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -1642,7 +1640,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         'v2.2.5+11',
                         style: TextStyle(
                           fontSize: 11.5,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: NelfundColors.emerald,
                         ),
                       ),
@@ -1805,7 +1803,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                       tr.isHausa ? 'Rufe' : 'Close',
                       style: const TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: CupertinoColors.white,
                       ),
                     ),
@@ -1853,7 +1851,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                 version,
                 style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: NelfundColors.emerald,
                 ),
               ),
@@ -1866,7 +1864,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                 ),
                 child: Text(
                   build,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
                 ),
               ),
               if (isCurrent) ...[
@@ -1881,7 +1879,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                     tr.isHausa ? 'Na Yanzu' : 'Current',
                     style: const TextStyle(
                       fontSize: 10,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: CupertinoColors.white,
                     ),
                   ),
@@ -1904,7 +1902,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
           Text(
             title,
             style: NelfundTypography.subhead.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
               fontSize: 13,
             ),
           ),
@@ -1919,7 +1917,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                     '• ',
                     style: TextStyle(
                       color: NelfundColors.emerald,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   Expanded(

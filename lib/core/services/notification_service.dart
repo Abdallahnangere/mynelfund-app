@@ -427,7 +427,7 @@ class NotificationService {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: CupertinoColors.label,
                         ),
                       ),

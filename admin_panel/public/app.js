@@ -45,7 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadUserStats();
   loadFaqs();
   loadNotifications();
+  loadPromo();
   setupLivePreview();
+  setupPromoLivePreview();
   setupEventHandlers();
   setInterval(loadUserStats, 15000); // Live poll device stats
 });
@@ -81,6 +83,9 @@ function initTabs() {
       if (targetId === 'faqs-tab') {
         pageHeading.textContent = 'FAQ Knowledge Base';
         pageSubheading.textContent = 'Manage verified statutory student loan policies & guidance in real time';
+      } else if (targetId === 'promo-tab') {
+        pageHeading.textContent = 'Sauki Go Promo';
+        pageSubheading.textContent = 'Configure companion data & airtime plans, store links, and modal cadence';
       } else {
         pageHeading.textContent = 'Push Notifications';
         pageSubheading.textContent = 'Dispatch high-priority bulletins to Android and iOS student devices';
@@ -246,6 +251,83 @@ function setupLivePreview() {
   notifBadgeColor.addEventListener('change', updatePreview);
 }
 
+// --- Sauki Go Promo Manager ---
+function updatePromoPreview() {
+  const appNameEl = document.getElementById('promo-app-name');
+  const cycleEnEl = document.getElementById('promo-cycle-en');
+  const headlineEnEl = document.getElementById('promo-headline-en');
+  const p1dEl = document.getElementById('promo-plan1-data');
+  const p1pEl = document.getElementById('promo-plan1-price');
+  const p2dEl = document.getElementById('promo-plan2-data');
+  const p2pEl = document.getElementById('promo-plan2-price');
+
+  const prevName = document.getElementById('promo-preview-name');
+  const prevCycle = document.getElementById('promo-preview-cycle');
+  const prevHeadline = document.getElementById('promo-preview-headline');
+  const prevP1d = document.getElementById('promo-preview-p1d');
+  const prevP1p = document.getElementById('promo-preview-p1p');
+  const prevP2d = document.getElementById('promo-preview-p2d');
+  const prevP2p = document.getElementById('promo-preview-p2p');
+
+  if (prevName && appNameEl) prevName.textContent = `⚡ ${appNameEl.value.trim() || 'Sauki Go'}`;
+  if (prevCycle && cycleEnEl) prevCycle.textContent = cycleEnEl.value.trim() || 'All Monthly';
+  if (prevHeadline && headlineEnEl) {
+    prevHeadline.textContent = headlineEnEl.value.trim() || 'Get affordable data and airtime from our trusted app';
+  }
+  if (prevP1d && p1dEl) prevP1d.textContent = p1dEl.value.trim() || '1GB';
+  if (prevP1p && p1pEl) prevP1p.textContent = p1pEl.value.trim() || '₦400';
+  if (prevP2d && p2dEl) prevP2d.textContent = p2dEl.value.trim() || '5GB';
+  if (prevP2p && p2pEl) prevP2p.textContent = p2pEl.value.trim() || '₦1,500';
+}
+
+function setupPromoLivePreview() {
+  const ids = [
+    'promo-app-name',
+    'promo-cycle-en',
+    'promo-headline-en',
+    'promo-plan1-data',
+    'promo-plan1-price',
+    'promo-plan2-data',
+    'promo-plan2-price',
+  ];
+  ids.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updatePromoPreview);
+  });
+}
+
+async function loadPromo() {
+  try {
+    const res = await fetch(`${API_BASE}/api/promo`);
+    const result = await res.json();
+    if (!result.success || !result.data) return;
+    const d = result.data;
+    const setVal = (id, val) => {
+      const el = document.getElementById(id);
+      if (el && val !== undefined && val !== null) el.value = String(val);
+    };
+    setVal('promo-enabled', d.enabled !== false);
+    setVal('promo-modal-enabled', d.modalEnabled !== false);
+    setVal('promo-app-name', d.appName || 'Sauki Go');
+    setVal('promo-cooldown-days', d.cooldownDays ?? 7);
+    setVal('promo-plan1-data', d.plan1Data || '1GB');
+    setVal('promo-plan1-price', d.plan1Price || '₦400');
+    setVal('promo-plan2-data', d.plan2Data || '5GB');
+    setVal('promo-plan2-price', d.plan2Price || '₦1,500');
+    setVal('promo-cycle-en', d.cycleEn || 'All Monthly');
+    setVal('promo-cycle-ha', d.cycleHa || 'Duka na Wata-Wata');
+    setVal('promo-headline-en', d.headlineEn || '');
+    setVal('promo-headline-ha', d.headlineHa || '');
+    setVal('promo-subtitle-en', d.subtitleEn || '');
+    setVal('promo-subtitle-ha', d.subtitleHa || '');
+    setVal('promo-appstore-url', d.appStoreUrl || 'https://apps.apple.com/app/id6815456102');
+    setVal('promo-playstore-url', d.playStoreUrl || 'https://play.google.com/store/apps/details?id=com.saukimart.go');
+    updatePromoPreview();
+  } catch (err) {
+    console.warn('Could not load Sauki Go promo config:', err);
+  }
+}
+
 async function loadNotifications() {
   try {
     const res = await fetch(`${API_BASE}/api/notifications`);
@@ -403,6 +485,73 @@ function setupEventHandlers() {
       showToast(err.message, true);
     }
   });
+
+  // Refresh Sauki Go Promo
+  const btnRefreshPromo = document.getElementById('btn-refresh-promo');
+  if (btnRefreshPromo) {
+    btnRefreshPromo.addEventListener('click', async () => {
+      btnRefreshPromo.disabled = true;
+      btnRefreshPromo.textContent = 'Refreshing...';
+      await loadPromo();
+      showToast('Synchronized Sauki Go promo config from Firestore');
+      btnRefreshPromo.disabled = false;
+      btnRefreshPromo.textContent = 'Refresh';
+    });
+  }
+
+  // Save Sauki Go Promo Form
+  const promoForm = document.getElementById('promo-form');
+  if (promoForm) {
+    promoForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('btn-save-promo');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving to Firestore...';
+      }
+
+      const payload = {
+        enabled: document.getElementById('promo-enabled').value === 'true',
+        modalEnabled: document.getElementById('promo-modal-enabled').value === 'true',
+        appName: document.getElementById('promo-app-name').value.trim(),
+        cooldownDays: parseInt(document.getElementById('promo-cooldown-days').value, 10) || 7,
+        plan1Data: document.getElementById('promo-plan1-data').value.trim(),
+        plan1Price: document.getElementById('promo-plan1-price').value.trim(),
+        plan2Data: document.getElementById('promo-plan2-data').value.trim(),
+        plan2Price: document.getElementById('promo-plan2-price').value.trim(),
+        cycleEn: document.getElementById('promo-cycle-en').value.trim(),
+        cycleHa: document.getElementById('promo-cycle-ha').value.trim(),
+        headlineEn: document.getElementById('promo-headline-en').value.trim(),
+        headlineHa: document.getElementById('promo-headline-ha').value.trim(),
+        subtitleEn: document.getElementById('promo-subtitle-en').value.trim(),
+        subtitleHa: document.getElementById('promo-subtitle-ha').value.trim(),
+        appStoreUrl: document.getElementById('promo-appstore-url').value.trim(),
+        playStoreUrl: document.getElementById('promo-playstore-url').value.trim(),
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/api/promo`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Sauki Go promo configuration saved to Firestore!');
+          updatePromoPreview();
+        } else {
+          showToast(data.error || 'Failed to save promo config', true);
+        }
+      } catch (err) {
+        showToast(err.message, true);
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Sauki Go Promo to Cloud Firestore';
+        }
+      }
+    });
+  }
 
   // Dispatch Push Notification Form
   notifForm.addEventListener('submit', async (e) => {

@@ -83,9 +83,9 @@ class LiquidGlassHeader extends StatelessWidget {
                         Text(
                           title,
                           style: NelfundTypography.title2.copyWith(
-                            fontSize: 19.5,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.4,
+                            fontSize: 19,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.35,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -99,7 +99,7 @@ class LiquidGlassHeader extends StatelessWidget {
                                 NelfundColors.secondaryLabel,
                                 context,
                               ),
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w400,
                               fontSize: 12,
                             ),
                             maxLines: 1,

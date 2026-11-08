@@ -381,20 +381,16 @@ class AppTranslations {
       : 'Select your preferred language for the application:';
 
   // ----------------------------------------------------
-  // Language Onboarding Modal
+  // Sauki Go Companion App Promo
   // ----------------------------------------------------
-  String get modalLanguageBadge => isHausa ? 'SABON TSARI • BILINGUAL' : 'NEW FEATURE • BILINGUAL';
-  String get modalLanguageTitle => isHausa ? 'Zaɓin Harshe • Language Selection' : 'Language Preference • Zaɓin Harshe';
-  String get modalLanguageDesc => isHausa
-      ? 'Barka da zuwa manhajar My NELFund. Domin sauƙaƙa fahimtar dokar bashi da tsarin biya, yanzu an samar da dukkan manhajar cikin cikakken Harshen Hausa tare da Harshen Ingilishi. Zaɓi harshen da kuka fi buƙata:'
-      : 'Welcome to My NELFund. To empower every Nigerian student with transparent statutory loan guidance, you can now experience the app in authentic Hausa or English. Select your preferred language:';
-  String get modalOptionEnglishTitle => 'English';
-  String get modalOptionEnglishDesc => isHausa
-      ? 'Ƙa\'idojin doka na asali da harshen Ingilishi'
-      : 'Official statutory terminology under the 2024 Act';
-  String get modalOptionHausaTitle => 'Harshen Hausa';
-  String get modalOptionHausaDesc => isHausa
-      ? 'Cikakkiyar fassarar ƙa\'idojin doka da lissafi'
-      : 'Authentic Hausa translation & statutory calculation';
-  String get modalConfirmButton => isHausa ? 'Tabbatar da Zaɓi' : 'Confirm & Continue';
+  String get getDataHeaderLabel => 'Get Data';
+  String get saukiTrustedTag => isHausa ? 'Amintacciya' : 'Trusted App';
+  String get saukiForIphoneLabel => isHausa ? 'NA IPHONE' : 'FOR IPHONE';
+  String get saukiForAndroidLabel => isHausa ? 'NA ANDROID' : 'FOR ANDROID';
+  String get saukiModalIphoneOverline =>
+      isHausa ? 'NA IPHONE • SAUKE A' : 'FOR IPHONE • DOWNLOAD ON';
+  String get saukiModalAndroidOverline =>
+      isHausa ? 'NA ANDROID • SAUKE A' : 'FOR ANDROID • GET IT ON';
+  String get saukiMaybeLaterLabel => isHausa ? 'Ba Yanzu Ba' : 'Maybe Later';
 }
+

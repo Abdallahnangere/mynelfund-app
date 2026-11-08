@@ -11,6 +11,7 @@ import '../core/services/update_service.dart';
 import '../core/theme/nelfund_colors.dart';
 import '../providers/faq_provider.dart';
 import '../providers/notification_provider.dart';
+import '../providers/promo_provider.dart';
 import '../widgets/liquid_glass_nav_bar.dart';
 import 'about/about_view.dart';
 import 'calculator/calculator_view.dart';
@@ -20,11 +21,11 @@ import 'home/home_view.dart';
 
 class MainTabScaffold extends StatelessWidget {
   final int initialIndex;
-  final bool showLanguageOnboarding;
+  final bool showStartupPromo;
   const MainTabScaffold({
     super.key,
     this.initialIndex = 0,
-    this.showLanguageOnboarding = false,
+    this.showStartupPromo = false,
   });
 
   static void switchTab(BuildContext context, int index) {
@@ -41,7 +42,7 @@ class MainTabScaffold extends StatelessWidget {
 
     final content = _MainTabScaffoldContent(
       initialIndex: initialIndex,
-      showLanguageOnboarding: showLanguageOnboarding,
+      showStartupPromo: showStartupPromo,
     );
     if (localeProv == null) {
       return MultiProvider(
@@ -49,6 +50,7 @@ class MainTabScaffold extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => LocaleProvider()),
           ChangeNotifierProvider(create: (_) => FaqProvider()),
           ChangeNotifierProvider(create: (_) => NotificationProvider()),
+          ChangeNotifierProvider(create: (_) => PromoProvider()),
         ],
         child: content,
       );
@@ -59,10 +61,10 @@ class MainTabScaffold extends StatelessWidget {
 
 class _MainTabScaffoldContent extends StatefulWidget {
   final int initialIndex;
-  final bool showLanguageOnboarding;
+  final bool showStartupPromo;
   const _MainTabScaffoldContent({
     this.initialIndex = 0,
-    this.showLanguageOnboarding = false,
+    this.showStartupPromo = false,
   });
 
   @override
@@ -201,7 +203,7 @@ class _MainTabScaffoldContentState extends State<_MainTabScaffoldContent> {
                   AppTranslations.of(context).backToExitToast,
                   style: const TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     color: CupertinoColors.white,
                     decoration: TextDecoration.none,
                   ),
@@ -239,7 +241,7 @@ class _MainTabScaffoldContentState extends State<_MainTabScaffoldContent> {
   Widget _buildTabView(int index) {
     switch (index) {
       case 0:
-        return HomeView(showLanguageOnboarding: widget.showLanguageOnboarding);
+        return HomeView(showStartupPromo: widget.showStartupPromo);
       case 1:
         return const EligibilityView();
       case 2:

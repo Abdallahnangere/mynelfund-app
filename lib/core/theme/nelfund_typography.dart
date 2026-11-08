@@ -7,21 +7,21 @@ class NelfundTypography {
 
   static const TextStyle largeTitle = TextStyle(
     fontSize: 34,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w600,
     letterSpacing: 0.37,
     color: NelfundColors.label,
   );
 
   static const TextStyle title1 = TextStyle(
     fontSize: 28,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w600,
     letterSpacing: 0.36,
     color: NelfundColors.label,
   );
 
   static const TextStyle title2 = TextStyle(
     fontSize: 22,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w600,
     letterSpacing: 0.35,
     color: NelfundColors.label,
   );
@@ -35,7 +35,7 @@ class NelfundTypography {
 
   static const TextStyle headline = TextStyle(
     fontSize: 17,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w500,
     letterSpacing: -0.41,
     color: NelfundColors.label,
   );
@@ -78,7 +78,7 @@ class NelfundTypography {
 
   static const TextStyle captionBold = TextStyle(
     fontSize: 12,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w500,
     letterSpacing: 0.0,
     color: NelfundColors.secondaryLabel,
   );

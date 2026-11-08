@@ -279,7 +279,7 @@ class _NotificationsViewState extends State<NotificationsView> {
               tr.notificationsEmptyTitle,
               textAlign: TextAlign.center,
               style: NelfundTypography.title3.copyWith(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.label,
                   context,
@@ -377,7 +377,7 @@ class _NotificationsViewState extends State<NotificationsView> {
             Text(
               displayTitle,
               style: NelfundTypography.headline.copyWith(
-                fontWeight: !item.isRead ? FontWeight.w800 : FontWeight.w700,
+                fontWeight: !item.isRead ? FontWeight.w600 : FontWeight.w500,
                 color: CupertinoDynamicColor.resolve(
                   NelfundColors.label,
                   context,

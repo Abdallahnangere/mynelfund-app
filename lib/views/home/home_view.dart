@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/nelfund_data.dart';
 import '../../core/localization/app_locale.dart';
 import '../../core/localization/app_translations.dart';
@@ -9,30 +8,41 @@ import '../../core/localization/locale_provider.dart';
 import '../../core/theme/nelfund_colors.dart';
 import '../../core/theme/nelfund_typography.dart';
 import '../../providers/notification_provider.dart';
+import '../../providers/promo_provider.dart';
 import '../../widgets/apple_frosted_card.dart';
 import '../../widgets/liquid_glass_header.dart';
+import '../../widgets/sauki_promo_widgets.dart';
 import '../main_tab_scaffold.dart';
 import '../notifications/notifications_view.dart';
 import '../timeline/timeline_view.dart';
 
 class HomeView extends StatelessWidget {
-  final bool showLanguageOnboarding;
-  const HomeView({super.key, this.showLanguageOnboarding = false});
+  final bool showStartupPromo;
+  const HomeView({super.key, this.showStartupPromo = false});
 
   @override
   Widget build(BuildContext context) {
     LocaleProvider? localeProv;
+    PromoProvider? promoProv;
     try {
       localeProv = Provider.of<LocaleProvider?>(context, listen: false);
     } catch (_) {}
+    try {
+      promoProv = Provider.of<PromoProvider?>(context, listen: false);
+    } catch (_) {}
 
     final content = _HomeViewContent(
-      showLanguageOnboarding: showLanguageOnboarding,
+      showStartupPromo: showStartupPromo,
     );
 
-    if (localeProv == null) {
-      return ChangeNotifierProvider(
-        create: (_) => LocaleProvider(),
+    if (localeProv == null || promoProv == null) {
+      return MultiProvider(
+        providers: [
+          if (localeProv == null)
+            ChangeNotifierProvider(create: (_) => LocaleProvider()),
+          if (promoProv == null)
+            ChangeNotifierProvider(create: (_) => PromoProvider()),
+        ],
         child: content,
       );
     }
@@ -41,8 +51,8 @@ class HomeView extends StatelessWidget {
 }
 
 class _HomeViewContent extends StatefulWidget {
-  final bool showLanguageOnboarding;
-  const _HomeViewContent({this.showLanguageOnboarding = false});
+  final bool showStartupPromo;
+  const _HomeViewContent({this.showStartupPromo = false});
 
   @override
   State<_HomeViewContent> createState() => _HomeViewContentState();
@@ -52,38 +62,27 @@ class _HomeViewContentState extends State<_HomeViewContent> {
   @override
   void initState() {
     super.initState();
-    if (widget.showLanguageOnboarding) {
+    if (widget.showStartupPromo) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _checkFirstTimeLanguageModal();
+        _checkStartupPromoModal();
       });
     }
   }
 
-  Future<void> _checkFirstTimeLanguageModal() async {
+  Future<void> _checkStartupPromoModal() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final hasSeen = prefs.getBool('has_seen_language_modal_v2') ?? false;
-      if (!hasSeen && mounted) {
-        await _showLanguageOnboardingDialog(context);
+      PromoProvider? promoProv;
+      try {
+        promoProv = Provider.of<PromoProvider?>(context, listen: false);
+      } catch (_) {}
+      final shouldShow = await (promoProv?.shouldAutoShowModal() ??
+          Future<bool>.value(false));
+      if (shouldShow && mounted) {
+        await SaukiPromoModal.show(context, trigger: 'startup');
       }
     } catch (e) {
-      debugPrint('[HomeView] Language onboarding check error: $e');
+      debugPrint('[HomeView] Startup promo modal check note: $e');
     }
-  }
-
-  Future<void> _showLanguageOnboardingDialog(BuildContext context) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('has_seen_language_modal_v2', true);
-    } catch (_) {}
-
-    if (!context.mounted) return;
-
-    await showCupertinoDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (dialogCtx) => const _LanguageOnboardingDialog(),
-    );
   }
 
   @override
@@ -98,12 +97,17 @@ class _HomeViewContentState extends State<_HomeViewContent> {
             _buildFintechHeader(context),
             Expanded(
               child: ListView(
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.fromLTRB(0, 12, 0, 88),
                 children: [
                   _buildSectionHeader(tr.programOverviewTitle),
                   _buildActOverviewCard(context),
+                  const SizedBox(height: 8),
+                  const SaukiPromoHomeCard(),
                   const SizedBox(height: 16),
                   _buildSectionHeader(tr.keyLoanPillarsTitle),
                   _buildCorePillars(context),
@@ -152,7 +156,14 @@ class _HomeViewContentState extends State<_HomeViewContent> {
           ),
         ),
       ),
-      trailing: _buildNotificationButton(context),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const GetDataHeaderButton(),
+          const SizedBox(width: 8),
+          _buildNotificationButton(context),
+        ],
+      ),
       bottom: _buildHeaderLanguageToggle(context),
     );
   }
@@ -213,25 +224,31 @@ class _HomeViewContentState extends State<_HomeViewContent> {
                         ]
                       : null,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('🇬🇧', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 6),
-                    Text(
-                      'English',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: !isHausa ? FontWeight.w700 : FontWeight.w500,
-                        color: !isHausa
-                            ? NelfundColors.emerald
-                            : CupertinoDynamicColor.resolve(
-                                NelfundColors.secondaryLabel,
-                                context,
-                              ),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('🇬🇧', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 6),
+                      Text(
+                        'English',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight:
+                              !isHausa ? FontWeight.w600 : FontWeight.w400,
+                          color: !isHausa
+                              ? NelfundColors.emerald
+                              : CupertinoDynamicColor.resolve(
+                                  NelfundColors.secondaryLabel,
+                                  context,
+                                ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -251,6 +268,7 @@ class _HomeViewContentState extends State<_HomeViewContent> {
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.easeInOut,
                 alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 6),
                 decoration: BoxDecoration(
                   color: isHausa
                       ? (isDark ? const Color(0xFF153822) : CupertinoColors.white)
@@ -266,25 +284,30 @@ class _HomeViewContentState extends State<_HomeViewContent> {
                         ]
                       : null,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('🇳🇬', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Harshen Hausa',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isHausa ? FontWeight.w700 : FontWeight.w500,
-                        color: isHausa
-                            ? NelfundColors.emerald
-                            : CupertinoDynamicColor.resolve(
-                                NelfundColors.secondaryLabel,
-                                context,
-                              ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('🇳🇬', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Harshen Hausa',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight:
+                              isHausa ? FontWeight.w600 : FontWeight.w400,
+                          color: isHausa
+                              ? NelfundColors.emerald
+                              : CupertinoDynamicColor.resolve(
+                                  NelfundColors.secondaryLabel,
+                                  context,
+                                ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -304,6 +327,7 @@ class _HomeViewContentState extends State<_HomeViewContent> {
 
     return CupertinoButton(
       padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
       onPressed: () {
         HapticFeedback.lightImpact();
         Navigator.of(context).push(
@@ -351,7 +375,9 @@ class _HomeViewContentState extends State<_HomeViewContent> {
                   color: const Color(0xFFE53935),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isDark ? const Color(0xFF161718) : CupertinoColors.white,
+                    color: isDark
+                        ? const Color(0xFF161718)
+                        : CupertinoColors.white,
                     width: 1.8,
                   ),
                 ),
@@ -368,7 +394,7 @@ class _HomeViewContentState extends State<_HomeViewContent> {
       child: Text(
         title,
         style: NelfundTypography.title3.copyWith(
-          fontSize: 18,
+          fontSize: 17.5,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -445,12 +471,14 @@ class _HomeViewContentState extends State<_HomeViewContent> {
                     Expanded(
                       child: Text(
                         title,
-                        style: NelfundTypography.headline.copyWith(fontSize: 15.5),
+                        style: NelfundTypography.headline.copyWith(fontSize: 15),
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: tagColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(6),
@@ -470,7 +498,9 @@ class _HomeViewContentState extends State<_HomeViewContent> {
                   subtitle,
                   style: NelfundTypography.footnote.copyWith(
                     color: CupertinoDynamicColor.resolve(
-                        NelfundColors.secondaryLabel, context),
+                      NelfundColors.secondaryLabel,
+                      context,
+                    ),
                   ),
                 ),
               ],
@@ -583,15 +613,23 @@ class _HomeViewContentState extends State<_HomeViewContent> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      tr.timelineHeaderTitle,
-                      style: NelfundTypography.headline.copyWith(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Text(
+                        tr.timelineHeaderTitle,
+                        style: NelfundTypography.headline.copyWith(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: NelfundColors.emerald.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(6),
@@ -677,14 +715,16 @@ class _HomeViewContentState extends State<_HomeViewContent> {
           const SizedBox(height: 12),
           Text(
             title,
-            style: NelfundTypography.headline.copyWith(fontSize: 15),
+            style: NelfundTypography.headline.copyWith(fontSize: 14.5),
           ),
           const SizedBox(height: 4),
           Text(
             description,
             style: NelfundTypography.footnote.copyWith(
               color: CupertinoDynamicColor.resolve(
-                  NelfundColors.secondaryLabel, context),
+                NelfundColors.secondaryLabel,
+                context,
+              ),
               fontSize: 12,
             ),
             maxLines: 2,
@@ -716,7 +756,7 @@ class _HomeViewContentState extends State<_HomeViewContent> {
               Expanded(
                 child: Text(
                   actTitle,
-                  style: NelfundTypography.headline.copyWith(fontSize: 15.5),
+                  style: NelfundTypography.headline.copyWith(fontSize: 15),
                 ),
               ),
             ],
@@ -727,7 +767,9 @@ class _HomeViewContentState extends State<_HomeViewContent> {
             style: NelfundTypography.body.copyWith(
               fontSize: 14,
               color: CupertinoDynamicColor.resolve(
-                  NelfundColors.secondaryLabel, context),
+                NelfundColors.secondaryLabel,
+                context,
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -766,333 +808,3 @@ class _HomeViewContentState extends State<_HomeViewContent> {
     );
   }
 }
-
-class _LanguageOnboardingDialog extends StatelessWidget {
-  const _LanguageOnboardingDialog();
-
-  @override
-  Widget build(BuildContext context) {
-    final tr = AppTranslations.of(context);
-    LocaleProvider? localeProv;
-    try {
-      localeProv = Provider.of<LocaleProvider?>(context);
-    } catch (_) {}
-    final isHausa = localeProv?.isHausa ?? false;
-    final isDark = CupertinoTheme.of(context).brightness == Brightness.dark;
-
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        constraints: const BoxConstraints(maxWidth: 400),
-        decoration: BoxDecoration(
-          color: CupertinoDynamicColor.resolve(
-            const CupertinoDynamicColor.withBrightness(
-              color: CupertinoColors.white,
-              darkColor: Color(0xFF1C221E),
-            ),
-            context,
-          ),
-          borderRadius: BorderRadius.circular(26),
-          border: Border.all(
-            color: NelfundColors.emerald.withValues(alpha: 0.25),
-            width: 1.2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: CupertinoColors.black.withValues(alpha: isDark ? 0.5 : 0.18),
-              blurRadius: 30,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: CupertinoPopupSurface(
-          isSurfacePainted: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(22, 20, 22, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Top Dismiss Button Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: NelfundColors.emerald.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: NelfundColors.emerald.withValues(alpha: 0.3),
-                          width: 0.8,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            CupertinoIcons.globe,
-                            size: 13,
-                            color: NelfundColors.emerald,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            tr.modalLanguageBadge,
-                            style: const TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w700,
-                              color: NelfundColors.emerald,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Close 'X' Button
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        HapticFeedback.lightImpact();
-                        Navigator.of(context).pop();
-                      },
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: CupertinoDynamicColor.resolve(
-                            const CupertinoDynamicColor.withBrightness(
-                              color: Color(0xFFF0F3F1),
-                              darkColor: Color(0xFF2B332E),
-                            ),
-                            context,
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          CupertinoIcons.xmark,
-                          size: 14,
-                          color: CupertinoDynamicColor.resolve(
-                            NelfundColors.secondaryLabel,
-                            context,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-
-                // Icon / Graphic
-                Container(
-                  width: 58,
-                  height: 58,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        NelfundColors.emerald.withValues(alpha: 0.2),
-                        NelfundColors.emeraldLight.withValues(alpha: 0.2),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: NelfundColors.emerald.withValues(alpha: 0.4),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      CupertinoIcons.chat_bubble_2_fill,
-                      color: NelfundColors.emerald,
-                      size: 28,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-
-                // Modal Title
-                Text(
-                  tr.modalLanguageTitle,
-                  textAlign: TextAlign.center,
-                  style: NelfundTypography.title2.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                // Formal & Professional Description
-                Text(
-                  tr.modalLanguageDesc,
-                  textAlign: TextAlign.center,
-                  style: NelfundTypography.footnote.copyWith(
-                    color: CupertinoDynamicColor.resolve(
-                      NelfundColors.secondaryLabel,
-                      context,
-                    ),
-                    height: 1.4,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Language Option Cards
-                _buildOptionCard(
-                  context: context,
-                  flag: '🇬🇧',
-                  title: tr.modalOptionEnglishTitle,
-                  desc: tr.modalOptionEnglishDesc,
-                  isSelected: !isHausa,
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    localeProv?.setLanguage(AppLanguage.english);
-                  },
-                ),
-                const SizedBox(height: 10),
-                _buildOptionCard(
-                  context: context,
-                  flag: '🇳🇬',
-                  title: tr.modalOptionHausaTitle,
-                  desc: tr.modalOptionHausaDesc,
-                  isSelected: isHausa,
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    localeProv?.setLanguage(AppLanguage.hausa);
-                  },
-                ),
-                const SizedBox(height: 22),
-
-                // Primary Confirm Button
-                SizedBox(
-                  width: double.infinity,
-                  child: CupertinoButton(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    color: NelfundColors.emerald,
-                    borderRadius: BorderRadius.circular(16),
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      tr.modalConfirmButton,
-                      style: const TextStyle(
-                        fontSize: 15.5,
-                        fontWeight: FontWeight.w700,
-                        color: CupertinoColors.white,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOptionCard({
-    required BuildContext context,
-    required String flag,
-    required String title,
-    required String desc,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final isDark = CupertinoTheme.of(context).brightness == Brightness.dark;
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (isDark ? const Color(0xFF173724) : const Color(0xFFEBF6EF))
-              : (isDark ? const Color(0xFF222824) : const Color(0xFFF7FAF8)),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected
-                ? NelfundColors.emerald
-                : (isDark ? const Color(0xFF323B35) : const Color(0xFFE2E7E3)),
-            width: isSelected ? 1.8 : 1.0,
-          ),
-        ),
-        child: Row(
-          children: [
-            // Flag
-            Text(flag, style: const TextStyle(fontSize: 24)),
-            const SizedBox(width: 12),
-
-            // Title and Description
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected
-                          ? NelfundColors.emerald
-                          : CupertinoDynamicColor.resolve(
-                              NelfundColors.label,
-                              context,
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    desc,
-                    style: TextStyle(
-                      fontSize: 11.5,
-                      color: CupertinoDynamicColor.resolve(
-                        NelfundColors.secondaryLabel,
-                        context,
-                      ),
-                      height: 1.25,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-
-            // Radio Circle / Checkmark
-            Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected ? NelfundColors.emerald : CupertinoColors.transparent,
-                border: Border.all(
-                  color: isSelected
-                      ? NelfundColors.emerald
-                      : CupertinoDynamicColor.resolve(
-                          CupertinoColors.systemGrey3,
-                          context,
-                        ),
-                  width: 1.8,
-                ),
-              ),
-              child: isSelected
-                  ? const Icon(
-                      CupertinoIcons.checkmark,
-                      size: 13,
-                      color: CupertinoColors.white,
-                    )
-                  : null,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-

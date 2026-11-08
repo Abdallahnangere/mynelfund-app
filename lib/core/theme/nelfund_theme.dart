@@ -19,12 +19,12 @@ class NelfundTheme {
         textStyle: NelfundTypography.body,
         actionTextStyle: TextStyle(
           color: NelfundColors.emerald,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           fontSize: 17,
         ),
         tabLabelTextStyle: TextStyle(
           fontSize: 10,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
         ),
       ),
     );
@@ -44,12 +44,12 @@ class NelfundTheme {
         textStyle: NelfundTypography.body,
         actionTextStyle: TextStyle(
           color: Color(0xFF2FD18B),
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           fontSize: 17,
         ),
         tabLabelTextStyle: TextStyle(
           fontSize: 10,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
         ),
       ),
     );

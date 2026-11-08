@@ -645,11 +645,101 @@ app.delete('/api/notifications/:id', async (req, res) => {
   }
 });
 
+// --- Sauki Go Promo Configuration Endpoints ---
+
+const DEFAULT_SAUKI_PROMO = {
+  enabled: true,
+  modalEnabled: true,
+  cooldownDays: 7,
+  appName: 'Sauki Go',
+  headlineEn: 'Get affordable data and airtime from our trusted app',
+  headlineHa: 'Samu data da katin waya mai sauƙi daga amintacciyar manhajarmu',
+  subtitleEn: 'Stay connected for lectures, research & NELFUND portal updates.',
+  subtitleHa: 'Kasance cikin haɗin yanar gizo don karatu da sabuntawar shafin NELFUND.',
+  plan1Data: '1GB',
+  plan1Price: '₦400',
+  plan2Data: '5GB',
+  plan2Price: '₦1,500',
+  cycleEn: 'All Monthly',
+  cycleHa: 'Duka na Wata-Wata',
+  appStoreUrl: 'https://apps.apple.com/app/id6815456102',
+  playStoreUrl: 'https://play.google.com/store/apps/details?id=com.saukimart.go',
+};
+
+// Get current Sauki Go promo config
+app.get('/api/promo', async (req, res) => {
+  if (!db) {
+    return res.json({ success: true, data: DEFAULT_SAUKI_PROMO, source: 'default_offline' });
+  }
+
+  try {
+    const doc = await db.collection('app_config').doc('sauki_promo').get();
+    if (!doc.exists) {
+      return res.json({ success: true, data: DEFAULT_SAUKI_PROMO, source: 'default' });
+    }
+    const data = doc.data() || {};
+    res.json({
+      success: true,
+      source: 'firestore',
+      data: {
+        ...DEFAULT_SAUKI_PROMO,
+        ...data,
+        updatedAt: data.updatedAt && data.updatedAt.toDate
+          ? data.updatedAt.toDate().toISOString()
+          : data.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error('[API] Error fetching Sauki Go promo config:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update Sauki Go promo config
+app.put('/api/promo', async (req, res) => {
+  if (!db) {
+    return res.status(503).json({ error: 'Firestore is not connected' });
+  }
+
+  try {
+    const body = req.body || {};
+    const parsedCooldown = parseInt(body.cooldownDays, 10);
+    const payload = {
+      enabled: body.enabled !== undefined ? Boolean(body.enabled) : DEFAULT_SAUKI_PROMO.enabled,
+      modalEnabled: body.modalEnabled !== undefined ? Boolean(body.modalEnabled) : DEFAULT_SAUKI_PROMO.modalEnabled,
+      cooldownDays: Number.isFinite(parsedCooldown) && parsedCooldown >= 0
+        ? parsedCooldown
+        : DEFAULT_SAUKI_PROMO.cooldownDays,
+      appName: (body.appName || DEFAULT_SAUKI_PROMO.appName).toString().trim(),
+      headlineEn: (body.headlineEn || DEFAULT_SAUKI_PROMO.headlineEn).toString().trim(),
+      headlineHa: (body.headlineHa || DEFAULT_SAUKI_PROMO.headlineHa).toString().trim(),
+      subtitleEn: (body.subtitleEn || DEFAULT_SAUKI_PROMO.subtitleEn).toString().trim(),
+      subtitleHa: (body.subtitleHa || DEFAULT_SAUKI_PROMO.subtitleHa).toString().trim(),
+      plan1Data: (body.plan1Data || DEFAULT_SAUKI_PROMO.plan1Data).toString().trim(),
+      plan1Price: (body.plan1Price || DEFAULT_SAUKI_PROMO.plan1Price).toString().trim(),
+      plan2Data: (body.plan2Data || DEFAULT_SAUKI_PROMO.plan2Data).toString().trim(),
+      plan2Price: (body.plan2Price || DEFAULT_SAUKI_PROMO.plan2Price).toString().trim(),
+      cycleEn: (body.cycleEn || DEFAULT_SAUKI_PROMO.cycleEn).toString().trim(),
+      cycleHa: (body.cycleHa || DEFAULT_SAUKI_PROMO.cycleHa).toString().trim(),
+      appStoreUrl: (body.appStoreUrl || DEFAULT_SAUKI_PROMO.appStoreUrl).toString().trim(),
+      playStoreUrl: (body.playStoreUrl || DEFAULT_SAUKI_PROMO.playStoreUrl).toString().trim(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    await db.collection('app_config').doc('sauki_promo').set(payload, { merge: true });
+    console.log('[API] Updated Sauki Go promo config in app_config/sauki_promo');
+    res.json({ success: true, data: payload, message: 'Sauki Go promo configuration saved to Firestore' });
+  } catch (error) {
+    console.error('[API] Error updating Sauki Go promo config:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Start Express Server
 app.listen(PORT, () => {
   console.log(`====================================================`);
   console.log(`🇳🇬 My NELFund Official Enterprise Admin Console`);
   console.log(`   Running locally on: http://localhost:${PORT}`);
-  console.log(`   Status: Ready for Real-Time FAQ & Push Management`);
+  console.log(`   Status: Ready for Real-Time FAQ, Push & Promo Management`);
   console.log(`====================================================`);
 });

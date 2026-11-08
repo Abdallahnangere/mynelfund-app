@@ -188,8 +188,8 @@ class LiquidGlassNavBar extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 10.5,
                                         fontWeight: isSelected
-                                            ? FontWeight.w700
-                                            : FontWeight.w500,
+                                            ? FontWeight.w600
+                                            : FontWeight.w400,
                                         color: isSelected
                                             ? (isDark
                                                 ? const Color(0xFF68D391)

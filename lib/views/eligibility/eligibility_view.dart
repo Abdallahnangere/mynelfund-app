@@ -133,7 +133,7 @@ class _EligibilityContent extends StatelessWidget {
                           : (isHa ? 'Bayanai Ba Su Kammala Ba' : 'Incomplete Requirements')),
                   style: const TextStyle(
                     fontSize: 17,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -156,7 +156,7 @@ class _EligibilityContent extends StatelessWidget {
                       ? '1. Muhimman Sharudda (${report.coreMetCount}/${report.coreTotalCount} Sun Cika)'
                       : '1. Core Criteria (${report.coreMetCount}/${report.coreTotalCount} Met)',
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     fontSize: 12.5,
                   ),
                 ),
@@ -182,7 +182,7 @@ class _EligibilityContent extends StatelessWidget {
                             '! ',
                             style: TextStyle(
                               color: CupertinoColors.systemOrange,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
                           ),
@@ -208,7 +208,7 @@ class _EligibilityContent extends StatelessWidget {
                       ? '2. Shirye-shiryen KYC (${report.kycMetCount}/${report.kycTotalCount} A Shirye)'
                       : '2. KYC Readiness (${report.kycMetCount}/${report.kycTotalCount} Ready)',
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     fontSize: 12.5,
                   ),
                 ),
@@ -234,7 +234,7 @@ class _EligibilityContent extends StatelessWidget {
                             '• ',
                             style: TextStyle(
                               color: CupertinoColors.systemOrange,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
                           ),
@@ -258,7 +258,7 @@ class _EligibilityContent extends StatelessWidget {
                 Text(
                   isHa ? '3. Shingen Doka Masu Hana Bashi' : '3. Disqualification Bars',
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     fontSize: 12.5,
                   ),
                 ),
@@ -284,7 +284,7 @@ class _EligibilityContent extends StatelessWidget {
                             '✕ ',
                             style: TextStyle(
                               color: CupertinoColors.systemRed,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
                           ),
@@ -320,7 +320,7 @@ class _EligibilityContent extends StatelessWidget {
                       : 'Proceed to Portal (nelf.gov.ng)',
                   style: const TextStyle(
                     color: NelfundColors.emerald,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -498,7 +498,7 @@ class _EligibilityContent extends StatelessWidget {
                                       isHa ? 'Jagoran Cancantar Dalibi' : 'Student Eligibility Guide',
                                       style: NelfundTypography.headline.copyWith(
                                         fontSize: 16.5,
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
@@ -546,7 +546,7 @@ class _EligibilityContent extends StatelessWidget {
                                           : 'Follow through the following steps to check if you are eligible for the NELFund Student Loan:',
                                       style: NelfundTypography.body.copyWith(
                                         fontSize: 13.5,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w400,
                                         color: CupertinoDynamicColor.resolve(
                                           NelfundColors.label,
                                           context,
@@ -608,7 +608,7 @@ class _EligibilityContent extends StatelessWidget {
                                     isHa ? 'Na Fahimta, Bincika' : 'Got It, Let’s Begin',
                                     style: NelfundTypography.headline.copyWith(
                                       color: CupertinoColors.white,
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: FontWeight.w600,
                                       fontSize: 15.5,
                                     ),
                                   ),
@@ -669,7 +669,7 @@ class _EligibilityContent extends StatelessWidget {
                 style: const TextStyle(
                   color: CupertinoColors.white,
                   fontSize: 12,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -683,7 +683,7 @@ class _EligibilityContent extends StatelessWidget {
                   title,
                   style: NelfundTypography.headline.copyWith(
                     fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: isWarning ? CupertinoColors.systemOrange : null,
                   ),
                 ),
@@ -1214,7 +1214,7 @@ class _EligibilityContent extends StatelessWidget {
               tr.checkStatusButton,
               style: const TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: CupertinoColors.white,
               ),
             ),
@@ -1276,7 +1276,7 @@ class _EligibilityContent extends StatelessWidget {
                   style: NelfundTypography.headline.copyWith(
                     color: badgeColor,
                     fontSize: 16.5,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -1336,7 +1336,7 @@ class _EligibilityContent extends StatelessWidget {
                             '! ',
                             style: TextStyle(
                               color: CupertinoColors.systemOrange,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
                           ),
@@ -1398,7 +1398,7 @@ class _EligibilityContent extends StatelessWidget {
                             '• ',
                             style: TextStyle(
                               color: CupertinoColors.systemOrange,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
                           ),
@@ -1461,7 +1461,7 @@ class _EligibilityContent extends StatelessWidget {
                             '✕ ',
                             style: TextStyle(
                               color: CupertinoColors.systemRed,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           Expanded(
@@ -1521,7 +1521,7 @@ class _EligibilityContent extends StatelessWidget {
                         isHa ? 'Cikakken Bayani: Me Ya Faru?' : 'Full Breakdown: What Happened?',
                         style: NelfundTypography.headline.copyWith(
                           fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: hasDisqualifiers
                               ? CupertinoColors.systemRed
                               : CupertinoColors.systemOrange,
@@ -1633,7 +1633,7 @@ class _EligibilityContent extends StatelessWidget {
                 title,
                 style: NelfundTypography.headline.copyWith(
                   fontSize: 13.5,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               Container(
@@ -1650,7 +1650,7 @@ class _EligibilityContent extends StatelessWidget {
                   statusTag,
                   style: TextStyle(
                     fontSize: 11,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: tagColor,
                   ),
                 ),
@@ -1780,7 +1780,7 @@ class _AnimatedHelpButtonState extends State<_AnimatedHelpButton>
                 widget.isHausa ? 'Jagora' : 'Help Guide',
                 style: const TextStyle(
                   fontSize: 11.5,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: NelfundColors.emerald,
                 ),
               ),
