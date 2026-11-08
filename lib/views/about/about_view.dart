@@ -1328,7 +1328,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
-                      'v2.2.5+11',
+                      'v2.2.6+12',
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w600,
@@ -1537,8 +1537,8 @@ class _AboutViewContentState extends State<_AboutViewContent> {
           const SizedBox(height: 10),
           Text(
             tr.isHausa
-                ? 'Siffa ta 2.2.5+11 • Dokar Bashin Ɗalibai domin samar da ilimi mai zurfi ta shekarar 2024'
-                : 'Version 2.2.5+11 • Students Loans (Access to Higher Education) Act 2024',
+                ? 'Siffa ta 2.2.6+12 • Dokar Bashin Ɗalibai domin samar da ilimi mai zurfi ta shekarar 2024'
+                : 'Version 2.2.6+12 • Students Loans (Access to Higher Education) Act 2024',
             textAlign: TextAlign.center,
             style: NelfundTypography.caption.copyWith(
               color: CupertinoDynamicColor.resolve(
@@ -1637,7 +1637,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Text(
-                        'v2.2.5+11',
+                        'v2.2.6+12',
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w600,
@@ -1657,10 +1657,33 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         _buildChangelogCard(
                           sheetCtx,
                           tr,
+                          version: 'v2.2.6',
+                          build: 'Build 12',
+                          date: 'Nov 2026',
+                          isCurrent: true,
+                          title: tr.isHausa
+                              ? 'Tsarin Rubutu Mai Kyau & Haɗin Sauki Go'
+                              : 'Refined Apple HIG Typography & Sauki Go Integration',
+                          highlights: tr.isHausa
+                              ? [
+                                  'Daidaita kaurin rubutu a duk shafukan manhajar don sauƙin karantawa da tsari mai haske.',
+                                  'Sabon katin amintacciyar manhajar Sauki Go don sayen data da katin waya mai rahusa na wata-wata.',
+                                  'Gyaran girman allon waya a harshen Hausa da Turanci ba tare da cunkoso ba.',
+                                ]
+                              : [
+                                  'Balanced Apple HIG typography weights across every screen for cleaner, lighter readability.',
+                                  'Integrated Sauki Go companion app access for affordable monthly student data & airtime plans.',
+                                  'Responsive bilingual layout improvements across compact and large displays.',
+                                ],
+                        ),
+                        const SizedBox(height: 12),
+                        _buildChangelogCard(
+                          sheetCtx,
+                          tr,
                           version: 'v2.2.5',
                           build: 'Build 11',
                           date: 'Oct 2026',
-                          isCurrent: true,
+                          isCurrent: false,
                           title: tr.isHausa
                               ? 'Gyaran Bayanan Mai Haɓakawa & Katin Tuntuɓar WhatsApp'
                               : 'Developer Bio Refinement & Custom Digital Solutions CTA',
