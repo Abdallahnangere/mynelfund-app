@@ -57,9 +57,15 @@ master_page_*.png
 page_*_preview.png
 *.py
 app_store_assets/
+play_store_assets/
 admin_panel/
 dashboard/
 Launch_Telemetry_Dashboard.bat
 NELFUND_Language_Translation_Template.docx
 launch_emulator.ps1
+PROJECT.md
+FIREBASE_ANALYTICS_REPORT.md
+nelfund_extracted.txt
+.github/workflows/build_ios.yml
+.github/workflows/upload_to_testflight.yml
 
