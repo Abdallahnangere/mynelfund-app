@@ -10,13 +10,13 @@ class UpdateService {
   UpdateService._();
   static final UpdateService instance = UpdateService._();
 
-  static const String appVersion = '1.0.0';
-  static const int appBuildNumber = 1;
+  static const String appVersion = '2.2.7';
+  static const int appBuildNumber = 13;
   static const String packageName = 'com.mynelfund.app';
   static const String playStoreUrl =
       'https://play.google.com/store/apps/details?id=$packageName';
   static const String appStoreUrl =
-      'https://apps.apple.com/app/com.mynelfund.app';
+      'https://apps.apple.com/ng/app/my-nelfund/id6809634284';
 
   static bool get isIOS => defaultTargetPlatform == TargetPlatform.iOS;
   static String get storeName => isIOS ? 'App Store' : 'Play Store';

@@ -17,7 +17,7 @@ void main() {
   group('ReviewService Platform Tests', () {
     test('Package name and Store URLs match com.mynelfund.app', () {
       expect(ReviewService.androidPackageName, 'com.mynelfund.app');
-      expect(ReviewService.iosAppStoreId, 'com.mynelfund.app');
+      expect(ReviewService.iosAppStoreId, '6809634284');
       expect(
         ReviewService.playStoreWebUrl,
         'https://play.google.com/store/apps/details?id=com.mynelfund.app',
@@ -28,7 +28,7 @@ void main() {
       );
       expect(
         ReviewService.iosAppStoreWebUrl,
-        'https://apps.apple.com/app/idcom.mynelfund.app',
+        'https://apps.apple.com/ng/app/my-nelfund/id6809634284',
       );
     });
 
@@ -70,15 +70,15 @@ void main() {
   group('UpdateService Platform Tests', () {
     test('Package configuration and version properties', () {
       expect(UpdateService.packageName, 'com.mynelfund.app');
-      expect(UpdateService.appVersion, '1.0.0');
-      expect(UpdateService.appBuildNumber, 1);
+      expect(UpdateService.appVersion, '2.2.7');
+      expect(UpdateService.appBuildNumber, 13);
       expect(
         UpdateService.playStoreUrl,
         'https://play.google.com/store/apps/details?id=com.mynelfund.app',
       );
       expect(
         UpdateService.appStoreUrl,
-        'https://apps.apple.com/app/com.mynelfund.app',
+        'https://apps.apple.com/ng/app/my-nelfund/id6809634284',
       );
     });
 
@@ -89,7 +89,7 @@ void main() {
       expect(UpdateService.storeFullName, 'Apple App Store');
       expect(
         UpdateService.currentStoreUrl,
-        'https://apps.apple.com/app/com.mynelfund.app',
+        'https://apps.apple.com/ng/app/my-nelfund/id6809634284',
       );
     });
 

@@ -1328,7 +1328,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
-                      'v2.2.6+12',
+                      'v2.2.7+13',
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w600,
@@ -1537,8 +1537,8 @@ class _AboutViewContentState extends State<_AboutViewContent> {
           const SizedBox(height: 10),
           Text(
             tr.isHausa
-                ? 'Siffa ta 2.2.6+12 • Dokar Bashin Ɗalibai domin samar da ilimi mai zurfi ta shekarar 2024'
-                : 'Version 2.2.6+12 • Students Loans (Access to Higher Education) Act 2024',
+                ? 'Siffa ta 2.2.7+13 • Dokar Bashin Ɗalibai domin samar da ilimi mai zurfi ta shekarar 2024'
+                : 'Version 2.2.7+13 • Students Loans (Access to Higher Education) Act 2024',
             textAlign: TextAlign.center,
             style: NelfundTypography.caption.copyWith(
               color: CupertinoDynamicColor.resolve(
@@ -1637,7 +1637,7 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Text(
-                        'v2.2.6+12',
+                        'v2.2.7+13',
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w600,
@@ -1657,8 +1657,8 @@ class _AboutViewContentState extends State<_AboutViewContent> {
                         _buildChangelogCard(
                           sheetCtx,
                           tr,
-                          version: 'v2.2.6',
-                          build: 'Build 12',
+                          version: 'v2.2.7',
+                          build: 'Build 13',
                           date: 'Nov 2026',
                           isCurrent: true,
                           title: tr.isHausa

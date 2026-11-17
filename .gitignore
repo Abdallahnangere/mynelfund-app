@@ -57,6 +57,9 @@ master_page_*.png
 page_*_preview.png
 *.py
 app_store_assets/
-admin_panel/node_modules/
-admin_panel/service-account.json
+admin_panel/
+dashboard/
+Launch_Telemetry_Dashboard.bat
+NELFUND_Language_Translation_Template.docx
+launch_emulator.ps1
 

@@ -15,9 +15,9 @@ class ReviewService {
       'https://play.google.com/store/apps/details?id=$androidPackageName';
   static const String playStoreMarketUrl =
       'market://details?id=$androidPackageName';
-  static const String iosAppStoreId = 'com.mynelfund.app';
+  static const String iosAppStoreId = '6809634284';
   static const String iosAppStoreWebUrl =
-      'https://apps.apple.com/app/id$iosAppStoreId';
+      'https://apps.apple.com/ng/app/my-nelfund/id$iosAppStoreId';
 
   static bool get isIOS => defaultTargetPlatform == TargetPlatform.iOS;
   static String get storeName => isIOS ? 'App Store' : 'Play Store';
