@@ -11,7 +11,6 @@ Built with Flutter and Cupertino design principles for smooth native performance
 - **Program Overview & Statutory Reference**: Clear summary of the 2024 Act covering `0%` zero-interest student financing, direct institutional tuition disbursement, and the `₦20,000` monthly upkeep allowance.
 - **Eligibility & KYC Diagnostic**: Interactive assessment across Fresh Entry (`100L`), Direct Entry (`200L`), and Returning Undergraduate streams against Section 2.0 criteria, Section 3.0 disqualification bars, and mandatory KYC readiness (`BVN`, `NIN`, `JAMB`, `SVS`).
 - **10% Statutory Repayment Calculator**: Multi-session academic portfolio builder (`100L–600L`) with a 12-month upkeep selector, post-NYSC 2-year protected moratorium timeline, PAYE / IBR stream switcher, and voluntary accelerated repayment modeling.
-- **Official 5-Stage SLA Tracker**: Evaluates application processing health (`On Track`, `Approaching Deadline`, `Overdue`) in working days against official NELFUND SLA benchmarks and Section 6.0 escalation channels.
 - **Offline-First Bilingual FAQ & Bulletins**: Searchable statutory Q&A and real-time Cloud Firestore / FCM announcement feed cached locally via `SharedPreferences`.
 
 ---

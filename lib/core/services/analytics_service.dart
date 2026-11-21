@@ -142,7 +142,7 @@ class AnalyticsService {
     } catch (_) {}
   }
 
-  /// Log Official External Links (NELFUND Portal, Anjal Ventures)
+  /// Log Official External Links (NELFUND Portal and Approved Resources)
   Future<void> logExternalLink({
     required String destination,
     required String url,
