@@ -5,9 +5,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../features/notifications/domain/notification_model.dart';
+import '../../features/notifications/presentation/providers/notification_provider.dart';
 import '../../firebase_options.dart';
-import '../../models/notification_model.dart';
-import '../../providers/notification_provider.dart';
 import '../localization/app_locale.dart';
 import '../theme/nelfund_colors.dart';
 import 'analytics_service.dart';
@@ -24,12 +24,14 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     );
   } catch (_) {}
 
-  final title = message.notification?.title ??
+  final title =
+      message.notification?.title ??
       message.data['title'] ??
       message.data['header'] ??
       message.data['subject'] ??
       '';
-  final body = message.notification?.body ??
+  final body =
+      message.notification?.body ??
       message.data['body'] ??
       message.data['message'] ??
       message.data['content'] ??
@@ -37,7 +39,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   if (title.isNotEmpty || body.isNotEmpty) {
     final item = NotificationItem(
-      id: message.data['id'] ?? message.messageId ?? 'notif_${DateTime.now().millisecondsSinceEpoch}',
+      id:
+          message.data['id'] ??
+          message.messageId ??
+          'notif_${DateTime.now().millisecondsSinceEpoch}',
       title: title.isEmpty ? 'My NELFund Bulletin' : title,
       body: body,
       badge: message.data['badge'] ?? 'Advisory',
@@ -118,7 +123,9 @@ class NotificationService {
           if (apnsToken != null) break;
           await Future.delayed(const Duration(milliseconds: 500));
         }
-        debugPrint('[NotificationService] iOS APNs Token status: ${apnsToken != null ? "Ready" : "Pending"}');
+        debugPrint(
+          '[NotificationService] iOS APNs Token status: ${apnsToken != null ? "Ready" : "Pending"}',
+        );
       }
 
       // 5. Retrieve FCM Registration Token
@@ -143,7 +150,8 @@ class NotificationService {
       await _syncCurrentLanguage();
 
       // 6. Handle notification click when app is opened from terminated state
-      final RemoteMessage? initialMessage = await _messaging!.getInitialMessage();
+      final RemoteMessage? initialMessage = await _messaging!
+          .getInitialMessage();
       if (initialMessage != null) {
         _handleNotificationTap(initialMessage, isTerminatedLaunch: true);
       }
@@ -154,9 +162,13 @@ class NotificationService {
       });
 
       _isInitialized = true;
-      debugPrint('[NotificationService] Push notifications initialized successfully.');
+      debugPrint(
+        '[NotificationService] Push notifications initialized successfully.',
+      );
     } catch (e) {
-      debugPrint('[NotificationService] Push notifications unavailable in this environment: $e');
+      debugPrint(
+        '[NotificationService] Push notifications unavailable in this environment: $e',
+      );
     }
   }
 
@@ -166,7 +178,8 @@ class NotificationService {
       final prefs = await SharedPreferences.getInstance();
       var id = prefs.getString('nelfund_device_uuid_v1');
       if (id == null || id.isEmpty) {
-        id = 'dev_${DateTime.now().millisecondsSinceEpoch}_${(DateTime.now().microsecondsSinceEpoch % 100000)}';
+        id =
+            'dev_${DateTime.now().millisecondsSinceEpoch}_${(DateTime.now().microsecondsSinceEpoch % 100000)}';
         await prefs.setString('nelfund_device_uuid_v1', id);
       }
       return id;
@@ -202,9 +215,13 @@ class NotificationService {
         try {
           await _messaging!.subscribeToTopic(targetTopic);
           await _messaging!.unsubscribeFromTopic(oppositeTopic);
-          debugPrint('[NotificationService] Re-aligned FCM topic: +$targetTopic, -$oppositeTopic');
+          debugPrint(
+            '[NotificationService] Re-aligned FCM topic: +$targetTopic, -$oppositeTopic',
+          );
         } catch (topicErr) {
-          debugPrint('[NotificationService] Topic subscription switch error: $topicErr');
+          debugPrint(
+            '[NotificationService] Topic subscription switch error: $topicErr',
+          );
         }
       }
 
@@ -225,10 +242,14 @@ class NotificationService {
             .doc(deviceId)
             .set(docData, SetOptions(merge: true));
 
-        debugPrint('[NotificationService] Synced language "${language.code}" to Firestore doc /user_preferences/$deviceId');
+        debugPrint(
+          '[NotificationService] Synced language "${language.code}" to Firestore doc /user_preferences/$deviceId',
+        );
       }
     } catch (e) {
-      debugPrint('[NotificationService] Error syncing language preference to Firestore: $e');
+      debugPrint(
+        '[NotificationService] Error syncing language preference to Firestore: $e',
+      );
     }
   }
 
@@ -240,7 +261,9 @@ class NotificationService {
         await _messaging!.subscribeToTopic(topic);
         debugPrint('[NotificationService] Subscribed to topic: $topic');
       } catch (e) {
-        debugPrint('[NotificationService] Topic subscription error ($topic): $e');
+        debugPrint(
+          '[NotificationService] Topic subscription error ($topic): $e',
+        );
       }
     }
   }
@@ -264,19 +287,24 @@ class NotificationService {
     RemoteMessage message, {
     required bool isTerminatedLaunch,
   }) {
-    final title = message.notification?.title ??
+    final title =
+        message.notification?.title ??
         message.data['title'] ??
         message.data['header'] ??
         message.data['subject'] ??
         'Notification';
-    final body = message.notification?.body ??
+    final body =
+        message.notification?.body ??
         message.data['body'] ??
         message.data['message'] ??
         message.data['content'] ??
         '';
 
     final item = NotificationItem(
-      id: message.data['id'] ?? message.messageId ?? 'notif_${DateTime.now().millisecondsSinceEpoch}',
+      id:
+          message.data['id'] ??
+          message.messageId ??
+          'notif_${DateTime.now().millisecondsSinceEpoch}',
       title: title.isEmpty ? 'My NELFund Bulletin' : title,
       body: body,
       badge: message.data['badge'] ?? 'Advisory',
@@ -295,7 +323,9 @@ class NotificationService {
     AnalyticsService.instance.logNotificationInteraction(
       title: title,
       messageId: message.messageId,
-      action: isTerminatedLaunch ? 'opened_from_terminated' : 'opened_from_background',
+      action: isTerminatedLaunch
+          ? 'opened_from_terminated'
+          : 'opened_from_background',
     );
   }
 
@@ -307,13 +337,15 @@ class NotificationService {
     if (_messaging == null) return null;
 
     return FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final title = message.notification?.title ??
+      final title =
+          message.notification?.title ??
           message.data['title'] ??
           message.data['header'] ??
           message.data['subject'] ??
           'My NELFund Alert';
 
-      final body = message.notification?.body ??
+      final body =
+          message.notification?.body ??
           message.data['body'] ??
           message.data['message'] ??
           message.data['content'] ??
@@ -322,7 +354,10 @@ class NotificationService {
       if (title.isEmpty && body.isEmpty) return;
 
       final item = NotificationItem(
-        id: message.data['id'] ?? message.messageId ?? 'notif_${DateTime.now().millisecondsSinceEpoch}',
+        id:
+            message.data['id'] ??
+            message.messageId ??
+            'notif_${DateTime.now().millisecondsSinceEpoch}',
         title: title,
         body: body,
         badge: message.data['badge'] ?? 'Advisory',
@@ -462,7 +497,9 @@ class NotificationService {
 
     overlay.insert(entry);
     dismissTimer = Timer(const Duration(seconds: 4), () {
-      entry.remove();
+      if (entry.mounted) {
+        entry.remove();
+      }
     });
   }
 }

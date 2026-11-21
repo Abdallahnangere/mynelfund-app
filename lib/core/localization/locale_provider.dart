@@ -30,7 +30,9 @@ class LocaleProvider extends ChangeNotifier {
         }
         notifyListeners();
       }
-      unawaited(NotificationService.instance.syncLanguagePreference(_currentLanguage));
+      unawaited(
+        NotificationService.instance.syncLanguagePreference(_currentLanguage),
+      );
     } catch (e) {
       debugPrint('[LocaleProvider] Error loading language preference: $e');
     }

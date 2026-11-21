@@ -46,25 +46,27 @@ void main() {
       expect(ReviewService.rateActionLabel, 'Rate on Play Store ★★★★★');
     });
 
-    test('App launch counter increments correctly and triggers review prompt at threshold',
-        () async {
-      final review = ReviewService.instance;
+    test(
+      'App launch counter increments correctly and triggers review prompt at threshold',
+      () async {
+        final review = ReviewService.instance;
 
-      expect(await review.shouldPromptReview(), isFalse);
+        expect(await review.shouldPromptReview(), isFalse);
 
-      await review.recordAppLaunch(); // 1
-      expect(await review.shouldPromptReview(), isFalse);
+        await review.recordAppLaunch(); // 1
+        expect(await review.shouldPromptReview(), isFalse);
 
-      await review.recordAppLaunch(); // 2
-      expect(await review.shouldPromptReview(), isFalse);
+        await review.recordAppLaunch(); // 2
+        expect(await review.shouldPromptReview(), isFalse);
 
-      await review.recordAppLaunch(); // 3
-      expect(await review.shouldPromptReview(), isTrue);
+        await review.recordAppLaunch(); // 3
+        expect(await review.shouldPromptReview(), isTrue);
 
-      // Once user rates or declines, shouldPromptReview becomes false
-      await review.setHasRatedOrDeclined(true);
-      expect(await review.shouldPromptReview(), isFalse);
-    });
+        // Once user rates or declines, shouldPromptReview becomes false
+        await review.setHasRatedOrDeclined(true);
+        expect(await review.shouldPromptReview(), isFalse);
+      },
+    );
   });
 
   group('UpdateService Platform Tests', () {

@@ -34,9 +34,13 @@ class AnalyticsService {
       await _analytics?.setAnalyticsCollectionEnabled(true);
       _isInitialized = true;
       await logAppOpen();
-      debugPrint('[AnalyticsService] Google Analytics initialized successfully.');
+      debugPrint(
+        '[AnalyticsService] Google Analytics initialized successfully.',
+      );
     } catch (e) {
-      debugPrint('[AnalyticsService] Note: Analytics unavailable in this environment ($e).');
+      debugPrint(
+        '[AnalyticsService] Note: Analytics unavailable in this environment ($e).',
+      );
     }
   }
 
@@ -62,10 +66,7 @@ class AnalyticsService {
     try {
       await _analytics?.logEvent(
         name: 'tab_switched',
-        parameters: {
-          'tab_index': tabIndex,
-          'tab_name': tabName,
-        },
+        parameters: {'tab_index': tabIndex, 'tab_name': tabName},
       );
     } catch (_) {}
   }
@@ -132,15 +133,11 @@ class AnalyticsService {
   }
 
   /// Log Developer Contact Action (Call, Copy, WhatsApp)
-  Future<void> logDeveloperContact({
-    required String method,
-  }) async {
+  Future<void> logDeveloperContact({required String method}) async {
     try {
       await _analytics?.logEvent(
         name: 'developer_contact_tapped',
-        parameters: {
-          'contact_method': method,
-        },
+        parameters: {'contact_method': method},
       );
     } catch (_) {}
   }
@@ -153,10 +150,7 @@ class AnalyticsService {
     try {
       await _analytics?.logEvent(
         name: 'external_link_opened',
-        parameters: {
-          'destination': destination,
-          'url': url,
-        },
+        parameters: {'destination': destination, 'url': url},
       );
     } catch (_) {}
   }
@@ -180,29 +174,21 @@ class AnalyticsService {
   }
 
   /// Log Sauki Go Companion App Promo Impression
-  Future<void> logSaukiPromoImpression({
-    required String placement,
-  }) async {
+  Future<void> logSaukiPromoImpression({required String placement}) async {
     try {
       await _analytics?.logEvent(
         name: 'sauki_promo_impression',
-        parameters: {
-          'placement': placement,
-        },
+        parameters: {'placement': placement},
       );
     } catch (_) {}
   }
 
   /// Log Sauki Go Startup / On-Demand Modal Dismissal
-  Future<void> logSaukiPromoDismissed({
-    required String trigger,
-  }) async {
+  Future<void> logSaukiPromoDismissed({required String trigger}) async {
     try {
       await _analytics?.logEvent(
         name: 'sauki_promo_dismissed',
-        parameters: {
-          'trigger': trigger,
-        },
+        parameters: {'trigger': trigger},
       );
     } catch (_) {}
   }
@@ -216,13 +202,8 @@ class AnalyticsService {
     try {
       await _analytics?.logEvent(
         name: 'sauki_promo_store_clicked',
-        parameters: {
-          'store': store,
-          'placement': placement,
-          'url': url,
-        },
+        parameters: {'store': store, 'placement': placement, 'url': url},
       );
     } catch (_) {}
   }
 }
-

@@ -5,8 +5,9 @@ import 'package:my_nelfund/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('Full End-to-End User Journey Across All 5 Tabs',
-      (WidgetTester tester) async {
+  testWidgets('Full End-to-End User Journey Across All 5 Tabs', (
+    WidgetTester tester,
+  ) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
@@ -20,10 +21,11 @@ void main() {
               'Under Section 5.3, willful defaulters will have their outstanding loan amount automatically swept via GSI.',
           'statutoryReference': 'Section 5.3(d) (GSI Auto-Debit)',
           'questionHa': 'Menene ma\'anar umarnin banki na GSI?',
-          'answerHa': 'Za a rinka kwasar kudin bashinsa kai-tsaye ta hanyar GSI.',
+          'answerHa':
+              'Za a rinka kwasar kudin bashinsa kai-tsaye ta hanyar GSI.',
           'statutoryReferenceHa': 'Sashe na 5.3(d)',
           'category': 'defaultRecovery',
-        }
+        },
       ]),
     });
 
@@ -62,7 +64,12 @@ void main() {
     await tester.tap(find.text('Help Guide'));
     await tester.pumpAndSettle();
     expect(find.text('Student Eligibility Guide'), findsOneWidget);
-    expect(find.textContaining('Follow through the following steps to check if you are eligible'), findsOneWidget);
+    expect(
+      find.textContaining(
+        'Follow through the following steps to check if you are eligible',
+      ),
+      findsOneWidget,
+    );
 
     // Dismiss the modal
     await tester.tap(find.text('Got It, Let’s Begin'));
@@ -109,13 +116,17 @@ void main() {
     await tester.tap(find.text('Self-Employed (Direct)'));
     await tester.pumpAndSettle();
     expect(find.text('STATUTORY MONTHLY DEDUCTION'), findsOneWidget);
-    expect(find.textContaining('10% of monthly business profit'),
-        findsOneWidget);
+    expect(
+      find.textContaining('10% of monthly business profit'),
+      findsOneWidget,
+    );
 
     // Verify Moratorium & Friendly compliance
     expect(find.text('2-Year Post-NYSC Grace Period'), findsOneWidget);
-    expect(find.text('Repayment Support & Compliance Guidelines'),
-        findsOneWidget);
+    expect(
+      find.text('Repayment Support & Compliance Guidelines'),
+      findsOneWidget,
+    );
 
     // ==========================================
     // TAB 3: FAQ KNOWLEDGE BASE
@@ -124,17 +135,23 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Official FAQ'), findsOneWidget);
-    expect(find.text('30-Day Institutional Refund Rule (Sec. 4.1.2)'),
-        findsOneWidget);
-    expect(find.text('Global Standing Instruction (GSI) Alert (Sec. 5.3)'),
-        findsNothing);
+    expect(
+      find.text('30-Day Institutional Refund Rule (Sec. 4.1.2)'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Global Standing Instruction (GSI) Alert (Sec. 5.3)'),
+      findsNothing,
+    );
 
     // Test real-time search
     await tester.enterText(find.byType(CupertinoSearchTextField), 'GSI');
     await tester.pumpAndSettle();
 
     // Expand search result
-    await tester.tap(find.text('What is the Global Standing Instruction (GSI) mandate?'));
+    await tester.tap(
+      find.text('What is the Global Standing Instruction (GSI) mandate?'),
+    );
     await tester.pumpAndSettle();
     expect(find.textContaining('Section 5.3'), findsWidgets);
 

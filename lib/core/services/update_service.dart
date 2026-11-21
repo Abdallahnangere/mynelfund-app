@@ -27,8 +27,10 @@ class UpdateService {
   bool _isChecking = false;
 
   /// Check Google Play Store or App Store for updates
-  Future<void> checkForUpdates(BuildContext context,
-      {bool userInitiated = false}) async {
+  Future<void> checkForUpdates(
+    BuildContext context, {
+    bool userInitiated = false,
+  }) async {
     if (_isChecking) return;
     _isChecking = true;
 
@@ -61,7 +63,9 @@ class UpdateService {
       } else {
         if (userInitiated && context.mounted) {
           _showUpToDateDialog(
-              context, 'Your app is up to date (Version $appVersion, Build $appBuildNumber).');
+            context,
+            'Your app is up to date (Version $appVersion, Build $appBuildNumber).',
+          );
         }
       }
     } catch (e) {
@@ -79,8 +83,11 @@ class UpdateService {
     }
   }
 
-  void _showUpToDateDialog(BuildContext context, String message,
-      {bool showStoreLink = false}) {
+  void _showUpToDateDialog(
+    BuildContext context,
+    String message, {
+    bool showStoreLink = false,
+  }) {
     showCupertinoDialog<void>(
       context: context,
       builder: (ctx) => CupertinoAlertDialog(

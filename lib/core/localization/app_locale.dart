@@ -1,7 +1,4 @@
-enum AppLanguage {
-  english,
-  hausa,
-}
+enum AppLanguage { english, hausa }
 
 extension AppLanguageExtension on AppLanguage {
   String get code {

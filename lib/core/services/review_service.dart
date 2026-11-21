@@ -75,7 +75,9 @@ class ReviewService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(
-          _prefLastPromptTime, DateTime.now().millisecondsSinceEpoch);
+        _prefLastPromptTime,
+        DateTime.now().millisecondsSinceEpoch,
+      );
     } catch (_) {}
   }
 
@@ -133,16 +135,12 @@ class ReviewService {
     await showCupertinoDialog<void>(
       context: context,
       builder: (ctx) => CupertinoAlertDialog(
-        title: Row(
+        title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              CupertinoIcons.star_fill,
-              color: Color(0xFFFFB800),
-              size: 20,
-            ),
-            const SizedBox(width: 6),
-            const Text('Enjoying My NELFund?'),
+            Icon(CupertinoIcons.star_fill, color: Color(0xFFFFB800), size: 20),
+            SizedBox(width: 6),
+            Text('Enjoying My NELFund?'),
           ],
         ),
         content: Padding(

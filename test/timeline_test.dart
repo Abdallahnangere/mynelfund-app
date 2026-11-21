@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:my_nelfund/models/timeline_model.dart';
-import 'package:my_nelfund/providers/timeline_provider.dart';
+import 'package:my_nelfund/features/timeline/domain/timeline_model.dart';
+import 'package:my_nelfund/features/timeline/presentation/providers/timeline_provider.dart';
 
 void main() {
   group('TimelineProvider & SLA Statutory Evaluator Tests', () {
@@ -44,27 +44,36 @@ void main() {
 
     test('Evaluator diagnoses application within SLA as onTrack', () {
       provider.setCurrentStage(SlaStage.etiVerification);
-      provider.setSubmissionDate(DateTime.now().subtract(const Duration(days: 3)));
+      provider.setSubmissionDate(
+        DateTime.now().subtract(const Duration(days: 3)),
+      );
 
       final eval = provider.evaluation;
       expect(eval.healthStatus, SlaHealthStatus.onTrack);
       expect(eval.statusTitle, contains('On Schedule'));
     });
 
-    test('Evaluator flags application exceeding limit as overdue with actionable escalation', () {
-      provider.setCurrentStage(SlaStage.etiVerification);
-      // 40 calendar days ago is ~28 working days, well over 20 allowed
-      provider.setSubmissionDate(DateTime.now().subtract(const Duration(days: 40)));
+    test(
+      'Evaluator flags application exceeding limit as overdue with actionable escalation',
+      () {
+        provider.setCurrentStage(SlaStage.etiVerification);
+        // 40 calendar days ago is ~28 working days, well over 20 allowed
+        provider.setSubmissionDate(
+          DateTime.now().subtract(const Duration(days: 40)),
+        );
 
-      final eval = provider.evaluation;
-      expect(eval.healthStatus, SlaHealthStatus.overdue);
-      expect(eval.statusTitle, contains('SLA Deadline Exceeded'));
-      expect(eval.actionableAdvice, contains('Student Affairs'));
-    });
+        final eval = provider.evaluation;
+        expect(eval.healthStatus, SlaHealthStatus.overdue);
+        expect(eval.statusTitle, contains('SLA Deadline Exceeded'));
+        expect(eval.actionableAdvice, contains('Student Affairs'));
+      },
+    );
 
     test('Reset restores default submission date and initial stage', () {
       provider.setCurrentStage(SlaStage.disbursement);
-      provider.setSubmissionDate(DateTime.now().subtract(const Duration(days: 60)));
+      provider.setSubmissionDate(
+        DateTime.now().subtract(const Duration(days: 60)),
+      );
       provider.reset();
 
       expect(provider.currentStage, SlaStage.etiVerification);

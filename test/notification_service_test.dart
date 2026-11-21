@@ -8,19 +8,27 @@ void main() {
       expect(service, isNotNull);
     });
 
-    test('Default broadcast topics match all, general, announcements, and loan_updates', () {
-      expect(
-        NotificationService.defaultTopics,
-        containsAll(['all', 'general', 'announcements', 'loan_updates']),
-      );
-      expect(NotificationService.defaultTopics.length, 4);
-    });
+    test(
+      'Default broadcast topics match all, general, announcements, and loan_updates',
+      () {
+        expect(
+          NotificationService.defaultTopics,
+          containsAll(['all', 'general', 'announcements', 'loan_updates']),
+        );
+        expect(NotificationService.defaultTopics.length, 4);
+      },
+    );
 
-    test('Topic subscription and unsubscription methods run safely without throwing',
-        () async {
-      final service = NotificationService.instance;
-      await expectLater(service.subscribeToTopic('test_topic'), completes);
-      await expectLater(service.unsubscribeFromTopic('test_topic'), completes);
-    });
+    test(
+      'Topic subscription and unsubscription methods run safely without throwing',
+      () async {
+        final service = NotificationService.instance;
+        await expectLater(service.subscribeToTopic('test_topic'), completes);
+        await expectLater(
+          service.unsubscribeFromTopic('test_topic'),
+          completes,
+        );
+      },
+    );
   });
 }

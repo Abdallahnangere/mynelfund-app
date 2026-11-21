@@ -51,11 +51,17 @@ key.properties
 android/key.properties
 android/app/*.jks
 android/app/*.keystore
+**/service-account.json
 /release_builds/
 *.pdf
+*.docx
+*.bat
+*.ps1
 master_page_*.png
 page_*_preview.png
 *.py
+__pycache__/
+docs/
 app_store_assets/
 play_store_assets/
 admin_panel/
@@ -65,7 +71,10 @@ NELFUND_Language_Translation_Template.docx
 launch_emulator.ps1
 PROJECT.md
 FIREBASE_ANALYTICS_REPORT.md
+CHANGELOG.md
 nelfund_extracted.txt
-.github/workflows/build_ios.yml
-.github/workflows/upload_to_testflight.yml
+.github/
+linux/
+macos/
+windows/
 

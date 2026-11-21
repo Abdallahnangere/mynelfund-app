@@ -22,10 +22,7 @@ class NelfundTheme {
           fontWeight: FontWeight.w500,
           fontSize: 17,
         ),
-        tabLabelTextStyle: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w400,
-        ),
+        tabLabelTextStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.w400),
       ),
     );
   }
@@ -47,10 +44,7 @@ class NelfundTheme {
           fontWeight: FontWeight.w500,
           fontSize: 17,
         ),
-        tabLabelTextStyle: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w400,
-        ),
+        tabLabelTextStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.w400),
       ),
     );
   }

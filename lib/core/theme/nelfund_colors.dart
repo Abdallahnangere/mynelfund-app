@@ -20,21 +20,21 @@ class NelfundColors {
 
   static const CupertinoDynamicColor frostedCard =
       CupertinoDynamicColor.withBrightness(
-    color: Color(0xE6FFFFFF),
-    darkColor: Color(0xCC1E1E20),
-  );
+        color: Color(0xE6FFFFFF),
+        darkColor: Color(0xCC1E1E20),
+      );
 
   static const CupertinoDynamicColor glassBorder =
       CupertinoDynamicColor.withBrightness(
-    color: Color(0x14000000),
-    darkColor: Color(0x26FFFFFF),
-  );
+        color: Color(0x14000000),
+        darkColor: Color(0x26FFFFFF),
+      );
 
   static const CupertinoDynamicColor emeraldTint =
       CupertinoDynamicColor.withBrightness(
-    color: Color(0xFF008751),
-    darkColor: Color(0xFF2FD18B),
-  );
+        color: Color(0xFF008751),
+        darkColor: Color(0xFF2FD18B),
+      );
 
   // Typography Tokens
   static const CupertinoDynamicColor label = CupertinoColors.label;
@@ -44,12 +44,8 @@ class NelfundColors {
       CupertinoColors.tertiaryLabel;
 
   // Semantic Status Colors
-  static const CupertinoDynamicColor success =
-      CupertinoColors.systemGreen;
-  static const CupertinoDynamicColor warning =
-      CupertinoColors.systemOrange;
-  static const CupertinoDynamicColor destructive =
-      CupertinoColors.systemRed;
-  static const CupertinoDynamicColor info =
-      CupertinoColors.systemBlue;
+  static const CupertinoDynamicColor success = CupertinoColors.systemGreen;
+  static const CupertinoDynamicColor warning = CupertinoColors.systemOrange;
+  static const CupertinoDynamicColor destructive = CupertinoColors.systemRed;
+  static const CupertinoDynamicColor info = CupertinoColors.systemBlue;
 }

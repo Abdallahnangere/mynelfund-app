@@ -22,8 +22,10 @@ class NelfundData {
   static const double monthlyUpkeepStipend = 20000.0; // ₦20,000/month
   static const double repaymentRatePercent = 10.0; // 10% statutory deduction
   static const int postNyscMoratoriumYears = 2; // 2 years after NYSC
-  static const int selfEmployedDisclosureDays = 60; // 60 days to report business
-  static const int jobChangeDisclosureDays = 30; // 30 days to report new employer
+  static const int selfEmployedDisclosureDays =
+      60; // 60 days to report business
+  static const int jobChangeDisclosureDays =
+      30; // 30 days to report new employer
 
   // Official Service Level Agreement (SLA) Turnaround Times (from nelfund.pdf)
   static const int slaInstitutionVerificationDays = 20; // Working days
@@ -37,7 +39,8 @@ class NelfundData {
 
   // Application Window (Configurable Standalone State)
   static const String currentAcademicSession = '2024/2025';
-  static const String currentBatchName = 'Phase 1 - Public Tertiary Institutions';
+  static const String currentBatchName =
+      'Phase 1 - Public Tertiary Institutions';
   static const bool isWindowOpen = true;
   static const String windowStatusText = 'Portal Currently Open';
   static const String windowAdvisory =
@@ -59,19 +62,22 @@ class NelfundData {
   static const List<Map<String, String>> corePillars = [
     {
       'title': '0% Zero Interest',
-      'subtitle': 'No compounding fees or interest accumulation. You only repay the exact principal amount disbursed.',
+      'subtitle':
+          'No compounding fees or interest accumulation. You only repay the exact principal amount disbursed.',
       'icon': 'percent',
       'highlight': '100% Interest-Free',
     },
     {
       'title': 'Direct Tuition Disbursement',
-      'subtitle': 'Institutional fees are paid electronically and directly to your tertiary institution upon verification.',
+      'subtitle':
+          'Institutional fees are paid electronically and directly to your tertiary institution upon verification.',
       'icon': 'school',
       'highlight': '100% Institutional',
     },
     {
       'title': '₦20,000 Monthly Upkeep',
-      'subtitle': 'Optional living stipend paid monthly directly into your personal bank account to support study costs.',
+      'subtitle':
+          'Optional living stipend paid monthly directly into your personal bank account to support study costs.',
       'icon': 'wallet',
       'highlight': 'Direct to Student',
     },
@@ -82,19 +88,22 @@ class NelfundData {
       return const [
         {
           'title': '0% Babu Kudin Ruwa',
-          'subtitle': 'Babu karin kudin ruwa ko boyayyun caje-caje. Adadin ainihin kudin da aka biya ma makaranta ko aka ba ka shi kadai za ka biya.',
+          'subtitle':
+              'Babu karin kudin ruwa ko boyayyun caje-caje. Adadin ainihin kudin da aka biya ma makaranta ko aka ba ka shi kadai za ka biya.',
           'icon': 'percent',
           'highlight': '0% Ba Kudin Ruwa',
         },
         {
           'title': 'Biyan Kudin Makaranta Kai-tsaye',
-          'subtitle': 'Ana tura kudaden makaranta 100% kai-tsaye ta hanyar na\'ura zuwa asusun babban bankin makarantarku bayan an tantance ka.',
+          'subtitle':
+              'Ana tura kudaden makaranta 100% kai-tsaye ta hanyar na\'ura zuwa asusun babban bankin makarantarku bayan an tantance ka.',
           'icon': 'school',
           'highlight': '100% An Biya',
         },
         {
           'title': '₦20,000 Tallafin Rayuwa a Wata',
-          'subtitle': 'Tallafin alawus na rayuwa na kowanne wata da ake sawa kai-tsaye a asusun bankinka na kashin kai domin saukaka hidimar karatu.',
+          'subtitle':
+              'Tallafin alawus na rayuwa na kowanne wata da ake sawa kai-tsaye a asusun bankinka na kashin kai domin saukaka hidimar karatu.',
           'icon': 'wallet',
           'highlight': '₦20k a Wata',
         },
@@ -130,4 +139,3 @@ class NelfundData {
         : independentDisclaimer;
   }
 }
-
